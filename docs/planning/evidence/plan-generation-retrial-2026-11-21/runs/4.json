@@ -1,0 +1,2458 @@
+{
+ "run": 4,
+ "request": {
+  "id": "P04",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P04]",
+  "text": "a robot that learns to play music",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-locked-carousel",
+  "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 71,
+  "choices": 118,
+  "variables": 0,
+  "request_seed_id": "ede02888-1091-5cf8-83ba-6b375974d635"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a robot that learns to play music",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2634,
+   "worst_case_usd": 0.022636,
+   "spent_before_usd": 0.85569,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1000,
+   "output_tokens": 469,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.00669,
+   "vendor_cost_usd": 0.005476,
+   "latency_s": 5.1,
+   "provider_duration_ms": 5140,
+   "response_chars": 1288
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 17902,
+   "worst_case_usd": 0.337904,
+   "spent_before_usd": 0.86238,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 7455,
+   "output_tokens": 12577,
+   "reasoning_tokens": 1842,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.14068,
+   "vendor_cost_usd": 0.134621,
+   "latency_s": 77.2,
+   "provider_duration_ms": 77220,
+   "response_chars": 24562
+  }
+ ],
+ "wall_seconds": 82.4,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 1,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Pip, a small repair-shop robot with a dented tin chest",
+    "want": "To learn to play the old piano so it can make a tune like the ones it hears through the wall",
+    "obstacle": "Its metal fingers are too heavy and clunky, and every key it presses lands with a loud thud",
+    "stake": "The shop will be sold and the piano taken away before Pip ever plays a whole song",
+    "ending_kind": "a warm discovery at home"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {
+    "SP-3": 4,
+    "SP-8": 1
+   },
+   "findings": [
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": "e_set_doze",
+     "choice_id": null,
+     "message": "failure fact 'f11' (at e_set_doze) and 'f55' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'f11' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f11",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": "e_set_lost",
+     "choice_id": null,
+     "message": "failure fact 'f20' (at e_set_lost) and 'f55' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'f20' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f20",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": "e_set_tide",
+     "choice_id": null,
+     "message": "failure fact 'f33' (at e_set_tide) and 'f55' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'f33' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f33",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": "e_set_home",
+     "choice_id": null,
+     "message": "failure fact 'f56' (at e_set_home) and 'f55' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'f56' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f56",
+     "route": null
+    },
+    {
+     "rule_id": "SP-8",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": "cv_shims",
+     "choice_id": null,
+     "message": "decision 'cv_shims' offers c_cv_shims_ondine, c_cv_shims_hub at one shared cost ('leaves the writer unfound') in 1 state(s); a symmetric opportunity cost is advisory",
+     "state": "(no variables)",
+     "fact_id": null,
+     "route": null
+    }
+   ]
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": [
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_locked_carousel",
+    "node_id": "e_set_doze",
+    "choice_id": null,
+    "message": "failure fact 'f11' (at e_set_doze) and 'f55' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'f11' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f11",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_locked_carousel",
+    "node_id": "e_set_lost",
+    "choice_id": null,
+    "message": "failure fact 'f20' (at e_set_lost) and 'f55' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'f20' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f20",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_locked_carousel",
+    "node_id": "e_set_tide",
+    "choice_id": null,
+    "message": "failure fact 'f33' (at e_set_tide) and 'f55' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'f33' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f33",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_locked_carousel",
+    "node_id": "e_set_home",
+    "choice_id": null,
+    "message": "failure fact 'f56' (at e_set_home) and 'f55' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'f56' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f56",
+    "route": null
+   },
+   {
+    "rule_id": "SP-8",
+    "severity": "warning",
+    "story_id": "sk_locked_carousel",
+    "node_id": "cv_shims",
+    "choice_id": null,
+    "message": "decision 'cv_shims' offers c_cv_shims_ondine, c_cv_shims_hub at one shared cost ('leaves the writer unfound') in 1 state(s); a symmetric opportunity cost is advisory",
+    "state": "(no variables)",
+    "fact_id": null,
+    "route": null
+   }
+  ]
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "a robot that learns to play music",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Pip, a small repair-shop robot with a dented tin chest",
+   "want": "To learn to play the old piano so it can make a tune like the ones it hears through the wall",
+   "obstacle": "Its metal fingers are too heavy and clunky, and every key it presses lands with a loud thud",
+   "stake": "The shop will be sold and the piano taken away before Pip ever plays a whole song",
+   "ending_kind": "a warm discovery at home"
+  },
+  "cast": {
+   "pip": {
+    "name": "Pip",
+    "role": "small repair-shop robot with a dented tin chest",
+    "want": "To play the old piano and make a tune like the ones through the wall",
+    "voice": "Soft, hopeful, a little clanky",
+    "knows": [
+     "f1",
+     "f2",
+     "f3"
+    ]
+   },
+   "explorer": {
+    "name": "Explorer",
+    "role": "curious young helper who guides Pip, addressed as you",
+    "want": "To help Pip play a whole song before the shop sells",
+    "voice": "Gentle and curious",
+    "knows": [
+     "f1"
+    ]
+   },
+   "wren": {
+    "name": "Mrs. Wren",
+    "role": "neighbor who plays piano next door",
+    "want": "To share her music with someone who listens",
+    "voice": "Warm and humming",
+    "knows": [
+     "f50"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "The tune through the wall is Mrs. Wren playing her piano next door. Pip learns that soft felt pads on its fingers stop the thuds, and plays a whole song on the old piano before it leaves.",
+   "facts": [
+    "f50",
+    "f54",
+    "f55"
+   ],
+   "question": "Where does the tune come from, and how can Pip play it?"
+  },
+  "facts": {
+   "f1": {
+    "text": "Pip longs to play a tune like the ones it hears through the wall.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f2": {
+    "text": "Pip's metal fingers are heavy and every key it presses lands with a thud.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f3": {
+    "text": "The repair shop will be sold soon and the old piano taken away.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f4": {
+    "text": "The shop floor has many doors and corners Pip could try.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f5": {
+    "text": "Pip looks over the workbench of spare parts.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f6": {
+    "text": "A jar of loose springs sits on the bench.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f7": {
+    "text": "Pip bounces a spring on a key and it twangs oddly.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f8": {
+    "text": "Pip finds a coil that is too bouncy to press keys with.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f9": {
+    "text": "Pip tries a rubber washer on a finger but it slips off.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f10": {
+    "text": "Pip tries tapping with a wooden spoon and it clacks.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f11": {
+    "text": "Pip decides the piano is too hard and gives up for today.",
+    "contradicts": [
+     "f55"
+    ],
+    "implicit_plant": null
+   },
+   "f12": {
+    "text": "A shelf of soft scraps and cloths stands by the window.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f13": {
+    "text": "Pip finds a scrap of velvet on the shelf.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f14": {
+    "text": "The velvet is too thin and bunches up on Pip's finger.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f15": {
+    "text": "Pip finds a thick wool sock on the shelf.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f16": {
+    "text": "The sock is too bulky to fit between the keys.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f17": {
+    "text": "Pip gathers soft scraps to bring to the piano.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f18": {
+    "text": "A scrap of piano felt lies under the shelf.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f19": {
+    "text": "Pip holds the felt scrap and feels how quiet it is.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f20": {
+    "text": "Pip hides the scraps in a drawer and forgets them for now.",
+    "contradicts": [
+     "f55"
+    ],
+    "implicit_plant": null
+   },
+   "f21": {
+    "text": "The back room is dusty and full of boxes.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f22": {
+    "text": "Pip finds a box labeled old piano parts.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f23": {
+    "text": "Pip finds a small hammer with a soft head inside the box.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f24": {
+    "text": "Pip learns a piano hammer is padded with felt.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f25": {
+    "text": "Pip sees a dusty photo of a smiling piano player.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f26": {
+    "text": "Pip reads a note saying the piano was loved once.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f27": {
+    "text": "Pip wonders who played the piano long ago.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f28": {
+    "text": "Pip presses an ear to the wall to listen.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f29": {
+    "text": "Faint notes come through the wall in a slow pattern.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f30": {
+    "text": "Pip hums the pattern back to itself.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f31": {
+    "text": "Pip notices the notes are played gently, not hit.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f32": {
+    "text": "Pip hears the tune stop and start again like a song.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f33": {
+    "text": "Pip knocks on the wall too hard and the music stops, so Pip leaves.",
+    "contradicts": [
+     "f55"
+    ],
+    "implicit_plant": null
+   },
+   "f34": {
+    "text": "A pile of sheet music sits on the piano lid.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f35": {
+    "text": "Pip cannot read the dots on the page yet.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f36": {
+    "text": "Pip spots a short song with only five notes.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f37": {
+    "text": "Pip counts the five notes on the page.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f38": {
+    "text": "The notes match the first part of the tune Pip hears.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f39": {
+    "text": "Pip learns the song is called Little Lantern.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f40": {
+    "text": "Pip finds a note on the sheet music written by Mrs. Wren.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f41": {
+    "text": "A tuning fork lies near the piano.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f42": {
+    "text": "Pip taps the fork and hears a clear single tone.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f43": {
+    "text": "Pip learns tapping lightly gives a clear tone.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f44": {
+    "text": "Pip finds the piano is a little out of tune.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f45": {
+    "text": "Pip turns a tuning pin with a careful wrench.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f46": {
+    "text": "Pip loosens a key by accident and it sticks.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f47": {
+    "text": "Pip fixes the sticky key with oil.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f48": {
+    "text": "Pip tries to rush the tuning and a string twangs sourly.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f49": {
+    "text": "Pip finds a small door in the piano's side holding a music box.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f50": {
+    "text": "The tune through the wall is Mrs. Wren playing her own piano next door.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f51": {
+    "text": "Pip pauses to think about what it has learned.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f52": {
+    "text": "Pip plays a few clumsy notes with Mrs. Wren's help in mind.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f53": {
+    "text": "Pip wonders if softness is the answer.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f54": {
+    "text": "Soft felt pads on Pip's fingers stop the thuds and make gentle notes.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f55": {
+    "text": "Pip plays a whole song on the old piano.",
+    "contradicts": [
+     "f11",
+     "f20",
+     "f33",
+     "f56"
+    ],
+    "implicit_plant": null
+   },
+   "f56": {
+    "text": "Pip walks away from the piano and does not play today.",
+    "contradicts": [
+     "f55"
+    ],
+    "implicit_plant": null
+   },
+   "f57": {
+    "text": "Pip plays the song for the shopkeeper.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f58": {
+    "text": "Pip hears applause from next door.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f59": {
+    "text": "Pip plays with Mrs. Wren at the wall.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f60": {
+    "text": "Pip takes the song to Mrs. Wren's door.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f61": {
+    "text": "Pip plays alone at night in the quiet shop.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f62": {
+    "text": "Pip teaches the shopkeeper a few notes.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f63": {
+    "text": "The shopkeeper decides to keep the piano.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f64": {
+    "text": "Mrs. Wren offers to buy the shop's piano and keep it nearby.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f65": {
+    "text": "Pip plays Little Lantern to the street.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f66": {
+    "text": "The shop is saved and Pip plays at home.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f67": {
+    "text": "The piano moves next door and Pip visits it often.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f68": {
+    "text": "Pip plays beside the shopkeeper at home.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f69": {
+    "text": "Pip and Mrs. Wren play together by the wall.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f70": {
+    "text": "Pip plays the song to the whole street.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f71": {
+    "text": "Pip falls asleep happy beside the piano.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_start": {
+    "function": "opening",
+    "event": "Pip hears a tune through the wall and wishes it could play like that.",
+    "requires": [],
+    "establishes": [
+     "f1"
+    ]
+   },
+   "n_gate": {
+    "function": "continue",
+    "event": "Pip tries the old piano and every key lands with a thud.",
+    "requires": [
+     "f1"
+    ],
+    "establishes": [
+     "f2"
+    ]
+   },
+   "n_notice": {
+    "function": "continue",
+    "event": "The shopkeeper says the shop will be sold and the piano taken away.",
+    "requires": [
+     "f1",
+     "f2"
+    ],
+    "establishes": [
+     "f3"
+    ]
+   },
+   "n_hub": {
+    "function": "merge",
+    "event": "Pip stands on the shop floor deciding where to look for a way to play softly.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f4"
+    ]
+   },
+   "tb_booth": {
+    "function": "decision",
+    "event": "Pip goes through the workbench of spare parts.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f5"
+    ]
+   },
+   "tb_ledgers": {
+    "function": "decision",
+    "event": "Pip opens the jar of springs.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f6"
+    ]
+   },
+   "tb_recent": {
+    "function": "decision",
+    "event": "Pip tests a spring on the piano keys.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f7"
+    ]
+   },
+   "tb_old": {
+    "function": "decision",
+    "event": "Pip finds a coil that is far too bouncy.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f8"
+    ]
+   },
+   "tb_office": {
+    "function": "decision",
+    "event": "Pip tries a rubber washer on a finger.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f9"
+    ]
+   },
+   "tb_photo": {
+    "function": "decision",
+    "event": "Pip tries tapping with a wooden spoon.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f10"
+    ]
+   },
+   "e_set_doze": {
+    "function": "ending",
+    "event": "Pip feels too discouraged and gives up for the day.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f11"
+    ]
+   },
+   "hm_door": {
+    "function": "decision",
+    "event": "Pip visits the shelf of soft scraps by the window.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f12"
+    ]
+   },
+   "hm_echo": {
+    "function": "continue",
+    "event": "Pip lifts the shelf's top cloth and finds a velvet scrap.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f13"
+    ]
+   },
+   "hm_tall": {
+    "function": "decision",
+    "event": "Pip wraps velvet around a finger but it bunches.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f14"
+    ]
+   },
+   "hm_bent": {
+    "function": "decision",
+    "event": "Pip pulls out a thick wool sock.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f15"
+    ]
+   },
+   "hm_plank": {
+    "function": "decision",
+    "event": "Pip tries the sock between the keys and it will not fit.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f16"
+    ]
+   },
+   "hm_rotunda": {
+    "function": "merge",
+    "event": "Pip gathers the scraps and carries them to the piano.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f17"
+    ]
+   },
+   "hm_behind": {
+    "function": "decision",
+    "event": "Pip finds a scrap of piano felt in the pile.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f18"
+    ]
+   },
+   "hm_flicker": {
+    "function": "decision",
+    "event": "Pip holds the felt and feels how quiet it is.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f19"
+    ]
+   },
+   "e_set_lost": {
+    "function": "ending",
+    "event": "Pip stuffs the scraps in a drawer and forgets them.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f20"
+    ]
+   },
+   "ws_door": {
+    "function": "decision",
+    "event": "Pip enters the dusty back room full of boxes.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f21"
+    ]
+   },
+   "ws_tools": {
+    "function": "decision",
+    "event": "Pip opens a box labeled old piano parts.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f22"
+    ]
+   },
+   "ws_horse": {
+    "function": "decision",
+    "event": "Pip finds a small soft-headed hammer.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f23"
+    ]
+   },
+   "ws_bench": {
+    "function": "merge",
+    "event": "Pip learns piano hammers are padded with felt.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f24"
+    ]
+   },
+   "ws_crate": {
+    "function": "decision",
+    "event": "Pip finds a dusty photo of a smiling piano player.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f25"
+    ]
+   },
+   "bw_steps": {
+    "function": "decision",
+    "event": "Pip presses an ear to the wall to listen.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f28"
+    ]
+   },
+   "bw_pilings": {
+    "function": "decision",
+    "event": "Faint notes come through in a slow pattern.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f29"
+    ]
+   },
+   "bw_catwalk": {
+    "function": "merge",
+    "event": "Pip hums the pattern back.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f30"
+    ]
+   },
+   "bw_footing": {
+    "function": "merge",
+    "event": "Pip notices the notes are played gently.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f31"
+    ]
+   },
+   "bw_pierhead": {
+    "function": "decision",
+    "event": "Pip hears the tune stop and start like a song.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f32"
+    ]
+   },
+   "bw_watch": {
+    "function": "decision",
+    "event": "Pip reads a note on the old photo about the piano being loved.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f26"
+    ]
+   },
+   "bw_call": {
+    "function": "decision",
+    "event": "Pip wonders who played the piano long ago.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f27"
+    ]
+   },
+   "e_set_tide": {
+    "function": "ending",
+    "event": "Pip knocks too hard, the music stops, and Pip leaves.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f33"
+    ]
+   },
+   "cv_door": {
+    "function": "merge",
+    "event": "Pip finds sheet music on the piano lid.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f34"
+    ]
+   },
+   "cv_window": {
+    "function": "decision",
+    "event": "Pip cannot read the dots yet.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f35"
+    ]
+   },
+   "cv_knock": {
+    "function": "merge",
+    "event": "Pip spots a short five-note song.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f36"
+    ]
+   },
+   "cv_table": {
+    "function": "decision",
+    "event": "Pip counts the five notes.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f37"
+    ]
+   },
+   "cv_shims": {
+    "function": "decision",
+    "event": "Pip matches the notes to the tune it hears.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f38"
+    ]
+   },
+   "cv_ondine": {
+    "function": "merge",
+    "event": "Pip learns the song is called Little Lantern.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f39"
+    ]
+   },
+   "e_disc_stories": {
+    "function": "ending",
+    "event": "Pip finds a note on the music from Mrs. Wren and smiles.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f40"
+    ]
+   },
+   "ol_stairs": {
+    "function": "decision",
+    "event": "Pip finds a tuning fork near the piano.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f41"
+    ]
+   },
+   "ol_listen": {
+    "function": "decision",
+    "event": "Pip taps the fork and hears a clear tone.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f42"
+    ]
+   },
+   "ol_loft": {
+    "function": "merge",
+    "event": "Pip learns a light tap gives a clear tone.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f43"
+    ]
+   },
+   "ol_key": {
+    "function": "decision",
+    "event": "Pip finds the piano is a little out of tune.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f44"
+    ]
+   },
+   "ol_after": {
+    "function": "decision",
+    "event": "Pip turns a tuning pin with a careful wrench.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f45"
+    ]
+   },
+   "ol_rolls": {
+    "function": "decision",
+    "event": "Pip loosens a key and it sticks.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f46"
+    ]
+   },
+   "ol_crest": {
+    "function": "decision",
+    "event": "Pip oils the sticky key until it works.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f47"
+    ]
+   },
+   "e_set_bolt": {
+    "function": "ending",
+    "event": "Pip rushes the tuning and a string twangs sourly, so Pip stops.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f48"
+    ]
+   },
+   "e_disc_waltz": {
+    "function": "ending",
+    "event": "Pip finds a small door in the piano holding a music box.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f49"
+    ]
+   },
+   "fin_approach": {
+    "function": "merge",
+    "event": "Pip returns to the piano and learns the tune is Mrs. Wren playing next door.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "establishes": [
+     "f50"
+    ]
+   },
+   "fin_notice": {
+    "function": "decision",
+    "event": "Pip pauses to think over what it has learned.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3",
+     "f50"
+    ],
+    "establishes": [
+     "f51"
+    ]
+   },
+   "fin_climb": {
+    "function": "merge",
+    "event": "Pip tries a few clumsy notes with the next-door tune in mind.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3",
+     "f50"
+    ],
+    "establishes": [
+     "f52"
+    ]
+   },
+   "fin_pry": {
+    "function": "decision",
+    "event": "Pip wonders if softness is the answer.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3",
+     "f50"
+    ],
+    "establishes": [
+     "f53"
+    ]
+   },
+   "fin_press": {
+    "function": "merge",
+    "event": "Pip wraps felt pads on its fingers and the thuds go away.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3",
+     "f50"
+    ],
+    "establishes": [
+     "f54"
+    ]
+   },
+   "fin_drawings": {
+    "function": "decision",
+    "event": "Pip chooses how to play its first song.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3",
+     "f50",
+     "f54"
+    ],
+    "establishes": [
+     "f55"
+    ]
+   },
+   "e_set_home": {
+    "function": "ending",
+    "event": "Pip walks away from the piano without playing today.",
+    "requires": [
+     "f1",
+     "f2",
+     "f3",
+     "f50"
+    ],
+    "establishes": [
+     "f56"
+    ]
+   },
+   "r_caretaker": {
+    "function": "decision",
+    "event": "Pip plays for the shopkeeper.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f57"
+    ]
+   },
+   "r_meeting": {
+    "function": "continue",
+    "event": "Applause drifts in from next door.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f58"
+    ]
+   },
+   "r_inspector": {
+    "function": "continue",
+    "event": "Pip plays with Mrs. Wren at the wall.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f59"
+    ]
+   },
+   "r_family": {
+    "function": "decision",
+    "event": "Pip carries the song to Mrs. Wren's door.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f60"
+    ]
+   },
+   "r_fund": {
+    "function": "continue",
+    "event": "Pip plays alone at night in the quiet shop.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f61"
+    ]
+   },
+   "r_crew": {
+    "function": "continue",
+    "event": "Pip teaches the shopkeeper a few notes.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f62"
+    ]
+   },
+   "r_townhall": {
+    "function": "decision",
+    "event": "Pip plays Little Lantern for the street.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f65"
+    ]
+   },
+   "r_council": {
+    "function": "continue",
+    "event": "The shopkeeper decides to keep the piano.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f63"
+    ]
+   },
+   "r_paper": {
+    "function": "continue",
+    "event": "Mrs. Wren offers to keep the piano nearby.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f64"
+    ]
+   },
+   "e_festival": {
+    "function": "ending",
+    "event": "The shop is saved and Pip plays at home.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f66"
+    ]
+   },
+   "e_permit": {
+    "function": "ending",
+    "event": "Pip and Mrs. Wren play together by the wall.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f69"
+    ]
+   },
+   "e_fund": {
+    "function": "ending",
+    "event": "The piano moves next door and Pip visits it often.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f67"
+    ]
+   },
+   "e_crew": {
+    "function": "ending",
+    "event": "Pip plays beside the shopkeeper at home.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f68"
+    ]
+   },
+   "e_council": {
+    "function": "ending",
+    "event": "Pip plays for the whole street.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f70"
+    ]
+   },
+   "e_paper": {
+    "function": "ending",
+    "event": "Pip falls asleep happy beside the piano.",
+    "requires": [
+     "f55"
+    ],
+    "establishes": [
+     "f71"
+    ]
+   }
+  },
+  "choices": {
+   "c_start_out": {
+    "intent": "listen on to the tune",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_gate_midway": {
+    "intent": "try the piano again",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_notice_hub": {
+    "intent": "hear the shopkeeper out",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_booth": {
+    "intent": "look through the workbench",
+    "cost": "leaves the other rooms unsearched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_mirrors": {
+    "intent": "check the shelf of soft scraps",
+    "cost": "leaves the workbench alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_workshop": {
+    "intent": "explore the back room",
+    "cost": "leaves the shelf unvisited",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_boardwalk": {
+    "intent": "listen at the wall",
+    "cost": "leaves the back room dusty",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_caravan": {
+    "intent": "read the sheet music",
+    "cost": "leaves the wall unheard",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_organ": {
+    "intent": "test the tuning fork",
+    "cost": "leaves the music unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_carousel": {
+    "intent": "go straight to the piano",
+    "cost": "skips the clues around the shop",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_ledgers": {
+    "intent": "open the jar of springs",
+    "cost": "leaves the washers untried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_office": {
+    "intent": "try the rubber washer",
+    "cost": "leaves the springs shut in the jar",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent": {
+    "intent": "test a spring on a key",
+    "cost": "leaves the coil unexamined",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old": {
+    "intent": "examine the bouncy coil",
+    "cost": "leaves the spring untested",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_hub": {
+    "intent": "go back to the shop floor",
+    "cost": "leaves the spring idea unfinished",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_fin": {
+    "intent": "take the springs to the piano",
+    "cost": "gives up searching further",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_hub": {
+    "intent": "put the coil down and look elsewhere",
+    "cost": "drops the coil idea",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_fin": {
+    "intent": "carry the coil to the piano",
+    "cost": "gives up the rest of the bench",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo": {
+    "intent": "keep trying the washer",
+    "cost": "gives up the wooden spoon",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_chair": {
+    "intent": "give up for now",
+    "cost": "ends today's tries",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_hub": {
+    "intent": "return and try something else",
+    "cost": "drops the spoon idea",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_fin": {
+    "intent": "bring the spoon to the piano",
+    "cost": "gives up more searching",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall": {
+    "intent": "wrap the velvet scrap",
+    "cost": "leaves the sock in the pile",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent": {
+    "intent": "pull out the wool sock",
+    "cost": "leaves the velvet unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_hello": {
+    "intent": "gather all the scraps",
+    "cost": "gives up testing them one by one",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_echo_glint": {
+    "intent": "carry the scraps onward",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_rotunda": {
+    "intent": "take the velvet to the piano",
+    "cost": "gives up other scraps",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_hub": {
+    "intent": "return to the shop floor",
+    "cost": "leaves the velvet unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_steady": {
+    "intent": "carry the sock to the piano",
+    "cost": "gives up trying other scraps",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_plank": {
+    "intent": "try the sock between keys",
+    "cost": "risks it getting stuck",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_rotunda": {
+    "intent": "take what is left to the piano",
+    "cost": "gives up the sock",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_hub": {
+    "intent": "head back to the shop floor",
+    "cost": "leaves the sock behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_swing": {
+    "intent": "search the pile for felt",
+    "cost": "leaves the other scraps unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker": {
+    "intent": "feel how quiet the scraps are",
+    "cost": "leaves the felt unfound",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_dash": {
+    "intent": "stuff the scraps in a drawer",
+    "cost": "puts the scraps out of reach",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_fin": {
+    "intent": "take the felt to the piano",
+    "cost": "gives up other clues",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_hub": {
+    "intent": "go back to the shop floor",
+    "cost": "leaves the felt unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_fin": {
+    "intent": "bring the quiet scrap to the piano",
+    "cost": "gives up other clues",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_hub": {
+    "intent": "return to the shop floor",
+    "cost": "leaves the scrap untried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools": {
+    "intent": "open the old piano parts box",
+    "cost": "leaves the photo unseen",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse": {
+    "intent": "look at the dusty photo",
+    "cost": "leaves the box shut",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench": {
+    "intent": "read about the hammers",
+    "cost": "leaves the box and photo",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_fin": {
+    "intent": "take the hammer to the piano",
+    "cost": "gives up the rest of the room",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_hub": {
+    "intent": "put the box back and leave",
+    "cost": "drops the hammer",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_bench": {
+    "intent": "learn about felt-padded hammers",
+    "cost": "leaves the photo behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_hub": {
+    "intent": "leave the photo",
+    "cost": "drops the old player's story",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_fin": {
+    "intent": "go to the piano with what you learned",
+    "cost": "leaves the back room unfinished",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_crate": {
+    "intent": "read the note on the photo",
+    "cost": "delays going to the piano",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_hub": {
+    "intent": "go back to the shop floor",
+    "cost": "leaves the hammer facts unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_fin": {
+    "intent": "go to the piano wondering",
+    "cost": "leaves the old player a mystery",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_hub": {
+    "intent": "return to the shop floor",
+    "cost": "leaves the photo note unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pilings": {
+    "intent": "keep listening to the pattern",
+    "cost": "stays quiet and still",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_catwalk": {
+    "intent": "hum back to the wall",
+    "cost": "misses the pattern's end",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing": {
+    "intent": "notice how gently it is played",
+    "cost": "stops humming along",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_ladder": {
+    "intent": "hum along instead",
+    "cost": "misses the gentle details",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_arches": {
+    "intent": "knock on the wall",
+    "cost": "may stop the music",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_beam": {
+    "intent": "think about the gentle playing",
+    "cost": "stops humming",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pierhead": {
+    "intent": "wait for the song to restart",
+    "cost": "waits without learning more",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_fin": {
+    "intent": "take the idea to the piano",
+    "cost": "leaves the wall behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_hub": {
+    "intent": "go back to the shop floor",
+    "cost": "leaves the idea untested",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch": {
+    "intent": "follow the notes as they start again",
+    "cost": "leaves the pause unstudied",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call": {
+    "intent": "think about the old player",
+    "cost": "loses track of the tune",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_fin": {
+    "intent": "take the tune to the piano",
+    "cost": "gives up listening more",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_hub": {
+    "intent": "return to the shop floor",
+    "cost": "leaves the tune half learned",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_caravan": {
+    "intent": "check the sheet music for the old player",
+    "cost": "leaves the wall behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_hub": {
+    "intent": "drop the thought and return",
+    "cost": "loses the clue",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_knock": {
+    "intent": "count the notes",
+    "cost": "leaves the dots unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window": {
+    "intent": "try reading the dots",
+    "cost": "leaves the notes uncounted",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_knock": {
+    "intent": "find the short song",
+    "cost": "gives up reading the rest",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_slip": {
+    "intent": "put the music down",
+    "cost": "drops the page",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_sit": {
+    "intent": "match the song to the tune",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_favorite": {
+    "intent": "learn the song's name",
+    "cost": "leaves the matching notes unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims": {
+    "intent": "look for the writer",
+    "cost": "delays learning the name",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_stories": {
+    "intent": "look for a handwritten note",
+    "cost": "leaves the song's name unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_ondine": {
+    "intent": "learn the name from the page",
+    "cost": "leaves the writer unfound",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_hub": {
+    "intent": "return to the shop floor",
+    "cost": "leaves the writer unfound",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_go": {
+    "intent": "take the song to the piano",
+    "cost": "leaves the other clues",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_think": {
+    "intent": "go back to the shop floor",
+    "cost": "leaves the song unplayed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_climb": {
+    "intent": "tap the fork",
+    "cost": "leaves the piano untested",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_listen": {
+    "intent": "check the piano's tone",
+    "cost": "leaves the fork unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_up": {
+    "intent": "hear the clear tone",
+    "cost": "leaves the piano alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_down": {
+    "intent": "put the fork down",
+    "cost": "drops the clear tone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_key": {
+    "intent": "listen for a wrong note",
+    "cost": "leaves the sticking key unnoticed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls": {
+    "intent": "try a tuning pin",
+    "cost": "risks a sticking key",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest": {
+    "intent": "press keys lightly",
+    "cost": "leaves the pins untouched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_freeze": {
+    "intent": "turn the pin carefully",
+    "cost": "takes patient time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_bolt": {
+    "intent": "hurry the tuning",
+    "cost": "risks a sour string",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_fin": {
+    "intent": "play on the better piano",
+    "cost": "gives up other discoveries",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_hub": {
+    "intent": "return to the shop floor",
+    "cost": "leaves the pin tuned but unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_fin": {
+    "intent": "play on the stuck key",
+    "cost": "gives up fixing it",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_home": {
+    "intent": "open the small side door",
+    "cost": "leaves the key stuck",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_hub": {
+    "intent": "go back to the shop floor",
+    "cost": "leaves the key stuck",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_fin": {
+    "intent": "play with the oiled key",
+    "cost": "gives up other tries",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_hub": {
+    "intent": "return to the shop floor",
+    "cost": "leaves the oiled key unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_climb": {
+    "intent": "play on",
+    "cost": "skips the pause to think",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice": {
+    "intent": "stop and think",
+    "cost": "delays the playing",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_climb": {
+    "intent": "play again",
+    "cost": "cuts the thinking short",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_hub": {
+    "intent": "go back to the shop floor",
+    "cost": "leaves the piano silent",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_press": {
+    "intent": "wrap felt on Pip's fingers",
+    "cost": "skips more wondering",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry": {
+    "intent": "wonder about softness",
+    "cost": "delays the felt",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_press": {
+    "intent": "try the felt idea",
+    "cost": "gives up wondering",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_home": {
+    "intent": "leave the piano for today",
+    "cost": "gives up playing now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_open": {
+    "intent": "play with felt pads",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_caretaker": {
+    "intent": "play for the shopkeeper",
+    "cost": "leaves Mrs. Wren unvisited",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_family": {
+    "intent": "play for Mrs. Wren",
+    "cost": "leaves the shopkeeper unheard",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_town": {
+    "intent": "play for the street",
+    "cost": "leaves quiet homes behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting": {
+    "intent": "listen to the applause",
+    "cost": "leaves the shopkeeper's response",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector": {
+    "intent": "play with Mrs. Wren",
+    "cost": "gives up the applause",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting_end": {
+    "intent": "stay home and enjoy",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector_end": {
+    "intent": "keep playing together",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund": {
+    "intent": "play at her door",
+    "cost": "leaves Pip's own piano",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew": {
+    "intent": "play alone at night",
+    "cost": "leaves Mrs. Wren waiting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund_end": {
+    "intent": "follow the piano's new home",
+    "cost": "gives up keeping it at the shop",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew_end": {
+    "intent": "teach the shopkeeper",
+    "cost": "gives up playing alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council": {
+    "intent": "play for the shopkeeper's friends",
+    "cost": "gives up a quiet night",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper": {
+    "intent": "play for Mrs. Wren's neighbors",
+    "cost": "gives up the shopkeeper",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council_end": {
+    "intent": "play for everyone",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper_end": {
+    "intent": "rest after the song",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "e_set_doze": {
+    "gift": "A gentle nudge to try a different idea next time.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_lost": {
+    "gift": "A reason to come back and find the felt.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_tide": {
+    "gift": "A laugh at the knock and a wish to listen softly.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_stories": {
+    "gift": "A reveal that Mrs. Wren left a note on the music.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_bolt": {
+    "gift": "A giggle at the sour twang and a reason to tune slowly.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_waltz": {
+    "gift": "A reveal of a hidden music box inside the piano.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_home": {
+    "gift": "A reason to return and try the felt pads.",
+    "valence": null,
+    "kind": null
+   },
+   "e_festival": {
+    "gift": "A warm home with a saved shop and a song.",
+    "valence": null,
+    "kind": null
+   },
+   "e_permit": {
+    "gift": "A warm duet through the wall.",
+    "valence": null,
+    "kind": null
+   },
+   "e_fund": {
+    "gift": "A cozy reveal that the piano gets a new home nearby.",
+    "valence": null,
+    "kind": null
+   },
+   "e_crew": {
+    "gift": "A warm evening of music at home.",
+    "valence": null,
+    "kind": null
+   },
+   "e_council": {
+    "gift": "A proud song for the whole street.",
+    "valence": null,
+    "kind": null
+   },
+   "e_paper": {
+    "gift": "A cozy ending with a happy sleepy robot.",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-locked-carousel",
+    "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 5
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 2,
+  "input_tokens": 8455,
+  "output_tokens": 13046,
+  "reasoning_tokens": 1842,
+  "cost_estimate_usd": 0.14737,
+  "vendor_cost_usd": 0.140097,
+  "provider_seconds": 82.3
+ },
+ "budget": {
+  "budget_usd": 8.0,
+  "spent_before_usd": 0.85569,
+  "spent_after_usd": 1.00306
+ }
+}

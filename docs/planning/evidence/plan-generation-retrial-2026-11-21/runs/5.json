@@ -1,0 +1,1911 @@
+{
+ "run": 5,
+ "request": {
+  "id": "P05",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P05]",
+  "text": "a pirate looking for treasure under the sea",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-cave-of-echoes",
+  "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 65,
+  "choices": 64,
+  "variables": 0,
+  "request_seed_id": "b23dce3a-ff5e-5230-9757-f8180f280ace"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a pirate looking for treasure under the sea",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2645,
+   "worst_case_usd": 0.022646,
+   "spent_before_usd": 1.00306,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1005,
+   "output_tokens": 475,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.00676,
+   "vendor_cost_usd": 0.005546,
+   "latency_s": 5.1,
+   "provider_duration_ms": 5119,
+   "response_chars": 1273
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 16392,
+   "worst_case_usd": 0.336394,
+   "spent_before_usd": 1.00982,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 6541,
+   "output_tokens": 12886,
+   "reasoning_tokens": 3717,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.141942,
+   "vendor_cost_usd": 0.135883,
+   "latency_s": 84.1,
+   "provider_duration_ms": 84097,
+   "response_chars": 21469
+  }
+ ],
+ "wall_seconds": 89.3,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 1,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Marlo, a young pirate who sails a patched-up diving bell",
+    "want": "To find the sunken treasure chest marked on her grandmother's old map",
+    "obstacle": "A maze of kelp and coral tunnels where the map is torn and each way looks the same",
+    "stake": "The map crumbles to nothing and the family's seafaring story is lost for good",
+    "ending_kind": "a warm discovery that the treasure is a keepsake to share with family"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {
+    "SP-3": 6
+   },
+   "findings": [
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "la_hum_back",
+     "choice_id": null,
+     "message": "failure fact 'f19' (at la_hum_back) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f19' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f19",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "ra_lake_back",
+     "choice_id": null,
+     "message": "failure fact 'f29' (at ra_lake_back) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f29' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f29",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "ra_pool_back",
+     "choice_id": null,
+     "message": "failure fact 'f39' (at ra_pool_back) and 't_keepsake' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f39' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f39",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "da_bat_back",
+     "choice_id": null,
+     "message": "failure fact 'f51' (at da_bat_back) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f51' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f51",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "da_cache_back",
+     "choice_id": null,
+     "message": "failure fact 'f59' (at da_cache_back) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f59' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f59",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "la_retreat_pool",
+     "choice_id": null,
+     "message": "failure fact 'f8' (at la_retreat_pool) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f8' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "f8",
+     "route": null
+    }
+   ]
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": [
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "la_hum_back",
+    "choice_id": null,
+    "message": "failure fact 'f19' (at la_hum_back) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f19' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f19",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "ra_lake_back",
+    "choice_id": null,
+    "message": "failure fact 'f29' (at ra_lake_back) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f29' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f29",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "ra_pool_back",
+    "choice_id": null,
+    "message": "failure fact 'f39' (at ra_pool_back) and 't_keepsake' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f39' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f39",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "da_bat_back",
+    "choice_id": null,
+    "message": "failure fact 'f51' (at da_bat_back) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f51' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f51",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "da_cache_back",
+    "choice_id": null,
+    "message": "failure fact 'f59' (at da_cache_back) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f59' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f59",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "la_retreat_pool",
+    "choice_id": null,
+    "message": "failure fact 'f8' (at la_retreat_pool) and 't_chest' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'f8' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "f8",
+    "route": null
+   }
+  ]
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "a pirate looking for treasure under the sea",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Marlo, a young pirate who sails a patched-up diving bell",
+   "want": "To find the sunken treasure chest marked on her grandmother's old map",
+   "obstacle": "A maze of kelp and coral tunnels where the map is torn and each way looks the same",
+   "stake": "The map crumbles to nothing and the family's seafaring story is lost for good",
+   "ending_kind": "a warm discovery that the treasure is a keepsake to share with family"
+  },
+  "cast": {
+   "marlo": {
+    "name": "Marlo",
+    "role": "young pirate who sails a patched-up diving bell",
+    "want": "To find the sunken chest marked on grandmother's map",
+    "voice": "Bold, curious and gentle, speaks to 'you'",
+    "knows": [
+     "f1",
+     "f2"
+    ]
+   },
+   "grandmother": {
+    "name": "Grandmother",
+    "role": "old sea captain who drew the map",
+    "want": "To pass the family sea story on",
+    "voice": "Warm and rhyming, heard through notes",
+    "knows": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "pip": {
+    "name": "Pip",
+    "role": "small tapping octopus guide",
+    "want": "To lead friends away from danger",
+    "voice": "Taps and bubbles",
+    "knows": [
+     "f5"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "Grandmother's chest lies in a sunken wreck at the end of the tunnels. It holds her brass compass and sea letters, a keepsake, with a note asking Marlo to share it with the family.",
+   "facts": [
+    "t_chest",
+    "t_keepsake",
+    "t_share"
+   ],
+   "question": "What is the treasure on grandmother's map?"
+  },
+  "facts": {
+   "f1": {
+    "text": "Marlo sails a patched-up diving bell.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f2": {
+    "text": "Grandmother's old map is torn and crumbling at the edges.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f3": {
+    "text": "The kelp and coral tunnels all look the same.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f4": {
+    "text": "Three tunnel mouths open ahead: kelp, coral and a glowing one.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f5": {
+    "text": "A small octopus named Pip watches from the left kelp fork.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f3k": {
+    "text": "The kelp tunnel bends match the wavy ink line on the map.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f4k": {
+    "text": "The kelp tunnel splits into a bubbling fork and a roped fork.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f6": {
+    "text": "Pip tapped a warning that the tide turns soon.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f7": {
+    "text": "A narrow gap and a wide arch both lie ahead.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f8": {
+    "text": "Marlo took the wide arch, went in circles, and a map corner crumbled.",
+    "contradicts": [
+     "t_chest"
+    ],
+    "implicit_plant": null
+   },
+   "f9": {
+    "text": "Marlo squeezed through the gap and found a carved shell marker.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f10": {
+    "text": "The shell marker points up to a ship's mast and down to a dark hollow.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f11": {
+    "text": "Marlo climbed to the mast and found a rope tied in grandmother's knot.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f13": {
+    "text": "The hollow glows with sleeping lantern fish.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f14": {
+    "text": "Lantern light shows grandmother's initials carved on a stone.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f16": {
+    "text": "The roped fork has old knotted rope tied by grandmother's crew.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f17": {
+    "text": "The rope has three knots, matching the map's three tears.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f18": {
+    "text": "A mossy door and a whale-bone tunnel both lie ahead.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f19": {
+    "text": "Marlo tried the whale-bone tunnel, was turned around, and the map crumbled to dust.",
+    "contradicts": [
+     "t_chest"
+    ],
+    "implicit_plant": null
+   },
+   "f20": {
+    "text": "The mossy door opens onto a hall of glowing shells.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f21": {
+    "text": "A shell in the hall holds a rhyme from grandmother about the way.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f22": {
+    "text": "Marlo follows the rhyme to a wreck's round window.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f24": {
+    "text": "The coral tunnels glow pink and hum with faint whale song.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f25": {
+    "text": "The coral tunnel offers a pearl-lit passage and a sponge-lined one.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f26": {
+    "text": "Pearls on the floor form arrows in the pearl-lit passage.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f27": {
+    "text": "A hermit crab named Tula says grandmother's crew once passed here.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f28": {
+    "text": "Tula offers to guide Marlo, though Marlo could trust the map alone.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f29": {
+    "text": "Marlo hurried alone, the map crumbled, and she turned home for now.",
+    "contradicts": [
+     "t_chest"
+    ],
+    "implicit_plant": null
+   },
+   "f30": {
+    "text": "Tula guided Marlo through coral to a wreck's stern.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f31": {
+    "text": "At the wreck a barnacled hatch and a porthole both stand open.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f32": {
+    "text": "Through the hatch Marlo finds a cabin with a sea chest shape under weed.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f34": {
+    "text": "Through the porthole Marlo spots a chest by a ship's wheel.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f36": {
+    "text": "The sponge passage has soft yellow sponges and looks the same everywhere.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f37": {
+    "text": "A gentle current nudges the bell along the sponge passage.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f38": {
+    "text": "Marlo can chalk-mark the wall or follow the current.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f39": {
+    "text": "Marlo followed the current in circles and believed the chest held gold coins.",
+    "contradicts": [
+     "t_keepsake"
+    ],
+    "implicit_plant": null
+   },
+   "f40": {
+    "text": "Chalk marks let Marlo see which sponge turns she already tried.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f41": {
+    "text": "The unmarked turns lead to a tall stone arch and a small crack.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f42": {
+    "text": "Beyond the arch lies a wreck with a lantern-lit deck.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f44": {
+    "text": "Through the crack Marlo finds a wreck with a cracked hull door.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f46": {
+    "text": "Silver glimmerfish drift out of the third tunnel in a glowing line.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f47": {
+    "text": "The glimmerfish swim both toward a kelp curtain and toward a cave mouth.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f48": {
+    "text": "Behind the kelp curtain the water is calm and warm.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f49": {
+    "text": "A seahorse named Bram points out marks scratched on the rock.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f50": {
+    "text": "Bram's marks point one way, and the torn map points another.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f51": {
+    "text": "Marlo trusted the torn map over Bram, and a map piece crumbled away.",
+    "contradicts": [
+     "t_chest"
+    ],
+    "implicit_plant": null
+   },
+   "f52": {
+    "text": "Marlo followed Bram's marks to a ring of stones.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f53": {
+    "text": "Inside the ring a shell clock shows the hour grandmother sailed.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f54": {
+    "text": "The shell clock opens a gap into a sunken ship's hold.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f56": {
+    "text": "The cave mouth glitters with crystal and echoes Marlo's voice.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f57": {
+    "text": "The echoes repeat grandmother's old sea song.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f58": {
+    "text": "Marlo can follow the song deeper or stop to copy the map.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f59": {
+    "text": "Marlo stopped to copy the map, the song faded, and the original crumbled.",
+    "contradicts": [
+     "t_chest"
+    ],
+    "implicit_plant": null
+   },
+   "f60": {
+    "text": "The song leads to a crystal bridge over a deep trench.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f61": {
+    "text": "At the bridge's end are a lit lantern path and a rope ladder.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f62": {
+    "text": "The lantern path leads to a wreck with a carved door.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f64": {
+    "text": "The rope ladder leads down to a wreck's quiet deck.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "t_chest": {
+    "text": "Grandmother's chest lies in a sunken wreck at the end of the tunnels.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "t_keepsake": {
+    "text": "The chest holds her brass compass and sea letters, a keepsake.",
+    "contradicts": [
+     "f39"
+    ],
+    "implicit_plant": null
+   },
+   "t_share": {
+    "text": "A note in the chest asks Marlo to share it with the family.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_open": {
+    "function": "opening",
+    "event": "Marlo sets out in her patched diving bell holding grandmother's torn, crumbling map.",
+    "requires": [],
+    "establishes": [
+     "f1",
+     "f2"
+    ]
+   },
+   "n_start": {
+    "function": "decision",
+    "event": "Marlo reaches the maze and sees three tunnel mouths that look alike.",
+    "requires": [
+     "f2"
+    ],
+    "establishes": [
+     "f3",
+     "f4"
+    ]
+   },
+   "la_tunnel": {
+    "function": "continue",
+    "event": "In the kelp tunnel the bends match the map's wavy ink line.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f3k"
+    ]
+   },
+   "la_fork": {
+    "function": "decision",
+    "event": "The kelp tunnel splits in two.",
+    "requires": [
+     "f3k"
+    ],
+    "establishes": [
+     "f4k"
+    ]
+   },
+   "la_glitter": {
+    "function": "continue",
+    "event": "Warm bubbles rise from the left fork where a small octopus named Pip watches.",
+    "requires": [
+     "f4k"
+    ],
+    "establishes": [
+     "f5"
+    ]
+   },
+   "la_glitter2": {
+    "function": "continue",
+    "event": "Pip taps out a warning that the tide will turn soon.",
+    "requires": [
+     "f5"
+    ],
+    "establishes": [
+     "f6"
+    ]
+   },
+   "la_grotto_app": {
+    "function": "decision",
+    "event": "Ahead lie a narrow gap and a wide arch.",
+    "requires": [
+     "f6"
+    ],
+    "establishes": [
+     "f7"
+    ]
+   },
+   "la_retreat_pool": {
+    "function": "ending",
+    "event": "Marlo takes the wide arch, circles back, and a map corner crumbles. She goes home to try again.",
+    "requires": [
+     "f7"
+    ],
+    "establishes": [
+     "f8"
+    ]
+   },
+   "la_squeeze": {
+    "function": "continue",
+    "event": "Marlo squeezes through the gap and finds a carved shell marker.",
+    "requires": [
+     "f7"
+    ],
+    "establishes": [
+     "f9"
+    ]
+   },
+   "la_grotto": {
+    "function": "decision",
+    "event": "The shell marker points two ways.",
+    "requires": [
+     "f9"
+    ],
+    "establishes": [
+     "f10"
+    ]
+   },
+   "la_crystal_take": {
+    "function": "continue",
+    "event": "Marlo climbs to the ship's mast and finds a rope tied in grandmother's knot.",
+    "requires": [
+     "f10"
+    ],
+    "establishes": [
+     "f11"
+    ]
+   },
+   "la_crystal_out": {
+    "function": "ending",
+    "event": "The rope leads to the chest. Inside are grandmother's compass, letters and a note to share them.",
+    "requires": [
+     "f11"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "la_crystal_deeper": {
+    "function": "continue",
+    "event": "Marlo dives into the hollow, which glows with sleeping lantern fish.",
+    "requires": [
+     "f10"
+    ],
+    "establishes": [
+     "f13"
+    ]
+   },
+   "la_song_app": {
+    "function": "continue",
+    "event": "Lantern light shows grandmother's initials on a stone.",
+    "requires": [
+     "f13"
+    ],
+    "establishes": [
+     "f14"
+    ]
+   },
+   "la_song": {
+    "function": "ending",
+    "event": "Behind the stone sits the chest with the compass, letters and a note to share with family.",
+    "requires": [
+     "f14"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "la_hum": {
+    "function": "continue",
+    "event": "Marlo finds old knotted rope tied by grandmother's crew in the right fork.",
+    "requires": [
+     "f4k"
+    ],
+    "establishes": [
+     "f16"
+    ]
+   },
+   "la_hum2": {
+    "function": "continue",
+    "event": "Marlo counts three knots, matching the map's three tears.",
+    "requires": [
+     "f16"
+    ],
+    "establishes": [
+     "f17"
+    ]
+   },
+   "la_bell_app": {
+    "function": "decision",
+    "event": "A mossy door and a whale-bone tunnel appear.",
+    "requires": [
+     "f17"
+    ],
+    "establishes": [
+     "f18"
+    ]
+   },
+   "la_hum_back": {
+    "function": "ending",
+    "event": "Marlo tries the whale-bone tunnel, gets turned around, and the map dusts away. She heads home.",
+    "requires": [
+     "f18"
+    ],
+    "establishes": [
+     "f19"
+    ]
+   },
+   "la_bell": {
+    "function": "continue",
+    "event": "The mossy door opens onto a hall of glowing shells.",
+    "requires": [
+     "f18"
+    ],
+    "establishes": [
+     "f20"
+    ]
+   },
+   "la_bell2": {
+    "function": "continue",
+    "event": "One shell holds a rhyme from grandmother about the way.",
+    "requires": [
+     "f20"
+    ],
+    "establishes": [
+     "f21"
+    ]
+   },
+   "la_bell3": {
+    "function": "continue",
+    "event": "Marlo follows the rhyme to a wreck's round window.",
+    "requires": [
+     "f21"
+    ],
+    "establishes": [
+     "f22"
+    ]
+   },
+   "la_bell4": {
+    "function": "ending",
+    "event": "Through the window Marlo reaches the chest of compass and letters, and the note asks her to share.",
+    "requires": [
+     "f22"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "ra_drip": {
+    "function": "continue",
+    "event": "The coral tunnels glow pink and hum with whale song.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f24"
+    ]
+   },
+   "ra_fork": {
+    "function": "decision",
+    "event": "The tunnel offers a pearl-lit and a sponge-lined passage.",
+    "requires": [
+     "f24"
+    ],
+    "establishes": [
+     "f25"
+    ]
+   },
+   "ra_lake_way": {
+    "function": "continue",
+    "event": "Pearls on the floor form arrows.",
+    "requires": [
+     "f25"
+    ],
+    "establishes": [
+     "f26"
+    ]
+   },
+   "ra_lake2": {
+    "function": "continue",
+    "event": "A hermit crab named Tula says grandmother's crew passed here.",
+    "requires": [
+     "f26"
+    ],
+    "establishes": [
+     "f27"
+    ]
+   },
+   "ra_lake_app": {
+    "function": "decision",
+    "event": "Tula offers to guide Marlo.",
+    "requires": [
+     "f27"
+    ],
+    "establishes": [
+     "f28"
+    ]
+   },
+   "ra_lake_back": {
+    "function": "ending",
+    "event": "Marlo hurries alone, the map crumbles, and she turns home for now.",
+    "requires": [
+     "f28"
+    ],
+    "establishes": [
+     "f29"
+    ]
+   },
+   "ra_descend": {
+    "function": "continue",
+    "event": "Tula guides Marlo through coral to a wreck's stern.",
+    "requires": [
+     "f28"
+    ],
+    "establishes": [
+     "f30"
+    ]
+   },
+   "ra_lakeshore": {
+    "function": "decision",
+    "event": "A barnacled hatch and a porthole stand open.",
+    "requires": [
+     "f30"
+    ],
+    "establishes": [
+     "f31"
+    ]
+   },
+   "ra_boat": {
+    "function": "continue",
+    "event": "Through the hatch Marlo finds a cabin with a chest shape under weed.",
+    "requires": [
+     "f31"
+    ],
+    "establishes": [
+     "f32"
+    ]
+   },
+   "ra_row": {
+    "function": "ending",
+    "event": "Marlo opens the chest to find compass, letters and a note to share, and Tula cheers.",
+    "requires": [
+     "f32"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "ra_wade": {
+    "function": "continue",
+    "event": "Through the porthole Marlo spots a chest by the ship's wheel.",
+    "requires": [
+     "f31"
+    ],
+    "establishes": [
+     "f34"
+    ]
+   },
+   "ra_islet": {
+    "function": "ending",
+    "event": "Marlo slips in and finds the compass, letters and a note to share with family.",
+    "requires": [
+     "f34"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "ra_pool_way": {
+    "function": "continue",
+    "event": "The sponge passage is soft and yellow and looks the same everywhere.",
+    "requires": [
+     "f25"
+    ],
+    "establishes": [
+     "f36"
+    ]
+   },
+   "ra_pool2": {
+    "function": "continue",
+    "event": "A gentle current nudges the bell along.",
+    "requires": [
+     "f36"
+    ],
+    "establishes": [
+     "f37"
+    ]
+   },
+   "ra_pool_app": {
+    "function": "decision",
+    "event": "Marlo can chalk-mark the wall or follow the current.",
+    "requires": [
+     "f37"
+    ],
+    "establishes": [
+     "f38"
+    ]
+   },
+   "ra_pool_back": {
+    "function": "ending",
+    "event": "Marlo follows the current in circles, sure the chest is full of gold, and goes home for a bigger bag.",
+    "requires": [
+     "f38"
+    ],
+    "establishes": [
+     "f39"
+    ]
+   },
+   "ra_pool_enter": {
+    "function": "continue",
+    "event": "Marlo chalk-marks the wall and sees which turns she has tried.",
+    "requires": [
+     "f38"
+    ],
+    "establishes": [
+     "f40"
+    ]
+   },
+   "ra_pool_chamber": {
+    "function": "decision",
+    "event": "The untried turns lead to a tall arch and a small crack.",
+    "requires": [
+     "f40"
+    ],
+    "establishes": [
+     "f41"
+    ]
+   },
+   "ra_starfish": {
+    "function": "continue",
+    "event": "Beyond the arch lies a wreck with a lantern-lit deck.",
+    "requires": [
+     "f41"
+    ],
+    "establishes": [
+     "f42"
+    ]
+   },
+   "ra_starfish2": {
+    "function": "ending",
+    "event": "On the deck Marlo finds the chest of compass and letters, and the note asks her to share.",
+    "requires": [
+     "f42"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "ra_pool_deep": {
+    "function": "continue",
+    "event": "Through the crack Marlo finds a wreck with a cracked hull door.",
+    "requires": [
+     "f41"
+    ],
+    "establishes": [
+     "f44"
+    ]
+   },
+   "ra_pool_deep2": {
+    "function": "ending",
+    "event": "Inside the hull Marlo finds the chest, compass, letters and a note to share.",
+    "requires": [
+     "f44"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "da_dark": {
+    "function": "continue",
+    "event": "Silver glimmerfish drift out of the third tunnel in a glowing line.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f46"
+    ]
+   },
+   "da_fork": {
+    "function": "decision",
+    "event": "The glimmerfish swim toward a kelp curtain and a cave mouth.",
+    "requires": [
+     "f46"
+    ],
+    "establishes": [
+     "f47"
+    ]
+   },
+   "da_bat_way": {
+    "function": "continue",
+    "event": "Behind the kelp curtain the water is calm and warm.",
+    "requires": [
+     "f47"
+    ],
+    "establishes": [
+     "f48"
+    ]
+   },
+   "da_bat2": {
+    "function": "continue",
+    "event": "A seahorse named Bram points out marks scratched on the rock.",
+    "requires": [
+     "f48"
+    ],
+    "establishes": [
+     "f49"
+    ]
+   },
+   "da_bat_app": {
+    "function": "decision",
+    "event": "Bram's marks and the torn map point different ways.",
+    "requires": [
+     "f49"
+    ],
+    "establishes": [
+     "f50"
+    ]
+   },
+   "da_bat_back": {
+    "function": "ending",
+    "event": "Marlo trusts the map over Bram, a piece crumbles, and she heads home to try again.",
+    "requires": [
+     "f50"
+    ],
+    "establishes": [
+     "f51"
+    ]
+   },
+   "da_bat_enter": {
+    "function": "continue",
+    "event": "Marlo follows Bram's marks to a ring of stones.",
+    "requires": [
+     "f50"
+    ],
+    "establishes": [
+     "f52"
+    ]
+   },
+   "da_roost": {
+    "function": "continue",
+    "event": "A shell clock inside the ring shows the hour grandmother sailed.",
+    "requires": [
+     "f52"
+    ],
+    "establishes": [
+     "f53"
+    ]
+   },
+   "da_roost2": {
+    "function": "continue",
+    "event": "The shell clock opens a gap into a sunken ship's hold.",
+    "requires": [
+     "f53"
+    ],
+    "establishes": [
+     "f54"
+    ]
+   },
+   "da_skylight": {
+    "function": "ending",
+    "event": "In the hold Marlo and Bram find the chest, compass, letters and a note to share.",
+    "requires": [
+     "f54"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "da_cache_way": {
+    "function": "continue",
+    "event": "The cave mouth glitters with crystals and echoes.",
+    "requires": [
+     "f47"
+    ],
+    "establishes": [
+     "f56"
+    ]
+   },
+   "da_cache2": {
+    "function": "continue",
+    "event": "The echoes repeat grandmother's old sea song.",
+    "requires": [
+     "f56"
+    ],
+    "establishes": [
+     "f57"
+    ]
+   },
+   "da_cache_app": {
+    "function": "decision",
+    "event": "Marlo can follow the song deeper or stop to copy the map.",
+    "requires": [
+     "f57"
+    ],
+    "establishes": [
+     "f58"
+    ]
+   },
+   "da_cache_back": {
+    "function": "ending",
+    "event": "Marlo stops to copy the map, the song fades, and the original crumbles. She goes home.",
+    "requires": [
+     "f58"
+    ],
+    "establishes": [
+     "f59"
+    ]
+   },
+   "da_cache_enter": {
+    "function": "continue",
+    "event": "The song leads to a crystal bridge over a deep trench.",
+    "requires": [
+     "f58"
+    ],
+    "establishes": [
+     "f60"
+    ]
+   },
+   "da_cache_room": {
+    "function": "decision",
+    "event": "At the bridge's end are a lit path and a rope ladder.",
+    "requires": [
+     "f60"
+    ],
+    "establishes": [
+     "f61"
+    ]
+   },
+   "da_compass": {
+    "function": "continue",
+    "event": "The lantern path leads to a wreck with a carved door.",
+    "requires": [
+     "f61"
+    ],
+    "establishes": [
+     "f62"
+    ]
+   },
+   "da_compass2": {
+    "function": "ending",
+    "event": "Behind the carved door Marlo finds the chest, compass, letters and a note to share.",
+    "requires": [
+     "f62"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   },
+   "da_coins": {
+    "function": "continue",
+    "event": "The rope ladder leads down to a wreck's quiet deck.",
+    "requires": [
+     "f61"
+    ],
+    "establishes": [
+     "f64"
+    ]
+   },
+   "da_coins2": {
+    "function": "ending",
+    "event": "On the deck Marlo opens the chest of compass and letters and reads the note about sharing.",
+    "requires": [
+     "f64"
+    ],
+    "establishes": [
+     "t_chest",
+     "t_keepsake",
+     "t_share"
+    ]
+   }
+  },
+  "choices": {
+   "c_open": {
+    "intent": "dive toward the maze with the map",
+    "cost": "leaves the safe harbor behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_left": {
+    "intent": "enter the kelp tunnel whose bends match the ink",
+    "cost": "leaves the coral and glowing tunnels unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_right": {
+    "intent": "enter the humming coral tunnel",
+    "cost": "leaves the kelp tunnel and glowing fish behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_down": {
+    "intent": "follow the glowing fish into the third tunnel",
+    "cost": "leaves the kelp and coral tunnels unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_fork": {
+    "intent": "keep going along the kelp bends",
+    "cost": "no time to study the map",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_glitter": {
+    "intent": "follow the warm bubbles in the left fork",
+    "cost": "leaves the roped fork unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hum": {
+    "intent": "follow the old rope in the right fork",
+    "cost": "leaves the bubbling fork and Pip behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_slope": {
+    "intent": "swim closer to the octopus",
+    "cost": "the bubbles drift away",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_crack": {
+    "intent": "listen to Pip's taps",
+    "cost": "loses a minute of searching",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_squeeze": {
+    "intent": "squeeze through the narrow gap",
+    "cost": "leaves the wide arch untried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_retreat": {
+    "intent": "swim through the wide arch, which looks easy",
+    "cost": "leaves the narrow gap untried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_room": {
+    "intent": "study the carved shell marker",
+    "cost": "uses up map-reading time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_take": {
+    "intent": "climb up toward the ship's mast",
+    "cost": "leaves the dark hollow unseen",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_deeper": {
+    "intent": "dive down into the dark hollow",
+    "cost": "leaves the mast unseen",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_up": {
+    "intent": "follow the rope to where it ends",
+    "cost": "no time to look around the mast",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_chord": {
+    "intent": "drift through the glowing fish",
+    "cost": "the bell bumps along in the dark",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_sing": {
+    "intent": "read the carved stone",
+    "cost": "the lantern fish wake and scatter",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_ring": {
+    "intent": "follow the rope's knots",
+    "cost": "the bubbling fork is forgotten",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_chime": {
+    "intent": "count the knots against the map",
+    "cost": "spends time while the tide turns",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bell": {
+    "intent": "try the mossy door",
+    "cost": "leaves the whale-bone tunnel unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_humback": {
+    "intent": "try the whale-bone tunnel, which looks bigger",
+    "cost": "leaves the mossy door unopened",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell2": {
+    "intent": "step into the shell hall",
+    "cost": "the tunnel behind closes",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell3": {
+    "intent": "follow grandmother's rhyme",
+    "cost": "skips other shells in the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell4": {
+    "intent": "swim up to the round window",
+    "cost": "leaves the hall behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_fork": {
+    "intent": "follow the humming deeper",
+    "cost": "leaves the tunnel mouth behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_lake": {
+    "intent": "follow the pearl arrows",
+    "cost": "leaves the sponge passage unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_pool": {
+    "intent": "try the soft sponge passage",
+    "cost": "leaves the pearl arrows unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_pebbles": {
+    "intent": "follow the arrows to where they end",
+    "cost": "no time to gather pearls",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_shelf": {
+    "intent": "talk to the hermit crab",
+    "cost": "loses a moment of time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_descend": {
+    "intent": "accept Tula's offer to guide",
+    "cost": "gives up finding the way alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_lakeback": {
+    "intent": "hurry on alone with the map",
+    "cost": "gives up Tula's guidance",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_shore": {
+    "intent": "follow Tula through the coral",
+    "cost": "slows to Tula's pace",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_boat": {
+    "intent": "enter through the barnacled hatch",
+    "cost": "leaves the porthole unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_wade": {
+    "intent": "peer through the porthole",
+    "cost": "leaves the hatch unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_row": {
+    "intent": "brush the weed off the shape",
+    "cost": "stirs up cloudy water",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_islet": {
+    "intent": "slip in through the porthole",
+    "cost": "gets a tight squeeze",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_crouch": {
+    "intent": "push on through the sponges",
+    "cost": "leaves the pearl passage behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_channel": {
+    "intent": "let the current carry the bell",
+    "cost": "loses control of direction",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_enter": {
+    "intent": "chalk-mark the wall at each turn",
+    "cost": "leaves the current's pull unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_poolback": {
+    "intent": "follow the current, which looks quick",
+    "cost": "leaves the chalk unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_kneel": {
+    "intent": "check the marks against the map",
+    "cost": "takes a patient moment",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_star": {
+    "intent": "swim under the tall arch",
+    "cost": "leaves the small crack unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_deep": {
+    "intent": "squeeze through the small crack",
+    "cost": "leaves the tall arch unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_sketch": {
+    "intent": "follow the lantern light across the deck",
+    "cost": "leaves the arch behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_reach": {
+    "intent": "push open the cracked hull door",
+    "cost": "leaves the crack behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_fork": {
+    "intent": "trail the glimmerfish",
+    "cost": "leaves the tunnel mouth behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bat": {
+    "intent": "follow the fish through the kelp curtain",
+    "cost": "leaves the cave mouth unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cache": {
+    "intent": "follow the fish into the cave mouth",
+    "cost": "leaves the kelp curtain unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_creep": {
+    "intent": "drift through the warm water",
+    "cost": "the glimmerfish swim ahead",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_grey": {
+    "intent": "ask Bram about the scratched marks",
+    "cost": "loses a little time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_batenter": {
+    "intent": "follow Bram's marks",
+    "cost": "gives up the torn map's direction",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_batback": {
+    "intent": "follow the torn map's direction",
+    "cost": "gives up Bram's marks",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_stair": {
+    "intent": "swim into the ring of stones",
+    "cost": "leaves Bram's other marks unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_climb": {
+    "intent": "turn the shell clock to the sailing hour",
+    "cost": "loses a quiet moment",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_push": {
+    "intent": "enter the opened gap",
+    "cost": "leaves the ring behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_door": {
+    "intent": "swim deeper into the crystal cave",
+    "cost": "the cave mouth glitters farther away",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_peer": {
+    "intent": "listen to the echoing song",
+    "cost": "stops moving for a bit",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cacheenter": {
+    "intent": "follow the song deeper",
+    "cost": "leaves the map uncopied",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cacheback": {
+    "intent": "stop to copy the map",
+    "cost": "leaves the song unfollowed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_boxes": {
+    "intent": "cross the crystal bridge",
+    "cost": "no looking back at the cave",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_compass": {
+    "intent": "take the lantern path",
+    "cost": "leaves the rope ladder unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_coins": {
+    "intent": "climb down the rope ladder",
+    "cost": "leaves the lantern path unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_out": {
+    "intent": "open the carved door",
+    "cost": "leaves the lantern path behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_carry": {
+    "intent": "step down onto the deck",
+    "cost": "leaves the ladder behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "la_retreat_pool": {
+    "gift": "A hint to try the narrow gap next time",
+    "valence": null,
+    "kind": null
+   },
+   "la_crystal_out": {
+    "gift": "The reveal that the treasure is a keepsake to share",
+    "valence": null,
+    "kind": null
+   },
+   "la_song": {
+    "gift": "A warm glow of grandmother's initials and her gift",
+    "valence": null,
+    "kind": null
+   },
+   "la_hum_back": {
+    "gift": "A hint that the mossy door is the way",
+    "valence": null,
+    "kind": null
+   },
+   "la_bell4": {
+    "gift": "A rhyme that guides home and the warm reveal",
+    "valence": null,
+    "kind": null
+   },
+   "ra_lake_back": {
+    "gift": "A reason to try again with Tula's help",
+    "valence": null,
+    "kind": null
+   },
+   "ra_row": {
+    "gift": "A cheer with Tula and the sharing note",
+    "valence": null,
+    "kind": null
+   },
+   "ra_islet": {
+    "gift": "A cozy discovery through the porthole",
+    "valence": null,
+    "kind": null
+   },
+   "ra_pool_back": {
+    "gift": "A laugh at the gold idea and a reason to chalk-mark",
+    "valence": null,
+    "kind": null
+   },
+   "ra_starfish2": {
+    "gift": "A lantern-lit reveal of the family keepsake",
+    "valence": null,
+    "kind": null
+   },
+   "ra_pool_deep2": {
+    "gift": "A quiet surprise inside the hull",
+    "valence": null,
+    "kind": null
+   },
+   "da_bat_back": {
+    "gift": "A reason to trust Bram next time",
+    "valence": null,
+    "kind": null
+   },
+   "da_skylight": {
+    "gift": "A friendship with Bram and a keepsake to share",
+    "valence": null,
+    "kind": null
+   },
+   "da_cache_back": {
+    "gift": "A reason to follow the song next time",
+    "valence": null,
+    "kind": null
+   },
+   "da_compass2": {
+    "gift": "A warm reveal behind a carved door",
+    "valence": null,
+    "kind": null
+   },
+   "da_coins2": {
+    "gift": "A peaceful ending with the family keepsake",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-cave-of-echoes",
+    "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 6
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 2,
+  "input_tokens": 7546,
+  "output_tokens": 13361,
+  "reasoning_tokens": 3717,
+  "cost_estimate_usd": 0.148702,
+  "vendor_cost_usd": 0.141429,
+  "provider_seconds": 89.2
+ },
+ "budget": {
+  "budget_usd": 8.0,
+  "spent_before_usd": 1.00306,
+  "spent_after_usd": 1.151762
+ }
+}
