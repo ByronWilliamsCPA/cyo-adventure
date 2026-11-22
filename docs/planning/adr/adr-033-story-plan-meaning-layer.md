@@ -171,12 +171,16 @@ and choice ids are shared. Nothing else crosses: the Storybook stays a complete,
 makes them converge in wording (AL-208) and that a fact graph alone does not capture a decision (AL-197). That is why
 `intent` and `cost` are in the plan and why plans are not reused.
 
-**Plan-writing conventions (added 2026-11-21, a condition of accepting G1, decision D5).** Every plan, hand-written or
+**Plan-writing conventions (added 2026-11-21, a condition of accepting G1, decision D5; convention 1 clarified 2026-11-22).** Every plan, hand-written or
 generated, follows these, because the G1 re-run showed the checks can only see what the plan records:
 
 1. A statement a passage makes about the hero's possessions, knowledge or state, including a negative ("he has no
    ticket"), is recorded as a fact that passage establishes, marked `contradicts` against its opposite. A
-   variable-backed state contradicted in a state where it holds is then an SP-3 ERROR.
+   variable-backed state contradicted in a state where it holds is then an SP-3 ERROR. A negative that a later passage
+   on the same reading reverses (the hero lacks the cloth, then is given it) is a change of state, not a
+   contradiction: it is worded to say when it was true ("has no cloth yet", "has not found the key by the gate") and
+   is not marked `contradicts` against the gain, because facts never retract (`AL-874`, chunked trial 2026-11-22).
+   `contradicts` is for facts that cannot both hold at any point of one reading.
 2. A warning, promise or instruction given in dialogue is its own fact (who told whom), separate from the thing it is
    about, so a later "as she told you" on a route that never heard it is visible (`AL-830`).
 3. A choice's `cost` is "none" only when the option truly costs nothing; when its cost is giving up the other options,

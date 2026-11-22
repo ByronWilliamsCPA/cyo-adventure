@@ -15,6 +15,12 @@ adding: the facts the named passages introduce or rely on, and intents and
 costs written for each decision. Never answer it, or any other finding, by
 deleting a true fact or a true `contradicts` mark.
 
+An SP-3 finding where one reading meets a lack and then the gain of the same
+thing (no cloth, then the cloth) is a change of state, not a contradiction:
+reword the earlier negative with its time ("has no cloth yet") and remove its
+`contradicts` mark against the gain. A `contradicts` mark that really holds
+stays.
+
 <!-- @user -->
 
 ## The checker's findings

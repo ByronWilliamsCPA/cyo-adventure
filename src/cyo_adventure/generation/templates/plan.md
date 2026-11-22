@@ -83,7 +83,12 @@ Respond with one JSON object with exactly these seven keys.
 
 1. A statement a passage makes about the hero's possessions, knowledge or
    state, including a negative ("he has no ticket"), is recorded as a fact that
-   passage establishes, marked `contradicts` against its opposite.
+   passage establishes, marked `contradicts` against its opposite. If a later
+   passage on the same route reverses the negative (she has no pocket, then is
+   given one), the negative is a change of state, not a contradiction: word it
+   with its time ("Ada has no pocket yet.") and do not mark it `contradicts`
+   against the gain. Use `contradicts` only for facts that cannot both be true at
+   any point of one reading.
 2. A warning, promise or instruction given in dialogue is its own fact (who
    told whom), separate from the thing it is about.
 3. A choice's cost is "none" only when the option truly costs nothing; when
