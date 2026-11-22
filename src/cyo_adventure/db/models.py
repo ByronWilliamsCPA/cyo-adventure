@@ -2688,6 +2688,7 @@ STORY_PLAN_REPORT_KEYS: tuple[str, ...] = (
     "story_plan_pitches",
     "story_plan_approval",
     "story_plan_attempt_summaries",
+    "story_plan_write_mode",
 )
 
 

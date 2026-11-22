@@ -1402,6 +1402,8 @@ async def _run_plan_generation(ctx: _PlanGenerationContext) -> GenerationOutcome
         max_repairs=_PLAN_MAX_REPAIRS,
         model_label=_model_label(ctx.effective_provider),
         repair_density_warnings=_default_settings.story_plan_repair_density_warnings,
+        # AL-855: auto writes a plan too long for one call in scene chunks.
+        write_mode=_default_settings.story_plan_write_mode,
         # AL-847: omitting `reasoning` does not stop a reasoning model, so the
         # plan path always sends an explicit setting.
         reasoning=ReasoningControl.from_settings(

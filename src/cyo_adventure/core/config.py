@@ -543,6 +543,14 @@ class Settings(BaseSettings):
     )
     story_plan_reasoning_max_tokens: int | None = Field(default=None, ge=1024)
 
+    # AL-844 / AL-855: how a Story Plan is written. "auto" (default) estimates
+    # the plan's output from the shape plus a reasoning allowance and writes it
+    # in one call when that fits the model's output cap, otherwise in scene
+    # chunks (a spine call, then one call per scene). "single" forces one call
+    # (a cut-off answer then fails the job instead of being repaired);
+    # "chunked" forces the spine and scene calls.
+    story_plan_write_mode: Literal["auto", "single", "chunked"] = "auto"
+
     # OpenRouter model ids that reason by default. A leg for one of them never
     # omits `reasoning`: with llm_effort="off" and no explicit control it
     # sends the documented disable {"effort": "none"}. Empty by default, so no

@@ -1,0 +1,2842 @@
+{
+ "cast": {
+  "wren": {
+   "name": "Wren",
+   "role": "Sharp-eyed eight-year-old detective, the reader's hero",
+   "want": "Find the Founders' Cup before Friday assembly",
+   "voice": "Quiet, precise, notices tiny details",
+   "knows": [
+    "cup_missing",
+    "milo_blamed"
+   ]
+  },
+  "milo": {
+   "name": "Milo",
+   "role": "Classmate wrongly blamed for the missing cup",
+   "want": "Clear his name",
+   "voice": "Nervous and honest",
+   "knows": [
+    "milo_blamed"
+   ]
+  },
+  "pell": {
+   "name": "Mr. Pell",
+   "role": "School caretaker who secretly took the cup",
+   "want": "Mend the cup before Friday so nobody is upset",
+   "voice": "Gruff but kind",
+   "knows": [
+    "pell_took",
+    "cup_cracked",
+    "pell_mending"
+   ]
+  },
+  "ortiz": {
+   "name": "Ms. Ortiz",
+   "role": "Head teacher who plans the assembly",
+   "want": "Have the cup back for Friday",
+   "voice": "Brisk and worried",
+   "knows": [
+    "cup_missing"
+   ]
+  }
+ },
+ "truth": {
+  "statement": "Mr. Pell the caretaker took the Founders' Cup after he accidentally cracked it while polishing. He was secretly mending it before Friday so nobody would be upset, and Milo was innocent.",
+  "facts": [
+   "pell_took",
+   "cup_cracked",
+   "pell_mending"
+  ],
+  "question": "Who took the Founders' Cup, and why?"
+ },
+ "facts": {
+  "cup_missing": {
+   "text": "The Founders' Cup has vanished from its case before Friday's assembly.",
+   "contradicts": [],
+   "implicit_plant": null
+  },
+  "milo_blamed": {
+   "text": "Milo is being blamed for the missing cup even though nobody saw him take it.",
+   "contradicts": [],
+   "implicit_plant": null
+  },
+  "mud_button": {
+   "text": "Wren picks up a muddy brass button near the trophy case.",
+   "contradicts": [],
+   "implicit_plant": null
+  },
+  "torn_note": {
+   "text": "Wren finds a torn note with a repair shop's name on it.",
+   "contradicts": [],
+   "implicit_plant": null
+  },
+  "brass_key": {
+   "text": "Wren is given a small brass key by a helpful pupil.",
+   "contradicts": [],
+   "implicit_plant": null
+  },
+  "pell_took": {
+   "text": "Mr. Pell took the Founders' Cup from its case.",
+   "contradicts": [
+    "milo_took"
+   ],
+   "implicit_plant": null
+  },
+  "milo_took": {
+   "text": "Milo took the Founders' Cup from its case.",
+   "contradicts": [
+    "pell_took"
+   ],
+   "implicit_plant": null
+  },
+  "cup_cracked": {
+   "text": "The cup had a crack in its handle that Mr. Pell caused by accident.",
+   "contradicts": [],
+   "implicit_plant": null
+  },
+  "pell_mending": {
+   "text": "Mr. Pell was secretly mending the cup so the assembly would not be spoiled.",
+   "contradicts": [],
+   "implicit_plant": null
+  }
+ },
+ "nodes": {
+  "n_open": {
+   "event": "Wren learns the Founders' Cup is gone and Milo is being blamed.",
+   "requires": [],
+   "establishes": [
+    "cup_missing",
+    "milo_blamed"
+   ]
+  },
+  "n_list": {
+   "event": "At the empty trophy case Wren sees three clues pointing at three people.",
+   "requires": [
+    "cup_missing"
+   ],
+   "establishes": []
+  },
+  "bs_hub": {
+   "event": "Wren studies a muddy trail that seems to change direction.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_hub": {
+   "event": "Wren searches the hall for a note and meets a helpful pupil.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_hub": {
+   "event": "Wren decides to question people before looking for objects.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_brackets": {
+   "event": "Wren follows the footprints to the playground.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_step": {
+   "event": "Wren follows the footprints to the boot room.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_carry": {
+   "event": "Wren follows the footprints to the garden shed.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_gate": {
+   "event": "Wren checks the corridor noticeboard.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_slip": {
+   "event": "Wren checks the library corner.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_ovens": {
+   "event": "Wren checks the art room.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_hinge": {
+   "event": "Wren talks with Ms. Ortiz in the office.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_low": {
+   "event": "Wren talks with Milo on the bench.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_fruit": {
+   "event": "Wren talks with the caretaker's helper.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_plugs": {
+   "event": "The prints loop back near the gym door.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_wire": {
+   "event": "Wren loses the prints and reaches a quiet, empty corner.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_dot": {
+   "event": "The prints split into two trails.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_reroute": {
+   "event": "A clue in the corridor points toward the music room.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_posts": {
+   "event": "A clue leads Wren to a locked cupboard.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_sign": {
+   "event": "A clue leads Wren to a dusty stairway.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_hooks": {
+   "event": "Someone mentions seeing a ladder moved last night.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_lane": {
+   "event": "Someone mentions a late light in the workshop.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_twins": {
+   "event": "Someone mentions a missing tin of metal glue.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_flight": {
+   "event": "Wren compares two clues that do not quite fit.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_test": {
+   "event": "Wren notices a smear of polish on a door handle.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_report": {
+   "event": "Wren tries to match the trail with a shoe size.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_walk": {
+   "event": "Wren re-reads the clues and spots a pattern.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_permission": {
+   "event": "Wren finds a sock-print where the boots should be.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_mark": {
+   "event": "Wren hears tapping from somewhere in the building.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_hang": {
+   "event": "Wren finds a flake of silver on the floor.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_check": {
+   "event": "Wren sees the shed door left unlatched.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_spare": {
+   "event": "Wren sees a cloth with a little polish on it.",
+   "requires": [],
+   "establishes": []
+  },
+  "bs_page": {
+   "event": "Wren ends up at the lost property box and learns the cup is not there.",
+   "requires": [],
+   "establishes": []
+  },
+  "sf_dark": {
+   "event": "Wren searches the wrong cupboard and finds only old banners.",
+   "requires": [],
+   "establishes": []
+  },
+  "og_bottom": {
+   "event": "Wren finds Milo's lunchbox clue and sees it proves little.",
+   "requires": [],
+   "establishes": []
+  },
+  "gt_oil": {
+   "event": "Wren crosses the yard toward the workshop.",
+   "requires": [],
+   "establishes": []
+  },
+  "gt_hands": {
+   "event": "Wren finds a small tin box on a ledge.",
+   "requires": [],
+   "establishes": []
+  },
+  "cq_plant_did_knock_doors_that": {
+   "event": "A pupil hands Wren a small brass key.",
+   "requires": [],
+   "establishes": []
+  },
+  "gt_walk": {
+   "event": "Wren listens at the music room door.",
+   "requires": [],
+   "establishes": []
+  },
+  "gt_wind": {
+   "event": "Wren checks the staff room window.",
+   "requires": [],
+   "establishes": []
+  },
+  "gt_word": {
+   "event": "Wren follows a trail of shiny dust.",
+   "requires": [],
+   "establishes": []
+  },
+  "gt_bottom": {
+   "event": "Wren reads the visitor sign-in book.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_can": {
+   "event": "Wren faces three doors in the old wing.",
+   "requires": [],
+   "establishes": []
+  },
+  "cq_payoff_did_start_sheepfold_turn_site2": {
+   "event": "Wren uses what she found to see a hidden latch.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_bench": {
+   "event": "Wren reaches a fork in the cellar passage.",
+   "requires": [],
+   "establishes": []
+  },
+  "cq_payoff_did_start_sheepfold_turn": {
+   "event": "Wren uses what she found to read a faint label.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_wick": {
+   "event": "Wren reaches a corridor with fresh muddy marks.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_doors": {
+   "event": "Wren pieces together times from the clues.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_gate": {
+   "event": "Wren questions a pupil who saw the caretaker.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_shop": {
+   "event": "Wren checks who had keys to the case.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_survey": {
+   "event": "Wren inspects the case's hinge.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_gaps": {
+   "event": "Wren inspects a pair of gloves.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_ground": {
+   "event": "Wren inspects a muddy mat.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_school": {
+   "event": "Wren reaches the boiler corridor.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_ration": {
+   "event": "Wren reaches the supply cupboard.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_burn": {
+   "event": "Wren reaches the back stairs.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_borrow": {
+   "event": "Wren reaches the lamp-lit workshop door.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_teams": {
+   "event": "Wren weighs which suspect had the best chance.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_teach": {
+   "event": "Wren notices a clue clears Milo.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_quad": {
+   "event": "Wren notices a clue that does not fit Ms. Ortiz.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_twins": {
+   "event": "Wren compares two sets of prints.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_spacing": {
+   "event": "Wren follows the sound of tapping.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_drop": {
+   "event": "Wren follows a smell of metal polish.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_paint": {
+   "event": "Wren follows a thread of grey cloth.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_shelter": {
+   "event": "Wren follows a trail of tiny silver flecks.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_spill": {
+   "event": "Wren takes a wrong turn and ends up outside, the trail lost.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_crowd": {
+   "event": "Wren accuses the wrong person and has to stop and think again.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_map": {
+   "event": "Wren runs out of time to check a lead and must regroup.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_line": {
+   "event": "Wren finds a workbench with tools.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_shades": {
+   "event": "Wren finds a half-open toolbox.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_top": {
+   "event": "Wren finds a stool with a cloth on it.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_reserve": {
+   "event": "Wren finds a lamp still warm.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_rota": {
+   "event": "Wren links the polish smell to the caretaker.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_runner": {
+   "event": "Wren reaches a choice about whom to trust.",
+   "requires": [],
+   "establishes": []
+  },
+  "cq_payoff_did_knock_doors_that": {
+   "event": "Wren uses the key to open a small box.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_kettle": {
+   "event": "Wren re-checks the shoe sizes.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_trewin": {
+   "event": "Wren listens to a pupil's account again.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_hang": {
+   "event": "Wren nears the workshop's back room.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_dim": {
+   "event": "Wren nears a closed cupboard.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_bag": {
+   "event": "Wren nears a rattling door.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_post": {
+   "event": "Wren nears a faint light under a door.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_relight": {
+   "event": "Wren sees a shape wrapped in cloth.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_taper": {
+   "event": "Wren hears someone humming softly.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_count": {
+   "event": "Wren notices a glue pot and clamps.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_message": {
+   "event": "Wren spots footprints that finally stay straight.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_top": {
+   "event": "Wren thinks over why someone would hide a cup.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_keep": {
+   "event": "Wren stands before a locked inner door.",
+   "requires": [],
+   "establishes": []
+  },
+  "cq_payoff_did_knock_doors_that_site2": {
+   "event": "Wren uses the key to unlock the inner door.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_pair": {
+   "event": "Wren rehearses what to say.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_count": {
+   "event": "Wren steps toward the workshop back room.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_ninety": {
+   "event": "Wren edges closer to the glowing lamp.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_blown": {
+   "event": "Wren pauses at a creaking floorboard.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_meet": {
+   "event": "Wren sees a shadow move behind a screen.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_hold": {
+   "event": "Wren sees a cloth slip from the bench.",
+   "requires": [],
+   "establishes": []
+  },
+  "oil_fifty": {
+   "event": "Wren finds an empty box and learns the cup was moved, but not who moved it.",
+   "requires": [],
+   "establishes": []
+  },
+  "pp_village": {
+   "event": "Wren finds a clue that the cup was cracked, but the trail ends there.",
+   "requires": [],
+   "establishes": []
+  },
+  "pa_gap": {
+   "event": "Wren finds the mending tools but not the person.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_wait": {
+   "event": "Wren steps into the back room.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_signal": {
+   "event": "Wren knocks and waits.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_count": {
+   "event": "Wren peeks through the doorway.",
+   "requires": [],
+   "establishes": []
+  },
+  "cq_payoff_did_start_beacon_steps_site2": {
+   "event": "Wren uses what she found to open the door quietly.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_torch": {
+   "event": "Wren calls out gently.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_up": {
+   "event": "Wren sees a figure bent over a table.",
+   "requires": [],
+   "establishes": []
+  },
+  "cq_payoff_did_start_beacon_steps": {
+   "event": "Wren uses what she found to read the repair plan.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_hall": {
+   "event": "Wren holds up the button and key.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_ovens": {
+   "event": "Wren waits quietly in the doorway.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_taper": {
+   "event": "Wren walks in with steady steps.",
+   "requires": [],
+   "establishes": []
+  },
+  "fn_hold": {
+   "event": "Wren greets the figure.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_leeward": {
+   "event": "Mr. Pell turns, startled, holding the cup.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_bag": {
+   "event": "Mr. Pell sighs and sets the cup down.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_corner": {
+   "event": "Mr. Pell tries to hide the cup, then stops.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_relay": {
+   "event": "Mr. Pell looks up, glue on his fingers.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_watch": {
+   "event": "Mr. Pell lowers his tools.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_ankle": {
+   "event": "Mr. Pell wipes his hands slowly.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_gate": {
+   "event": "Mr. Pell notices Wren and the cup together.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_tally": {
+   "event": "Mr. Pell nods and sits down.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_round": {
+   "event": "Mr. Pell speaks softly about the cup.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_hold_end": {
+   "event": "Mr. Pell explains he cracked the cup by accident and was mending it quietly. Wren clears Milo.",
+   "requires": [],
+   "establishes": [
+    "pell_took",
+    "cup_cracked",
+    "pell_mending"
+   ]
+  },
+  "fx_early_end": {
+   "event": "Wren and Mr. Pell tell Ms. Ortiz together, and Milo is cleared.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_count_end": {
+   "event": "Wren helps finish the mending in time.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_list_end": {
+   "event": "Wren and Mr. Pell carry the mended cup to the hall.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_wind_end": {
+   "event": "Wren learns the secret but the mending is not done.",
+   "requires": [],
+   "establishes": []
+  },
+  "fx_short_end": {
+   "event": "Wren misreads the scene and the cup stays hidden past Friday.",
+   "requires": [],
+   "establishes": []
+  },
+  "z_warm": {
+   "event": "Wren returns the cup and understands why Mr. Pell hid it.",
+   "requires": [],
+   "establishes": [
+    "pell_took",
+    "cup_cracked",
+    "pell_mending"
+   ]
+  },
+  "z_turn": {
+   "event": "The assembly begins with the cup shining and Milo cheered.",
+   "requires": [],
+   "establishes": []
+  },
+  "z_seen": {
+   "event": "Ms. Ortiz thanks Wren and Mr. Pell together.",
+   "requires": [],
+   "establishes": []
+  },
+  "z_quad": {
+   "event": "Milo is cleared in front of the school.",
+   "requires": [],
+   "establishes": []
+  },
+  "z_tally": {
+   "event": "Wren and Mr. Pell finish the last repair.",
+   "requires": [],
+   "establishes": []
+  },
+  "z_hand": {
+   "event": "The cup is back in its case and Wren smiles.",
+   "requires": [],
+   "establishes": []
+  },
+  "z_page": {
+   "event": "Wren solves the puzzle but the cup's fate is left open.",
+   "requires": [],
+   "establishes": []
+  },
+  "z_late": {
+   "event": "Wren is a little late and the assembly starts without the cup.",
+   "requires": [],
+   "establishes": []
+  },
+  "z_shoulder": {
+   "event": "Wren is too late and the cup is lost for now, with Milo still blamed.",
+   "requires": [],
+   "establishes": []
+  }
+ },
+ "choices": {
+  "c_n_open_0": {
+   "intent": "Begin the search",
+   "cost": "none",
+   "requires": [],
+   "establishes": []
+  },
+  "c_n_list_0": {
+   "intent": "Pick up the muddy button",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": [
+    "mud_button"
+   ]
+  },
+  "c_n_list_1": {
+   "intent": "Take the torn note",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": [
+    "torn_note"
+   ]
+  },
+  "c_n_list_2": {
+   "intent": "Question people first",
+   "cost": "Leaves clues unexamined",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_hub_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_hub_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_hub_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_hub_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_hub_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_hub_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hub_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hub_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hub_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_brackets_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_brackets_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_brackets_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_step_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_step_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_step_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_carry_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_carry_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_carry_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_gate_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_gate_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_gate_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_slip_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_slip_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_slip_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_ovens_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_ovens_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_ovens_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hinge_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hinge_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hinge_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_low_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_low_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_low_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_fruit_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_fruit_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_fruit_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_plugs_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_plugs_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_plugs_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_wire_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_wire_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_wire_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_dot_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_dot_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_dot_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_reroute_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_reroute_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_reroute_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_posts_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_posts_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_posts_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_sign_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_sign_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_sign_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hooks_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hooks_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hooks_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_lane_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_lane_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_lane_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_twins_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_twins_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_twins_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_flight_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_flight_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_flight_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_test_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_test_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_test_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_report_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_report_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_bs_report_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_walk_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_walk_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_walk_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_permission_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_permission_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_permission_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_mark_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_mark_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_sf_mark_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hang_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hang_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_hang_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_check_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_check_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_check_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_spare_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_spare_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_og_spare_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_oil_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_oil_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_oil_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_hands_0": {
+   "intent": "Accept the brass key",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": [
+    "brass_key"
+   ]
+  },
+  "c_gt_hands_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_hands_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_cq_plant_did_knock_doors_that": {
+   "intent": "Read on",
+   "cost": "none",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_walk_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_walk_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_walk_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_wind_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_wind_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_wind_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_word_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_word_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_word_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_bottom_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_bottom_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_gt_bottom_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_can_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_can_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_can_1_cq_did_start_sheepfold_turn": {
+   "intent": "Question a suspect with the note",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_can_2": {
+   "intent": "Retrace the cup's last steps",
+   "cost": "Leaves the trail cold",
+   "requires": [],
+   "establishes": []
+  },
+  "c_cq_payoff_did_start_sheepfold_turn_site2": {
+   "intent": "Read on",
+   "cost": "none",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_bench_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_bench_0_cq_did_start_sheepfold_turn": {
+   "intent": "Follow the footprints with the note",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_bench_1": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_bench_2": {
+   "intent": "Retrace the cup's last steps",
+   "cost": "Leaves the trail cold",
+   "requires": [],
+   "establishes": []
+  },
+  "c_cq_payoff_did_start_sheepfold_turn": {
+   "intent": "Read on",
+   "cost": "none",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_wick_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_wick_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_wick_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_doors_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_doors_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_doors_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_gate_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_gate_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_gate_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_shop_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_shop_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_shop_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_survey_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_survey_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_survey_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_gaps_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_gaps_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_gaps_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_ground_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_ground_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_ground_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_school_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_school_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_school_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_ration_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_ration_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_ration_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_burn_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_burn_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_burn_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_borrow_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_borrow_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_borrow_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_teams_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_teams_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_teams_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_teach_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_teach_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_teach_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_quad_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_quad_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_quad_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_twins_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_twins_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_twins_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_spacing_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_spacing_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_spacing_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_drop_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_drop_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_drop_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_paint_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_paint_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_paint_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_shelter_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_shelter_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_shelter_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_line_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_line_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_line_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_shades_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_shades_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_shades_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_top_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_top_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_top_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_reserve_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_reserve_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_reserve_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_rota_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_rota_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_rota_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_runner_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_runner_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_runner_1_cq_did_knock_doors_that": {
+   "intent": "Question a suspect using the key",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_runner_2": {
+   "intent": "Retrace the cup's last steps",
+   "cost": "Leaves the trail cold",
+   "requires": [],
+   "establishes": []
+  },
+  "c_cq_payoff_did_knock_doors_that": {
+   "intent": "Read on",
+   "cost": "none",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_kettle_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_kettle_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_kettle_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_trewin_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_trewin_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_trewin_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_hang_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_hang_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_hang_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_dim_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_dim_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_dim_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_bag_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_bag_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_bag_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_post_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_post_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_post_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_relight_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_relight_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_relight_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_taper_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_taper_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_taper_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_count_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_count_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_count_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_message_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_message_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_oil_message_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_top_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_top_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_top_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_keep_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_keep_0_cq_did_knock_doors_that": {
+   "intent": "Follow the footprints using the key",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_keep_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_keep_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_cq_payoff_did_knock_doors_that_site2": {
+   "intent": "Read on",
+   "cost": "none",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_pair_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_pair_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_pair_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_count_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_count_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pp_count_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_ninety_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_ninety_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_ninety_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_blown_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_blown_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_blown_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_meet_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_meet_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_meet_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_hold_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_hold_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_pa_hold_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_wait_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_wait_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_wait_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_signal_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_signal_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_signal_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_count_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_count_0_cq_did_start_beacon_steps": {
+   "intent": "Follow the footprints using the button",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_count_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_count_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_cq_payoff_did_start_beacon_steps_site2": {
+   "intent": "Read on",
+   "cost": "none",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_torch_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_torch_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_torch_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_up_0": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_up_1": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_up_2": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_up_2_cq_did_start_beacon_steps": {
+   "intent": "Follow the footprints using the button",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_cq_payoff_did_start_beacon_steps": {
+   "intent": "Read on",
+   "cost": "none",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_hall_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_hall_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_hall_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_ovens_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_ovens_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_ovens_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_taper_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_taper_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_taper_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_hold_0": {
+   "intent": "Follow the muddy footprints",
+   "cost": "Gives up the other leads",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_hold_1": {
+   "intent": "Question a suspect",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fn_hold_2": {
+   "intent": "Examine a clue closely",
+   "cost": "Leaves suspects unquestioned",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_leeward_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_leeward_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_leeward_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_bag_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_bag_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_bag_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_corner_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_corner_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_corner_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_relay_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_relay_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_relay_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_watch_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_watch_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_watch_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_ankle_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_ankle_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_ankle_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_gate_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_gate_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_gate_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_tally_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_tally_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_tally_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_round_0": {
+   "intent": "Ask Mr. Pell to explain",
+   "cost": "Gives up the other options",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_round_1": {
+   "intent": "Offer to help him",
+   "cost": "Spends time before Friday",
+   "requires": [],
+   "establishes": []
+  },
+  "c_fx_round_2": {
+   "intent": "Tell Ms. Ortiz first",
+   "cost": "Leaves Mr. Pell waiting",
+   "requires": [],
+   "establishes": []
+  }
+ },
+ "threads": {
+  "button_thread": {
+   "variable": "did_start_beacon_steps",
+   "plant": "mud_button",
+   "payoff_sites": [
+    {
+     "node": "fn_count",
+     "choice": "c_fn_count_0",
+     "shows": "The muddy button lets Wren match the prints to Mr. Pell's boots."
+    },
+    {
+     "node": "fn_up",
+     "choice": "c_fn_up_2",
+     "shows": "The muddy button lets Wren tie the trail to the workshop."
+    }
+   ]
+  },
+  "note_thread": {
+   "variable": "did_start_sheepfold_turn",
+   "plant": "torn_note",
+   "payoff_sites": [
+    {
+     "node": "oil_can",
+     "choice": "c_oil_can_1",
+     "shows": "The torn note points Wren to the right door."
+    },
+    {
+     "node": "oil_bench",
+     "choice": "c_oil_bench_0",
+     "shows": "The torn note shows which cellar passage leads to the repair bench."
+    }
+   ]
+  },
+  "key_thread": {
+   "variable": "did_knock_doors_that",
+   "plant": "brass_key",
+   "payoff_sites": [
+    {
+     "node": "pp_runner",
+     "choice": "c_pp_runner_1",
+     "shows": "The brass key opens a box that shows whom to trust."
+    },
+    {
+     "node": "pp_keep",
+     "choice": "c_pp_keep_0",
+     "shows": "The brass key opens the locked inner door."
+    }
+   ]
+  }
+ },
+ "endings": {
+  "bs_page": {
+   "gift": "A funny lost-property surprise and a reason to try another path",
+   "valence": null,
+   "kind": null
+  },
+  "sf_dark": {
+   "gift": "A pile of old banners that hints at a better search",
+   "valence": null,
+   "kind": null
+  },
+  "og_bottom": {
+   "gift": "A clue about Milo's lunch and a reason to look again",
+   "valence": null,
+   "kind": null
+  },
+  "oil_spill": {
+   "gift": "A reveal that the trail looped outdoors",
+   "valence": null,
+   "kind": null
+  },
+  "pp_crowd": {
+   "gift": "A lesson that wrong guesses can be fixed, and a reason to retry",
+   "valence": null,
+   "kind": null
+  },
+  "pa_map": {
+   "gift": "A hint about what to check first next time",
+   "valence": null,
+   "kind": null
+  },
+  "oil_fifty": {
+   "gift": "The reveal that the cup was moved on purpose",
+   "valence": null,
+   "kind": null
+  },
+  "pp_village": {
+   "gift": "The reveal of a crack in the cup's handle",
+   "valence": null,
+   "kind": null
+  },
+  "pa_gap": {
+   "gift": "The reveal of a secret mending kit",
+   "valence": null,
+   "kind": null
+  },
+  "fx_hold_end": {
+   "gift": "The full truth: a kind reason and Milo cleared",
+   "valence": null,
+   "kind": null
+  },
+  "fx_early_end": {
+   "gift": "A warm shared reveal with Ms. Ortiz",
+   "valence": null,
+   "kind": null
+  },
+  "fx_count_end": {
+   "gift": "The joy of mending the cup together",
+   "valence": null,
+   "kind": null
+  },
+  "fx_list_end": {
+   "gift": "A proud walk to the assembly with the cup",
+   "valence": null,
+   "kind": null
+  },
+  "fx_wind_end": {
+   "gift": "A secret learned and a reason to try again",
+   "valence": null,
+   "kind": null
+  },
+  "fx_short_end": {
+   "gift": "A near miss that invites a second try",
+   "valence": null,
+   "kind": null
+  },
+  "z_warm": {
+   "gift": "The cup returned and a good reason understood",
+   "valence": null,
+   "kind": null
+  },
+  "z_turn": {
+   "gift": "A cheering assembly with Milo praised",
+   "valence": null,
+   "kind": null
+  },
+  "z_seen": {
+   "gift": "Thanks for Wren and Mr. Pell",
+   "valence": null,
+   "kind": null
+  },
+  "z_quad": {
+   "gift": "Milo cleared in front of everyone",
+   "valence": null,
+   "kind": null
+  },
+  "z_tally": {
+   "gift": "The satisfaction of the last repair",
+   "valence": null,
+   "kind": null
+  },
+  "z_hand": {
+   "gift": "The cup shining back in its case",
+   "valence": null,
+   "kind": null
+  },
+  "z_page": {
+   "gift": "A solved puzzle with an open question to wonder about",
+   "valence": null,
+   "kind": null
+  },
+  "z_late": {
+   "gift": "A late finish and a reason to hurry next time",
+   "valence": null,
+   "kind": null
+  },
+  "z_shoulder": {
+   "gift": "A sad but gentle lesson and a reason to try again",
+   "valence": null,
+   "kind": null
+  }
+ }
+}

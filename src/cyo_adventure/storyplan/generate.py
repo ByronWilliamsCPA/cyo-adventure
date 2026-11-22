@@ -27,6 +27,26 @@ A request becomes a checked Story Plan in four steps, all on a retained shape
    allows, the findings go back to the model with the plan it wrote, and the
    whole plan is written again. The budget is bounded (``max_repairs``).
 
+Chunked writing (AL-844, AL-855)
+================================
+
+Before the first plan call the plan's output is estimated from the shape
+(:func:`~cyo_adventure.storyplan.chunking.estimate_plan_size`: nodes, choices
+and threads, plus a reasoning allowance) and compared with the output cap.
+A plan that fits is written in one call exactly as above. A plan that does not
+is written in parts: one **spine** call (cast, truth, the fact ledger,
+threads, endings' gifts and a summary per scene of a partition computed from
+the graph), then one call per **scene**, in reading order, each writing that
+scene's node and choice entries from the spine and the facts guaranteed on
+entry to the scene's boundary nodes. The parts are stitched, the shape-fixed
+fields filled in, and SP-0 to SP-9 run as usual; each finding is sent back
+only to the part that owns it, and each part re-written counts as one repair
+against the same ``max_repairs`` budget. An answer cut off at the output cap
+is never repaired as it stands: a one-call plan falls back once to chunked
+writing, a cut-off scene is split in two and written again once, and a
+cut-off spine is retried once asking for a shorter ledger.
+``Settings.story_plan_write_mode`` forces either mode.
+
 What this module does not do: approve a plan (WP-2.4 calls a validated plan
 reviewer; until then every plan goes to the owner, so the worker ends every
 plan job ``needs_review``), fill a book (WP-2.6), or show anything to a child.
@@ -72,13 +92,17 @@ from typing import TYPE_CHECKING, Final, Literal, TypeAlias, cast
 import httpx
 from pydantic import ValidationError as PydanticValidationError
 
-from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.core.exceptions import ProviderError, ValidationError
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import assert_prompt_pii_safe
 from cyo_adventure.generation.prompts import (
     build_pitch_prompt,
+    build_plan_chunk_prompt,
+    build_plan_chunk_repair_prompt,
     build_plan_prompt,
     build_plan_repair_prompt,
+    build_plan_spine_prompt,
+    build_plan_spine_repair_prompt,
 )
 from cyo_adventure.generation.reasoning import explicit_reasoning
 from cyo_adventure.generation.skeleton import resolve_output_cap
@@ -93,10 +117,36 @@ from cyo_adventure.storybook.models import (
     Storybook,
 )
 from cyo_adventure.storyplan.checks import (
+    COST_REUSE_MAX,
+    DENSITY_MIN_DECISION_CHOICES,
+    DENSITY_MIN_NODES,
     DENSITY_RULE,
+    EMPTY_NODE_SHARE_MAX,
+    INTENT_REUSE_MAX,
+    LEDGER_DENSITY_MIN,
     check_plan,
     plan_density,
     text_floor_violations,
+)
+from cyo_adventure.storyplan.chunking import (
+    SPINE,
+    ChunkEntries,
+    PlanSizeEstimate,
+    PlanWriteMode,
+    Routed,
+    Scene,
+    boundary_nodes,
+    choose_write_mode,
+    entry_knowledge,
+    estimate_plan_size,
+    estimate_spine_size,
+    owners,
+    partition_scenes,
+    route_findings,
+    route_load_errors,
+    scene_content,
+    split_scene,
+    stitch,
 )
 from cyo_adventure.storyplan.models import (
     PLAN_VERSION,
@@ -116,16 +166,18 @@ if TYPE_CHECKING:
 
     from cyo_adventure.generation.concept import ConceptBrief
     from cyo_adventure.generation.pii import PiiContext
+    from cyo_adventure.generation.prompts import StagePrompt
     from cyo_adventure.generation.provider import GenerationProvider
     from cyo_adventure.generation.reasoning import ReasoningControl
     from cyo_adventure.moderation.report import Finding
-    from cyo_adventure.storybook.models import Choice, Variable
+    from cyo_adventure.storybook.models import Choice, Node, Variable
     from cyo_adventure.storyplan.shapes import RetainedShape
     from cyo_adventure.validator.report import ValidationReport
 
 __all__ = [
     "DEFAULT_MAX_REPAIRS",
     "DEFAULT_REPAIR_DENSITY_WARNINGS",
+    "DEFAULT_WRITE_MODE",
     "PITCH_COUNT",
     "REPORT_KEYS",
     "AttemptSummary",
@@ -160,6 +212,14 @@ once per job. Density warnings never fail a plan: when the budget is spent,
 or the repair does not load or check cleanly, the job keeps the checked plan
 with its warnings recorded. ``Settings.story_plan_repair_density_warnings``
 is the production switch.
+"""
+
+DEFAULT_WRITE_MODE: Final[PlanWriteMode] = "auto"
+"""How a plan is written: ``auto`` decides from the size check (AL-855).
+
+``single`` forces one call (a cut-off answer then fails the job rather than
+spending a repair on an unchanged request); ``chunked`` forces the spine and
+scene calls. ``Settings.story_plan_write_mode`` is the production switch.
 """
 
 _PITCH_MAX_TOKENS: Final = 2_000
@@ -222,6 +282,7 @@ REPORT_KEYS: Final[tuple[str, ...]] = (
     "story_plan_pitches",
     "story_plan_approval",
     "story_plan_attempt_summaries",
+    "story_plan_write_mode",
 )
 """The ``GenerationJob.report`` keys a plan job writes (see :meth:`PlanGenerationResult.report`)."""
 
@@ -310,6 +371,73 @@ class ShapeView:
         Returns:
             dict[str, object]: The JSON-serialisable view.
         """
+        return {
+            "start": self.node_alias[self.book.start_node],
+            "states": self._states(),
+            "nodes": [self._node(node) for node in self.book.nodes],
+        }
+
+    def render_scene(
+        self, node_ids: Sequence[str], scene_of: Mapping[str, str]
+    ) -> dict[str, object]:
+        """Return one scene's slice of :meth:`render`, for a chunk call.
+
+        Each node is rendered as in :meth:`render`, plus ``from`` (the aliases
+        of the nodes with a choice into it). A choice whose target lies in
+        another scene gains ``to_scene``. Only the states one of the scene's
+        choices or ``on_enter`` effects sets or tests are listed.
+
+        Args:
+            node_ids: The scene's real node ids, in reading order.
+            scene_of: Real node id to its scene id.
+
+        Returns:
+            dict[str, object]: ``start`` (only when the start node is in the
+                scene), ``states`` and ``nodes``.
+        """
+        inside = set(node_ids)
+        by_id = {node.id: node for node in self.book.nodes}
+        preds: dict[str, list[str]] = {}
+        for node in self.book.nodes:
+            for choice in node.choices:
+                sources = preds.setdefault(choice.target, [])
+                if node.id not in sources:
+                    sources.append(node.id)
+        nodes: list[dict[str, object]] = []
+        used: set[str] = set()
+        for node_id in node_ids:
+            node = by_id[node_id]
+            rendered = self._node(node)
+            rendered["from"] = [self.node_alias[p] for p in preds.get(node_id, [])]
+            for choice, entry in zip(
+                node.choices,
+                cast("list[dict[str, object]]", rendered.get("choices", [])),
+                strict=True,
+            ):
+                if choice.target not in inside and choice.target in scene_of:
+                    entry["to_scene"] = scene_of[choice.target]
+                used.add(choice.id)
+            nodes.append(rendered)
+        aliases = {self.choice_alias[c] for c in used}
+        states = [
+            state
+            for state in self._states()
+            if aliases & set(cast("list[str]", state["set_by"]))
+            or aliases & set(cast("list[str]", state["tested_by"]))
+        ]
+        out: dict[str, object] = {}
+        if self.book.start_node in inside:
+            out["start"] = self.node_alias[self.book.start_node]
+        out["states"] = states
+        out["nodes"] = nodes
+        return out
+
+    def _states(self) -> list[dict[str, object]]:
+        """Render every declared state with its setters and testers, aliased.
+
+        Returns:
+            list[dict[str, object]]: One entry per variable, in book order.
+        """
         states: list[dict[str, object]] = []
         for variable in self.book.variables:
             entry = variable.model_dump(
@@ -330,30 +458,35 @@ class ShapeView:
                     "tested_by": tested,
                 }
             )
-        nodes: list[dict[str, object]] = []
-        for node in self.book.nodes:
-            rendered: dict[str, object] = {
-                "id": self.node_alias[node.id],
-                "function": self.functions[node.id],
-                "words": self.words[node.id],
-            }
-            if node.on_enter:
-                rendered["on_enter"] = [
-                    self._effect(e.model_dump(mode="json")) for e in node.on_enter
-                ]
-            if node.ending is not None:
-                rendered["ending"] = {
-                    "valence": node.ending.valence.value,
-                    "kind": node.ending.kind.value,
-                }
-            if node.choices:
-                rendered["choices"] = [self._choice(choice) for choice in node.choices]
-            nodes.append(rendered)
-        return {
-            "start": self.node_alias[self.book.start_node],
-            "states": states,
-            "nodes": nodes,
+        return states
+
+    def _node(self, node: Node) -> dict[str, object]:
+        """Render one node as :meth:`render` lists it.
+
+        Args:
+            node: The node.
+
+        Returns:
+            dict[str, object]: Alias, function, words, and when present its
+                ``on_enter`` effects, ending and choices.
+        """
+        rendered: dict[str, object] = {
+            "id": self.node_alias[node.id],
+            "function": self.functions[node.id],
+            "words": self.words[node.id],
         }
+        if node.on_enter:
+            rendered["on_enter"] = [
+                self._effect(e.model_dump(mode="json")) for e in node.on_enter
+            ]
+        if node.ending is not None:
+            rendered["ending"] = {
+                "valence": node.ending.valence.value,
+                "kind": node.ending.kind.value,
+            }
+        if node.choices:
+            rendered["choices"] = [self._choice(choice) for choice in node.choices]
+        return rendered
 
     def _choice(self, typed: Choice) -> dict[str, object]:
         """Render one choice with aliases.
@@ -1134,9 +1267,18 @@ class PlanDiff:
 
 
 AttemptOutcome = Literal[
-    "unparseable", "personal_information", "load_errors", "checked", "failed_checks"
+    "unparseable",
+    "personal_information",
+    "load_errors",
+    "checked",
+    "failed_checks",
+    "truncated",
 ]
-"""What one plan call produced."""
+"""What one plan call (or, in chunked mode, one stitched round) produced.
+
+``truncated``: the answer stopped at the output cap or held no content; it is
+never repaired as it stands (AL-855).
+"""
 
 
 def _counts_by_rule(findings: Sequence[object]) -> dict[str, int]:
@@ -1173,6 +1315,13 @@ class AttemptSummary:
             None for the first plan that loads (or one that does not).
         density: :func:`~cyo_adventure.storyplan.checks.plan_density` of the
             loaded plan, or None.
+        mode: ``single`` (one summary per plan call) or ``chunked`` (one
+            summary per stitched round; ``call`` is then the running count of
+            plan calls at that round).
+        parts: In chunked mode, the parts written in this round (``spine``,
+            ``S1`` ...); empty in single mode.
+        truncated: In chunked mode, the parts whose answer was cut off in this
+            round (each was split or retried, never repaired as it stood).
     """
 
     call: int
@@ -1183,6 +1332,9 @@ class AttemptSummary:
     repair: Literal["errors", "density"] | None = None
     diff: PlanDiff | None = None
     density: dict[str, object] | None = None
+    mode: Literal["single", "chunked"] = "single"
+    parts: tuple[str, ...] = ()
+    truncated: tuple[str, ...] = ()
 
     @property
     def loaded(self) -> bool:
@@ -1209,6 +1361,9 @@ class AttemptSummary:
             "repair": self.repair,
             "diff": None if self.diff is None else self.diff.to_dict(),
             "density": None if self.density is None else dict(self.density),
+            "mode": self.mode,
+            "parts": list(self.parts),
+            "truncated": list(self.truncated),
         }
 
 
@@ -1225,7 +1380,14 @@ class PlanGenerationResult:
         load_errors: Why the last answer did not load, when it did not.
         plan_calls: Plan calls made (the first plus repairs).
         stage_log: A short trail, e.g. ``["pitch:1", "plan:errors=3", ...]``.
-        attempts: One summary per plan call, in order (AL-850).
+        attempts: One summary per plan call, in order (AL-850); in chunked
+            mode one per stitched round.
+        write_mode: The size check and the write decision
+            (``story_plan_write_mode`` on the job report): the setting, the
+            mode used and why, the estimates, the scene partition, any
+            fallback and any split. Empty when no plan was attempted.
+        repair_calls: Repair calls made, when not simply ``plan_calls - 1``
+            (chunked mode, where the spine and every scene are first calls).
     """
 
     status: PlanStatus
@@ -1237,14 +1399,18 @@ class PlanGenerationResult:
     plan_calls: int = 0
     stage_log: list[str] = field(default_factory=list)
     attempts: list[AttemptSummary] = field(default_factory=list)
+    write_mode: dict[str, object] = field(default_factory=dict)
+    repair_calls: int | None = None
 
     @property
     def repairs(self) -> int:
         """Return how many repair calls were made.
 
         Returns:
-            int: Plan calls after the first.
+            int: :attr:`repair_calls` when set, else plan calls after the first.
         """
+        if self.repair_calls is not None:
+            return self.repair_calls
         return max(self.plan_calls - 1, 0)
 
     @property
@@ -1280,6 +1446,7 @@ class PlanGenerationResult:
                 "pending_owner" if self.status == "checked" else "not_applicable"
             ),
             "story_plan_attempt_summaries": [a.to_report() for a in self.attempts],
+            "story_plan_write_mode": dict(self.write_mode),
         }
 
 
@@ -1677,6 +1844,7 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
     model_label: str | None = None,
     repair_density_warnings: bool = DEFAULT_REPAIR_DENSITY_WARNINGS,
     reasoning: ReasoningControl | None = None,
+    write_mode: PlanWriteMode = DEFAULT_WRITE_MODE,
 ) -> PlanGenerationResult:
     """Run pitches, plan, checks and bounded repair for one request.
 
@@ -1687,7 +1855,9 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
             here, so every call is screened whatever the caller passed.
         pii: The family's PII context.
         screen: The Stage 0 screen for pitches.
-        max_repairs: Repair calls allowed after the first plan call.
+        max_repairs: Repair calls allowed after the first plan call. In
+            chunked mode each part re-written (the spine or one scene) counts
+            as one repair.
         chosen_pitch: A catalog owner's pitch; when given, no pitch call is
             made and this pitch is used (still floored by SP-9 as part of the
             plan).
@@ -1703,10 +1873,15 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
             so it reaches the adapter through any wrapper or cascade. None
             leaves each leg's own setting. The worker passes the
             ``Settings.story_plan_reasoning_*`` values.
+        write_mode: ``auto`` (the size check decides), ``single`` or
+            ``chunked`` (:data:`DEFAULT_WRITE_MODE`); the worker passes
+            ``Settings.story_plan_write_mode``.
 
     Returns:
         PlanGenerationResult: The outcome. A checked plan awaits approval; it
-            is never approved here. ``attempts`` summarises every plan call.
+            is never approved here. ``attempts`` summarises every plan call
+            (every stitched round in chunked mode) and ``write_mode`` records
+            the size check.
 
     Raises:
         ValidationError: From the PII guard (``field="prompt"``) when the
@@ -1720,6 +1895,7 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
         chosen_pitch=chosen_pitch,
         model_label=model_label,
         repair_density_warnings=repair_density_warnings,
+        write_mode=write_mode,
     )
     if reasoning is None:
         return await _generate_story_plan(request, view, provider, inputs)
@@ -1742,6 +1918,141 @@ class _JobInputs:
     chosen_pitch: Pitch | None
     model_label: str | None
     repair_density_warnings: bool
+    write_mode: PlanWriteMode = DEFAULT_WRITE_MODE
+
+
+@dataclass(frozen=True, slots=True)
+class _PlanParts:
+    """What every plan attempt is assembled from, besides the model's answer."""
+
+    request: PlanRequestInput
+    pitch: Pitch
+    model_label: str | None
+    note: str
+    pii: PiiContext
+
+
+@dataclass(slots=True)
+class _PlanJob:
+    """One plan job's fixed inputs and the state both write modes share."""
+
+    view: ShapeView
+    candidates: list[PitchCandidate]
+    guarded: PiiGuardedProvider
+    max_tokens: int
+    parts: _PlanParts
+    inputs: _JobInputs
+    state: _Attempt = field(default_factory=_Attempt)
+    stage_log: list[str] = field(default_factory=list)
+    calls: int = 0
+
+    @property
+    def pitch_fields(self) -> dict[str, str]:
+        """Return the chosen pitch's five fields.
+
+        Returns:
+            dict[str, str]: The pitch as the prompts carry it.
+        """
+        return cast("dict[str, str]", self.parts.pitch.model_dump())
+
+
+@dataclass(slots=True)
+class _WriteLog:
+    """The size check and write decision, for ``story_plan_write_mode``."""
+
+    setting: PlanWriteMode
+    mode: Literal["single", "chunked"]
+    reason: str
+    estimate: PlanSizeEstimate
+    spine: PlanSizeEstimate | None = None
+    scenes: list[dict[str, object]] = field(default_factory=list)
+    fallback: bool = False
+    splits: list[str] = field(default_factory=list)
+
+    def to_report(self) -> dict[str, object]:
+        """Return the decision as a JSON-serialisable mapping.
+
+        Returns:
+            dict[str, object]: Setting, mode, reason, estimates, scenes,
+                fallback and splits.
+        """
+        return {
+            "setting": self.setting,
+            "mode": self.mode,
+            "reason": self.reason,
+            "estimate": self.estimate.to_dict(),
+            "spine_estimate": None if self.spine is None else self.spine.to_dict(),
+            "scenes": [dict(scene) for scene in self.scenes],
+            "fallback": self.fallback,
+            "splits": list(self.splits),
+        }
+
+
+_TRUNCATED_FEEDBACK: Final = "the answer was cut off at the output limit"
+_LENGTH_STOP_MARKER: Final = "finish_reason=length"
+
+
+def _is_length_stop(exc: BaseException) -> bool:
+    """Return whether a provider error is an empty answer stopped at the cap.
+
+    Args:
+        exc: The provider error.
+
+    Returns:
+        bool: True when it, or an error it was raised from, names a
+            ``finish_reason=length`` stop.
+    """
+    # #ASSUME: external-resources: the OpenRouter and Modal adapters raise a
+    # leg-fatal ProviderError whose message names "finish_reason=length" for
+    # an EMPTY body at the cap (providers/openrouter.py
+    # _empty_content_message); a FallbackProvider re-raises "all legs
+    # exhausted" from it, so the cause chain is walked. A truncated NON-empty
+    # body arrives as an ordinary Completion with finish_reason "length".
+    # #VERIFY: test_storyplan_chunked.py::
+    # test_a_length_stop_provider_error_counts_as_truncation.
+    current: BaseException | None = exc
+    seen = 0
+    while current is not None and seen < 8:
+        if _LENGTH_STOP_MARKER in str(current):
+            return True
+        current = current.__cause__
+        seen += 1
+    return False
+
+
+async def _complete(job: _PlanJob, system: str, user: str) -> str | None:
+    """Make one plan-model call; None when the answer was cut off or empty.
+
+    Args:
+        job: The plan job.
+        system: The system block.
+        user: The user block.
+
+    Returns:
+        str | None: The answer text, or None for a truncated answer (stopped
+            at ``max_tokens``, or no content).
+
+    Raises:
+        ProviderError: Any provider failure other than a length stop. The
+            PII guard's ValidationError propagates unchanged as well.
+    """
+    # #CRITICAL: payment/financial: a truncated answer parses as nothing, and
+    # repairing it with an unchanged request buys the same wall at the same
+    # cap (AL-329, AL-855); it is reported as None so the caller changes the
+    # request (falls back to chunks, splits the scene) instead of repairing.
+    # #VERIFY: test_storyplan_chunked.py::
+    # test_a_truncated_single_call_falls_back_to_chunks_once.
+    try:
+        completion = await job.guarded.complete(
+            system=system, prompt=user, max_tokens=job.max_tokens
+        )
+    except ProviderError as exc:
+        if _is_length_stop(exc):
+            return None
+        raise
+    if completion.finish_reason == "length" or not completion.text.strip():
+        return None
+    return completion.text
 
 
 async def _generate_story_plan(
@@ -1762,9 +2073,7 @@ async def _generate_story_plan(
         PlanGenerationResult: The outcome.
     """
     pii, screen = inputs.pii, inputs.screen
-    max_repairs, chosen_pitch = inputs.max_repairs, inputs.chosen_pitch
-    model_label = inputs.model_label
-    repair_density_warnings = inputs.repair_density_warnings
+    chosen_pitch = inputs.chosen_pitch
     shape = {"id": view.shape_id, "hash": view.shape_hash}
     stage_log: list[str] = []
     if chosen_pitch is not None:
@@ -1784,21 +2093,79 @@ async def _generate_story_plan(
             stage_log=stage_log,
         )
 
-    guarded = PiiGuardedProvider(provider, forbidden=pii)
     max_tokens = resolve_output_cap(
         cast("str | None", getattr(provider, "model", None)), default=_PLAN_MAX_TOKENS
     )
-    state = _Attempt()
+    estimate = estimate_plan_size(view.book, cap=max_tokens)
+    mode, reason = choose_write_mode(inputs.write_mode, estimate)
+    write = _WriteLog(
+        setting=inputs.write_mode, mode=mode, reason=reason, estimate=estimate
+    )
+    _logger.info(
+        "story_plan.write_mode",
+        shape_id=view.shape_id,
+        setting=inputs.write_mode,
+        mode=mode,
+        estimate_tokens=estimate.total,
+        budget=estimate.budget,
+        cap=max_tokens,
+    )
+    job = _PlanJob(
+        view=view,
+        candidates=candidates,
+        guarded=PiiGuardedProvider(provider, forbidden=pii),
+        max_tokens=max_tokens,
+        parts=_PlanParts(
+            request,
+            chosen.pitch,
+            inputs.model_label,
+            _pitch_note(candidates, chosen),
+            pii,
+        ),
+        inputs=inputs,
+        stage_log=stage_log,
+    )
+    if mode == "single":
+        result = await _run_single(job, allow_fallback=inputs.write_mode == "auto")
+        if result is not None:
+            return replace(result, write_mode=write.to_report())
+        # #ASSUME: payment/financial: the cut-off call is not repaired; the
+        # chunked run that replaces it inherits the repairs already spent, so
+        # the job's repair budget is the same in both modes.
+        # #VERIFY: test_storyplan_chunked.py::
+        # test_a_truncated_single_call_falls_back_to_chunks_once.
+        write.mode, write.fallback = "chunked", True
+        write.reason = f"{reason}; the single call was cut off, fell back to chunks"
+        stage_log.append("plan:fallback=chunked")
+        _logger.info("story_plan.fallback_chunked", shape_id=view.shape_id)
+    runner = _ChunkedRun(job=job, write=write, repairs=max(job.calls - 1, 0))
+    return await runner.run()
+
+
+async def _run_single(
+    job: _PlanJob, *, allow_fallback: bool
+) -> PlanGenerationResult | None:
+    """Write the plan in one call with bounded whole-plan repair.
+
+    Args:
+        job: The plan job.
+        allow_fallback: Whether a cut-off answer hands over to chunked writing.
+
+    Returns:
+        PlanGenerationResult | None: The outcome, or None when an answer was
+            cut off and ``allow_fallback`` is set (the caller writes in chunks).
+    """
+    view, state, stage_log = job.view, job.state, job.stage_log
+    max_repairs = job.inputs.max_repairs
     calls = 0
-    note = _pitch_note(candidates, chosen)
     for call, system, user in _iter_plan_prompts(
         view,
-        request=request,
-        pitch=chosen.pitch,
+        request=job.parts.request,
+        pitch=job.parts.pitch,
         state=state,
         max_repairs=max_repairs,
     ):
-        calls = call
+        calls = job.calls = call
         # #CRITICAL: external-resources: each iteration is one paid provider
         # call; the loop is bounded by max_repairs + 1 calls and never retries
         # a provider error (that propagates to the worker, which records the
@@ -1806,18 +2173,17 @@ async def _generate_story_plan(
         # name echoed back) raises here the same way.
         # #VERIFY: test_storyplan_generate.py asserts the call count on the
         # exhausted path equals max_repairs + 1.
-        completion = await guarded.complete(
-            system=system, prompt=user, max_tokens=max_tokens
-        )
+        text = await _complete(job, system, user)
         has_next = call <= max_repairs
-        loaded = _load_plan(
-            view,
-            completion.text,
-            _PlanParts(request, chosen.pitch, model_label, note, pii),
-            state,
-            call,
-            stage_log,
-        )
+        if text is None:
+            state.load_errors = [_TRUNCATED_FEEDBACK]
+            state.record(call, "truncated")
+            stage_log.append(f"plan:{call}:truncated")
+            if allow_fallback:
+                return None
+            # A forced single call is never repaired with the same request.
+            break
+        loaded = _load_plan(view, text, job.parts, state, call, stage_log)
         if loaded is None:
             if has_next:
                 state.mark_repair("errors")
@@ -1838,20 +2204,38 @@ async def _generate_story_plan(
         # test_density_warnings_get_one_repair_within_the_budget and
         # ::test_a_failed_density_repair_keeps_the_checked_plan.
         if state.take_density_repair(
-            plan, report, enabled=repair_density_warnings, has_next=has_next
+            plan,
+            report,
+            enabled=job.inputs.repair_density_warnings,
+            has_next=has_next,
         ):
             state.previous = _sections_for_repair(view, plan)
             state.feedback = _feedback(view, report)
             stage_log.append(f"plan:{call}:density_repair={_density_findings(report)}")
             continue
-        return _checked(view, candidates, plan, report, call, stage_log, state)
+        return _checked(view, job.candidates, plan, report, call, stage_log, state)
+    return _unfinished(job, calls)
+
+
+def _unfinished(job: _PlanJob, calls: int) -> PlanGenerationResult:
+    """Return the result when the budget ran out without a final checked plan.
+
+    Args:
+        job: The plan job.
+        calls: Plan calls made in all.
+
+    Returns:
+        PlanGenerationResult: ``checked`` with the kept plan when a density
+            repair did not check cleanly, else ``failed_checks``.
+    """
+    view, state, stage_log = job.view, job.state, job.stage_log
     if state.best is not None:
         # Warnings never fail a plan: the density repair did not check
         # cleanly within the budget, so the job keeps the checked plan.
         best_plan, best_report = state.best
         stage_log.append("plan:kept_checked")
         return _checked(
-            view, candidates, best_plan, best_report, calls, stage_log, state
+            view, job.candidates, best_plan, best_report, calls, stage_log, state
         )
     _logger.info(
         "story_plan.failed_checks",
@@ -1861,8 +2245,8 @@ async def _generate_story_plan(
     )
     return PlanGenerationResult(
         status="failed_checks",
-        shape=shape,
-        pitches=candidates,
+        shape={"id": view.shape_id, "hash": view.shape_hash},
+        pitches=job.candidates,
         plan=state.plan,
         checks=state.checks,
         load_errors=state.load_errors,
@@ -1872,15 +2256,810 @@ async def _generate_story_plan(
     )
 
 
-@dataclass(frozen=True, slots=True)
-class _PlanParts:
-    """What every plan attempt is assembled from, besides the model's answer."""
+# ---------------------------------------------------------------------------
+# Chunked writing (AL-844, AL-855)
+# ---------------------------------------------------------------------------
 
-    request: PlanRequestInput
-    pitch: Pitch
-    model_label: str | None
-    note: str
-    pii: PiiContext
+
+def _real_load_errors(exc: PydanticValidationError) -> list[str]:
+    """Render a plan load failure as real-id messages without input values.
+
+    Args:
+        exc: The Pydantic error.
+
+    Returns:
+        list[str]: ``"<location>: <message>"`` per error (aliased only when
+            fed back to the model).
+    """
+    return [
+        f"{'.'.join(str(part) for part in err['loc']) or 'plan'}: {err['msg']}"
+        for err in exc.errors(include_input=False, include_url=False)
+    ]
+
+
+def _str_list(value: object) -> list[str]:
+    """Return the strings in a list value, or an empty list.
+
+    Args:
+        value: A JSON value.
+
+    Returns:
+        list[str]: Its string items.
+    """
+    if not isinstance(value, list):
+        return []
+    return [v for v in cast("list[object]", value) if isinstance(v, str)]
+
+
+def _establishes_of(section: object) -> dict[str, list[str]]:
+    """Return each entry's ``establishes`` list from a nodes or choices section.
+
+    Args:
+        section: An id-keyed section.
+
+    Returns:
+        dict[str, list[str]]: Entry id to its established fact ids.
+    """
+    if not isinstance(section, dict):
+        return {}
+    return {
+        key: _str_list(cast("dict[str, object]", entry).get("establishes"))
+        for key, entry in cast("dict[str, object]", section).items()
+        if isinstance(entry, dict)
+    }
+
+
+def _subset(entries: ChunkEntries, scene: Scene, view: ShapeView) -> ChunkEntries:
+    """Return the entries a half of a split scene owns.
+
+    Args:
+        entries: The whole scene's entries.
+        scene: The half.
+        view: The shape view.
+
+    Returns:
+        ChunkEntries: Its nodes and choices; every proposed fact is kept.
+    """
+    inside = set(scene.nodes)
+    choices = {
+        c.id for node in view.book.nodes if node.id in inside for c in node.choices
+    }
+    return ChunkEntries(
+        nodes={k: v for k, v in entries.nodes.items() if k in inside},
+        choices={k: v for k, v in entries.choices.items() if k in choices},
+        new_facts=dict(entries.new_facts),
+    )
+
+
+@dataclass(slots=True)
+class _ChunkedRun:
+    """The spine, the scenes and the routed repairs of one chunked plan job.
+
+    Scenes are written one after another, in reading order, not in
+    parallel: a scene's boundary facts are computed from what the earlier
+    scenes actually established (:func:`entry_knowledge`), and the ledger it
+    reads includes the facts they proposed, so it can reuse their ids instead
+    of inventing colliding ones. A parallel run could only give every scene
+    the spine's ledger and no boundary facts beyond it, which is what makes
+    SP-2 merge-closure findings at scene boundaries likely. The cost is
+    latency (one call after another), which a background job can afford.
+    """
+
+    job: _PlanJob
+    write: _WriteLog
+    repairs: int = 0
+    scenes: list[Scene] = field(default_factory=list)
+    spine: dict[str, object] | None = None
+    summaries: dict[str, object] = field(default_factory=dict)
+    entries: dict[str, ChunkEntries] = field(default_factory=dict)
+    pending: list[Routed] = field(default_factory=list)
+    written: list[str] = field(default_factory=list)
+    truncated: list[str] = field(default_factory=list)
+    frozen: set[str] = field(default_factory=set)
+    failed: str | None = None
+    _shape_json: str = ""
+
+    # -- calls ---------------------------------------------------------------
+
+    def _budget_left(self) -> int:
+        """Return how many repair calls the budget still allows.
+
+        Returns:
+            int: ``max_repairs`` less the repairs made (never negative).
+        """
+        return max(self.job.inputs.max_repairs - self.repairs, 0)
+
+    async def _call(self, prompt: StagePrompt, part: str) -> str | None:
+        """Make one part's call, logging it.
+
+        Args:
+            prompt: The part's prompt.
+            part: ``spine`` or the scene id.
+
+        Returns:
+            str | None: The answer, or None when it was cut off.
+        """
+        self.job.calls += 1
+        self.written.append(part)
+        self.job.stage_log.append(f"plan:{self.job.calls}:write={part}")
+        text = await _complete(self.job, prompt.system, prompt.user)
+        if text is None:
+            self.truncated.append(part)
+            self.job.stage_log.append(f"plan:{self.job.calls}:truncated={part}")
+        return text
+
+    # -- payloads ------------------------------------------------------------
+
+    def _scenes_json(self) -> str:
+        """Return the partition in alias form, JSON.
+
+        Returns:
+            str: Scene id to its node aliases.
+        """
+        view = self.job.view
+        return json.dumps(
+            {s.id: [view.node_alias[n] for n in s.nodes] for s in self.scenes},
+            separators=(",", ":"),
+        )
+
+    def _stitched(self, exclude: str | None = None) -> dict[str, object]:
+        """Return the stitched sections, optionally leaving one scene out.
+
+        Args:
+            exclude: A scene id to leave out.
+
+        Returns:
+            dict[str, object]: The model sections (real ids).
+        """
+        chunks = [
+            (scene, self.entries.get(scene.id))
+            for scene in self.scenes
+            if scene.id != exclude
+        ]
+        return stitch(self.spine or {}, chunks).sections
+
+    def _spine_alias(self) -> dict[str, object]:
+        """Return the spine as the spine writer wrote it, in alias form.
+
+        Returns:
+            dict[str, object]: The spine sections plus ``scenes``.
+        """
+        return {**self.job.view.to_alias(self.spine or {}), "scenes": self.summaries}
+
+    def _spine_payload(self) -> dict[str, object]:
+        """Return what a scene writer reads: the spine with the current ledger.
+
+        Returns:
+            dict[str, object]: Cast, truth, the ledger (the spine's facts plus
+                every fact a scene has proposed so far), threads, endings and
+                the scene summaries, in alias form.
+        """
+        spine = self.spine or {}
+        sections = {
+            key: spine[key]
+            for key in ("cast", "truth", "threads", "endings")
+            if key in spine
+        }
+        sections["facts"] = self._stitched()["facts"]
+        return {**self.job.view.to_alias(sections), "scenes": self.summaries}
+
+    def _entry_payload(self, scene: Scene) -> dict[str, list[str]]:
+        """Return the facts guaranteed on entry to the scene's boundary nodes.
+
+        Computed from every other scene's current entries, so on a first
+        write it reflects the scenes written before this one.
+
+        Args:
+            scene: The scene.
+
+        Returns:
+            dict[str, list[str]]: Boundary node alias to sorted fact ids.
+        """
+        view = self.job.view
+        others = self._stitched(exclude=scene.id)
+        entry = entry_knowledge(
+            view.book,
+            _establishes_of(others.get("nodes")),
+            _establishes_of(others.get("choices")),
+        )
+        return {
+            view.node_alias[node_id]: sorted(entry.get(node_id, frozenset()))
+            for node_id in boundary_nodes(view.book, scene)
+        }
+
+    def _feedback_lines(self, routed: Sequence[Routed]) -> list[str]:
+        """Alias a part's routed lines, errors first, capped.
+
+        Args:
+            routed: The part's lines.
+
+        Returns:
+            list[str]: At most :data:`_MAX_FEEDBACK_LINES` lines plus a count.
+        """
+        ordered = [r for r in routed if r.error] + [r for r in routed if not r.error]
+        lines = [
+            self.job.view.alias_text(r.line) for r in ordered[:_MAX_FEEDBACK_LINES]
+        ]
+        if len(ordered) > _MAX_FEEDBACK_LINES:
+            lines.append(f"... and {len(ordered) - _MAX_FEEDBACK_LINES} more findings")
+        return lines
+
+    # -- the spine -----------------------------------------------------------
+
+    def _accept_spine(self, text: str) -> list[str]:
+        """Decode and screen a spine answer; keep it when it is usable.
+
+        Args:
+            text: The answer.
+
+        Returns:
+            list[str]: Why it was not kept; empty when it was.
+        """
+        decoded, problem = _decode_object(text)
+        if decoded is None:
+            return [problem or "unparseable"]
+        real = self.job.view.to_real(decoded)
+        if not isinstance(real.get("facts"), dict):
+            return ["the spine must have a facts object"]
+        if _carries_pii(real, self.job.parts.pii):
+            # #CRITICAL: security: the spine is quoted into every scene
+            # prompt; a child name the model invented must not reach one
+            # (the provider guard would fail the job), so it is discarded.
+            # #VERIFY: test_storyplan_chunked.py::
+            # test_a_spine_naming_a_child_is_rewritten.
+            return [_PII_FEEDBACK]
+        self.spine = {
+            key: real[key]
+            for key in ("cast", "truth", "facts", "threads", "endings")
+            if key in real
+        }
+        scenes = real.get("scenes")
+        self.summaries = (
+            dict(cast("dict[str, object]", scenes)) if isinstance(scenes, dict) else {}
+        )
+        return []
+
+    async def _write_spine(self, feedback: Sequence[Routed] | None = None) -> None:
+        """Write (or repair) the spine; a cut-off first spine is retried once.
+
+        Args:
+            feedback: The spine's routed findings for a repair, or None.
+        """
+        job = self.job
+        pitch, brief = job.pitch_fields, job.parts.request.brief
+        if feedback is None:
+            prompt = build_plan_spine_prompt(
+                self._shape_json, self._scenes_json(), pitch, brief
+            )
+        else:
+            prompt = build_plan_spine_repair_prompt(
+                self._shape_json,
+                self._scenes_json(),
+                pitch,
+                brief,
+                previous=(
+                    None
+                    if self.spine is None
+                    else json.dumps(self._spine_alias(), indent=1, ensure_ascii=False)
+                ),
+                findings=self._feedback_lines(feedback),
+            )
+        text = await self._call(prompt, SPINE)
+        if text is None and feedback is None:
+            # The retry changes the request: it asks for a shorter ledger.
+            text = await self._call(
+                build_plan_spine_prompt(
+                    self._shape_json, self._scenes_json(), pitch, brief, compact=True
+                ),
+                SPINE,
+            )
+            if text is None:
+                self.failed = "the spine was cut off at the output limit twice"
+                return
+        if text is None:
+            # A cut-off spine repair keeps the previous spine and is not
+            # repaired again with the same request.
+            self.frozen.add(SPINE)
+            return
+        problems = self._accept_spine(text)
+        self.pending.extend(Routed(SPINE, p) for p in problems)
+
+    # -- scenes --------------------------------------------------------------
+
+    def _accept_scene(
+        self, scene: Scene, text: str
+    ) -> tuple[list[Routed], ChunkEntries | None]:
+        """Decode and screen a scene answer, keeping only the scene's entries.
+
+        Args:
+            scene: The scene.
+            text: The answer.
+
+        Returns:
+            tuple[list[Routed], ChunkEntries | None]: Feedback lines, and the
+                entries (None when the answer is unusable).
+        """
+        decoded, problem = _decode_object(text)
+        if decoded is None:
+            return [Routed(scene.id, problem or "unparseable")], None
+        raw: dict[str, dict[str, object]] = {}
+        for key in ("nodes", "choices", "new_facts"):
+            value = decoded.get(key, {})
+            if not isinstance(value, dict):
+                return [Routed(scene.id, f"{key} must be a JSON object")], None
+            raw[key] = cast("dict[str, object]", value)
+        if _carries_pii(raw, self.job.parts.pii):
+            return [Routed(scene.id, _PII_FEEDBACK)], None
+        view = self.job.view
+        real = view.to_real({"nodes": raw["nodes"], "choices": raw["choices"]})
+        inside = set(scene.nodes)
+        owned = {
+            c.id for node in view.book.nodes if node.id in inside for c in node.choices
+        }
+        nodes = cast("dict[str, object]", real["nodes"])
+        choices = cast("dict[str, object]", real["choices"])
+        dropped = sorted({*nodes} - inside) + sorted({*choices} - owned)
+        lines = [
+            Routed(
+                scene.id,
+                f"ignored entry {key!r}: not part of this scene",
+                error=False,
+            )
+            for key in dropped
+        ]
+        return lines, ChunkEntries(
+            nodes={k: v for k, v in nodes.items() if k in inside},
+            choices={k: v for k, v in choices.items() if k in owned},
+            new_facts=dict(raw["new_facts"]),
+        )
+
+    async def _write_scene(
+        self, scene: Scene, feedback: Sequence[Routed] | None = None
+    ) -> None:
+        """Write (or repair) one scene; a cut-off scene is split once.
+
+        Args:
+            scene: The scene.
+            feedback: The scene's routed findings for a repair, or None.
+        """
+        job, view = self.job, self.job.view
+        node_owner, _ = owners(view.book, self.scenes)
+        chunk_json = json.dumps(
+            view.render_scene(scene.nodes, node_owner), separators=(",", ":")
+        )
+        spine_json = json.dumps(
+            self._spine_payload(), ensure_ascii=False, separators=(",", ":")
+        )
+        entry_json = json.dumps(self._entry_payload(scene), separators=(",", ":"))
+        pitch, brief = job.pitch_fields, job.parts.request.brief
+        previous = self.entries.get(scene.id)
+        if feedback is None:
+            prompt = build_plan_chunk_prompt(
+                scene.id, chunk_json, spine_json, entry_json, pitch, brief
+            )
+        else:
+            prompt = build_plan_chunk_repair_prompt(
+                scene.id,
+                chunk_json,
+                spine_json,
+                entry_json,
+                pitch,
+                brief,
+                previous=(
+                    None
+                    if previous is None
+                    else json.dumps(
+                        view.to_alias(
+                            {
+                                "nodes": previous.nodes,
+                                "choices": previous.choices,
+                                "new_facts": previous.new_facts,
+                            }
+                        ),
+                        indent=1,
+                        ensure_ascii=False,
+                    )
+                ),
+                findings=self._feedback_lines(feedback),
+            )
+        text = await self._call(prompt, scene.id)
+        if text is None:
+            await self._split(scene, feedback)
+            return
+        lines, entries = self._accept_scene(scene, text)
+        self.pending.extend(lines)
+        if entries is not None:
+            self.entries[scene.id] = entries
+
+    async def _split(self, scene: Scene, feedback: Sequence[Routed] | None) -> None:
+        """Split a cut-off scene in two and write both halves (once).
+
+        Args:
+            scene: The scene whose answer was cut off.
+            feedback: Its routed findings when the cut-off call was a repair.
+        """
+        # #CRITICAL: payment/financial: a cut-off scene is never re-sent as it
+        # was. It is split in two and each half written once; a half that is
+        # cut off again ends the job (no further split, no repair), so the
+        # paid calls stay bounded by twice the scene count plus the repairs.
+        # #VERIFY: test_storyplan_chunked.py::
+        # test_a_truncated_chunk_is_split_and_retried.
+        if scene.split or len(scene.nodes) < 2:
+            self.failed = (
+                f"scene {scene.id} was cut off at the output limit after one split"
+            )
+            return
+        view = self.job.view
+        halves = split_scene(view.book, scene)
+        self.write.splits.append(scene.id)
+        index = self.scenes.index(scene)
+        self.scenes[index : index + 1] = list(halves)
+        previous = self.entries.pop(scene.id, None)
+        node_owner, choice_owner = owners(view.book, self.scenes)
+        for half in halves:
+            if previous is not None:
+                self.entries[half.id] = _subset(previous, half, view)
+            mine = None
+            if feedback is not None:
+                mine = [
+                    r
+                    for r in feedback
+                    if r.subject is None
+                    or (node_owner.get(r.subject) or choice_owner.get(r.subject))
+                    == half.id
+                ]
+                if not mine and half.id in self.entries:
+                    continue  # nothing reported in this half: keep its entries
+            await self._write_scene(half, mine)
+            if self.failed is not None:
+                return
+
+    # -- stitch, check, route --------------------------------------------------
+
+    def _annotate(self) -> None:
+        """Mark the last summary as a chunked round and reset the round's parts."""
+        state = self.job.state
+        if state.summaries:
+            state.summaries[-1] = replace(
+                state.summaries[-1],
+                mode="chunked",
+                parts=tuple(self.written),
+                truncated=tuple(self.truncated),
+            )
+        self.written, self.truncated = [], []
+
+    def _stitch_and_check(
+        self,
+    ) -> tuple[StoryPlan | None, ValidationReport | None, list[Routed]]:
+        """Stitch the parts, load and check the plan, and route what failed.
+
+        Returns:
+            tuple[StoryPlan | None, ValidationReport | None, list[Routed]]:
+                The checked plan and its report (None when it did not load)
+                and every routed feedback line, pending ones included.
+        """
+        job, view = self.job, self.job.view
+        state, call = job.state, job.calls
+        stitched = stitch(
+            self.spine or {}, [(s, self.entries.get(s.id)) for s in self.scenes]
+        )
+        node_owner, choice_owner = owners(view.book, self.scenes)
+        routed, self.pending = list(self.pending), []
+        sections, _ = _normalize(view, stitched.sections)
+        document = _assemble(
+            view,
+            sections,
+            request=job.parts.request,
+            pitch=job.parts.pitch,
+            model_label=job.parts.model_label,
+            note=f"{job.parts.note}; written in {len(self.scenes)} scenes",
+        )
+        try:
+            plan = StoryPlan.model_validate(document)
+        except PydanticValidationError as exc:
+            errors = _real_load_errors(exc)
+            state.load_errors = [view.alias_text(e) for e in errors]
+            state.record(call, "load_errors")
+            self._annotate()
+            job.stage_log.append(f"plan:{call}:load_errors={len(errors)}")
+            routed.extend(
+                route_load_errors(
+                    errors,
+                    node_owner=node_owner,
+                    choice_owner=choice_owner,
+                    fact_origin=stitched.fact_origin,
+                )
+            )
+            return None, None, routed
+        plan, report = _check_attempt(view, plan, state, call, job.stage_log)
+        self._annotate()
+        routed.extend(
+            route_findings(
+                [*report.errors, *report.warnings],
+                node_owner=node_owner,
+                choice_owner=choice_owner,
+                fact_origin=stitched.fact_origin,
+            )
+        )
+        return plan, report, routed
+
+    def _density_targets(self, plan: StoryPlan) -> list[Routed]:
+        """Route SP-D density warnings to the scenes holding the thin entries.
+
+        Args:
+            plan: A checked plan.
+
+        Returns:
+            list[Routed]: Warning lines, one per empty passage and per reused
+                intent or cost, each to its scene; ledger-wide and
+                unreferenced-fact lines go to every scene targeted (or to the
+                spine when no scene is).
+        """
+        view = self.job.view
+        density = plan_density(plan, view.book)
+        if density is None:
+            return []
+        node_owner, choice_owner = owners(view.book, self.scenes)
+        lines: list[Routed] = []
+        if (
+            density.passages >= DENSITY_MIN_NODES
+            and density.empty_share > EMPTY_NODE_SHARE_MAX
+        ):
+            lines.extend(
+                Routed(
+                    node_owner[n],
+                    f"SP-D warning: passage {n} neither requires nor establishes a "
+                    "fact: record the clues, objects, names, possessions and states "
+                    "it introduces or relies on",
+                    n,
+                    error=False,
+                )
+                for n in density.empty_passages
+                if n in node_owner
+            )
+        if density.decision_choices >= DENSITY_MIN_DECISION_CHOICES:
+            for reusers, what, limit, fix in (
+                (
+                    density.intent_reusers,
+                    "intent",
+                    INTENT_REUSE_MAX,
+                    "write its intent for this decision",
+                ),
+                (
+                    density.cost_reusers,
+                    "cost",
+                    COST_REUSE_MAX,
+                    "name what this option gives up here",
+                ),
+            ):
+                share = len(reusers) / density.decision_choices
+                if share > limit:
+                    lines.extend(
+                        Routed(
+                            choice_owner[c],
+                            f"SP-D warning: choice {c} shares its {what} with a "
+                            f"choice that leads somewhere else: {fix}",
+                            c,
+                            error=False,
+                        )
+                        for c in reusers
+                        if c in choice_owner
+                    )
+        general: list[str] = [
+            f"SP-D warning: fact {fact!r} is in the ledger but no passage or choice "
+            "requires or establishes it; use it where this part tells it"
+            for fact in density.unreferenced_facts
+        ]
+        if (
+            density.passages >= DENSITY_MIN_NODES
+            and density.ledger_density < LEDGER_DENSITY_MIN
+        ):
+            general.append(
+                f"SP-D warning: the plan references {density.referenced_facts} facts for "
+                f"{density.passages} passages: every clue found, thing handed over, "
+                "name learned and change of state is its own fact"
+            )
+        parts = list(dict.fromkeys(r.part for r in lines))
+        if not parts and general:
+            parts = (
+                [s.id for s in self.scenes]
+                if density.ledger_density < LEDGER_DENSITY_MIN
+                else [SPINE]
+            )
+        lines.extend(
+            Routed(part, line, None, error=False) for part in parts for line in general
+        )
+        return lines
+
+    async def _repair_round(
+        self, routed: Sequence[Routed], *, warnings_too: bool
+    ) -> int:
+        """Re-write each part with routed feedback, within the repair budget.
+
+        The spine goes first (scenes read its ledger), then the scenes with
+        the most errors. Each part re-written counts as one repair.
+
+        Args:
+            routed: Every routed line.
+            warnings_too: True for the density round, where a part with only
+                warnings is repaired; otherwise only parts with an error are.
+
+        Returns:
+            int: How many parts were re-written (0 when no routed part can be).
+        """
+        by_part: dict[str, list[Routed]] = {}
+        for item in routed:
+            by_part.setdefault(item.part, []).append(item)
+        order = {s.id: i for i, s in enumerate(self.scenes)}
+        targets = [
+            part
+            for part, items in by_part.items()
+            if part not in self.frozen
+            and (part == SPINE or part in order)
+            and (warnings_too or any(r.error for r in items))
+        ]
+        targets.sort(
+            key=lambda part: (
+                part != SPINE,
+                -sum(1 for r in by_part[part] if r.error),
+                order.get(part, -1),
+            )
+        )
+        chosen = targets[: self._budget_left()]
+        for part in chosen:
+            self.repairs += 1
+            if part == SPINE:
+                await self._write_spine(by_part[part])
+            else:
+                scene = next(s for s in self.scenes if s.id == part)
+                await self._write_scene(scene, by_part[part])
+            if self.failed is not None:
+                break
+        return len(chosen)
+
+    # -- the run ---------------------------------------------------------------
+
+    async def run(self) -> PlanGenerationResult:
+        """Write the spine and every scene, then check and repair.
+
+        Returns:
+            PlanGenerationResult: The outcome, with the write decision.
+        """
+        job, view = self.job, self.job.view
+        self._shape_json = json.dumps(view.render(), separators=(",", ":"))
+        self.scenes = partition_scenes(view.book, cap=job.max_tokens)
+        self.write.spine = estimate_spine_size(view.book, cap=job.max_tokens)
+        job.stage_log.append(f"plan:chunked:scenes={len(self.scenes)}")
+        if not self.write.spine.fits:
+            # #EDGE: external-resources: the spine is one call whatever the
+            # partition; on the two largest 13-16 shapes its estimate exceeds
+            # the budget at a 32,000 cap. It is still attempted (the estimate
+            # is deliberately high) and a cut-off spine is retried once
+            # asking for a shorter ledger.
+            # #VERIFY: test_storyplan_chunked.py::
+            # test_a_cut_off_spine_is_retried_once_asking_for_less.
+            _logger.warning(
+                "story_plan.spine_over_budget",
+                shape_id=view.shape_id,
+                estimate_tokens=self.write.spine.total,
+                budget=self.write.spine.budget,
+            )
+        await self._write_spine()
+        while self.spine is None and self.failed is None and self._budget_left():
+            feedback, self.pending = self.pending, []
+            self.repairs += 1
+            await self._write_spine(feedback)
+        if self.spine is None:
+            return self._finish_unwritten()
+        for scene in list(self.scenes):
+            if scene in self.scenes:
+                await self._write_scene(scene)
+            if self.failed is not None:
+                return self._finish_unwritten()
+        return await self._check_loop()
+
+    async def _check_loop(self) -> PlanGenerationResult:
+        """Stitch, check and repair until checked or out of budget.
+
+        Returns:
+            PlanGenerationResult: The outcome.
+        """
+        job, state = self.job, self.job.state
+        while True:
+            plan, report, routed = self._stitch_and_check()
+            has_next = self._budget_left() > 0
+            if plan is not None and report is not None and report.ok:
+                plan, report = state.denser(plan, report)
+                targets = (
+                    self._density_targets(plan)
+                    if job.inputs.repair_density_warnings
+                    else []
+                )
+                # #ASSUME: payment/financial: the density repair is taken at
+                # most once per job and only from the remaining budget
+                # (AL-848); in chunked mode it re-writes only the parts that
+                # hold thin entries, each counted as one repair.
+                # #VERIFY: test_storyplan_chunked.py::
+                # test_density_warnings_repair_only_the_thin_scenes.
+                if state.take_density_repair(
+                    plan, report, enabled=bool(targets), has_next=has_next
+                ):
+                    job.stage_log.append(
+                        f"plan:{job.calls}:density_repair={_density_findings(report)}"
+                    )
+                    repaired = await self._repair_round(targets, warnings_too=True)
+                    if self.failed is not None:
+                        break
+                    if repaired:
+                        continue
+                return self._finish(
+                    _checked(
+                        job.view,
+                        job.candidates,
+                        plan,
+                        report,
+                        job.calls,
+                        job.stage_log,
+                        state,
+                    )
+                )
+            if not has_next or not any(r.error for r in routed):
+                break
+            # A round that can re-write nothing (every erring part frozen
+            # after a cut-off repair) ends the loop instead of spinning. The
+            # round records no summary, so the stitched round's is still last.
+            if not await self._repair_round(routed, warnings_too=False):
+                break
+            state.mark_repair("errors")
+            if self.failed is not None:
+                break
+        if self.failed is not None:
+            state.load_errors = [*state.load_errors, self.failed]
+        return self._finish(_unfinished(job, job.calls))
+
+    def _finish_unwritten(self) -> PlanGenerationResult:
+        """Return ``failed_checks`` when no stitched plan could be attempted.
+
+        Returns:
+            PlanGenerationResult: The outcome, the last part's problem recorded.
+        """
+        job, state = self.job, self.job.state
+        reasons = [self.job.view.alias_text(r.line) for r in self.pending]
+        state.load_errors = [*reasons, *([self.failed] if self.failed else [])] or [
+            "the spine could not be written"
+        ]
+        outcome: AttemptOutcome = "truncated" if self.truncated else "unparseable"
+        state.record(job.calls, outcome)
+        self._annotate()
+        job.stage_log.append(f"plan:{job.calls}:{outcome}")
+        return self._finish(_unfinished(job, job.calls))
+
+    def _finish(self, result: PlanGenerationResult) -> PlanGenerationResult:
+        """Attach the write decision and the repair count to a result.
+
+        Args:
+            result: The outcome.
+
+        Returns:
+            PlanGenerationResult: The same, with ``write_mode`` and
+                ``repair_calls``.
+        """
+        self.write.scenes = [
+            {
+                "id": scene.id,
+                "nodes": len(scene.nodes),
+                "choices": sum(
+                    len(node.choices)
+                    for node in self.job.view.book.nodes
+                    if node.id in set(scene.nodes)
+                ),
+                "content_tokens": scene_content(self.job.view.book, scene.nodes),
+            }
+            for scene in self.scenes
+        ]
+        return replace(
+            result, write_mode=self.write.to_report(), repair_calls=self.repairs
+        )
 
 
 def _load_plan(  # noqa: PLR0913, PLR0917 - one attempt's inputs and loop state
