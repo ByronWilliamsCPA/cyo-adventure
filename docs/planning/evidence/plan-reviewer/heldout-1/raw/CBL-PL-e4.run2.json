@@ -1,0 +1,37 @@
+{
+  "plan_id": "CBL-PL-e4",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "c_retreat",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice intent 'get out while the way is dry' contradicts the required fact 'water_pooling_left' and the target node 'la_retreat_pool' where Maya carries Biscuit through rising water.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_poolback",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice intent 'get out before the channel floods' contradicts the required fact 'channel_flooding' and the target node 'ra_pool_back' where she bursts out as the sea pours in.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 14863,
+  "output_tokens": 5088,
+  "reasoning_tokens": 4917,
+  "cost_usd": 0.0687212,
+  "latency_ms": 39738,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"c_retreat\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice intent 'get out while the way is dry' contradicts the required fact 'water_pooling_left' and the target node 'la_retreat_pool' where Maya carries Biscuit through rising water.\"}, {\"entry\": \"c_poolback\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice intent 'get out before the channel floods' contradicts the required fact 'channel_flooding' and the target node 'ra_pool_back' where she bursts out as the sea pours in.\"}]}"
+}

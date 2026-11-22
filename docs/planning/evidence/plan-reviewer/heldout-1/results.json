@@ -1,0 +1,2766 @@
+{
+  "schema": "plan-reviewer-run/v1",
+  "run": {
+    "run_id": "heldout-1",
+    "half": "held_out",
+    "live": true,
+    "dry_run": false,
+    "partial": false,
+    "date": "2026-11-22",
+    "reviewer_model": "google/gemini-3.1-pro-preview",
+    "reported_models": [
+      "google/gemini-3.1-pro-preview"
+    ],
+    "writer_model": "anthropic/claude-sonnet-5.5",
+    "prompt_hash": "sha256:6a3be10872416bfa179cbbff7278b1c28b9b636af70ed38668a8a54014e4371e",
+    "runs": 2,
+    "reasoning_effort": "medium",
+    "max_tokens": 24000,
+    "temperature": 0.2,
+    "sample_rate_setting": 0.1,
+    "plans_run": 46,
+    "plans_checker_only": 13,
+    "plans_unrun": 0,
+    "unrun_ids": [],
+    "spend_stopped": false,
+    "budget_usd": "15",
+    "cost_usd": 5.55395,
+    "cost_complete": true,
+    "input_tokens": 1078480,
+    "output_tokens": 315853,
+    "finish_reason_counts": {
+      "stop": 44
+    },
+    "skipped_real_plans": {
+      "unknown": 2,
+      "weak": 0
+    }
+  },
+  "estimate": {
+    "plans": 22,
+    "calls": 44,
+    "input_tokens": 1829726,
+    "output_tokens": 616000,
+    "usd": 11.05,
+    "assumptions": {
+      "chars_per_token": 2.1,
+      "output_tokens_per_call": 14000,
+      "input_usd_per_mtok": 2.0,
+      "output_usd_per_mtok": 12.0
+    },
+    "checker_already_rejects": 24,
+    "largest_prompt_chars": 146725
+  },
+  "figures": {
+    "real_defective": {
+      "recall_overall": {
+        "k": 15,
+        "n": 17,
+        "rate": 0.8823529411764706,
+        "ci95": [
+          0.6566,
+          0.9671
+        ]
+      },
+      "checker_caught": {
+        "k": 13,
+        "n": 17,
+        "rate": 0.7647058823529411,
+        "ci95": [
+          0.5274,
+          0.9044
+        ]
+      },
+      "reviewer_decisive_recall": {
+        "k": 2,
+        "n": 4,
+        "rate": 0.5,
+        "ci95": [
+          0.15,
+          0.85
+        ]
+      },
+      "by_worst_severity": {
+        "blocker": {
+          "k": 7,
+          "n": 8,
+          "rate": 0.875,
+          "ci95": [
+            0.5291,
+            0.9776
+          ]
+        },
+        "should-fix": {
+          "k": 8,
+          "n": 9,
+          "rate": 0.8888888888888888,
+          "ci95": [
+            0.565,
+            0.9801
+          ]
+        }
+      },
+      "blocker_entries": {
+        "CC-B1": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CC-B2": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CC-B3": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CC-B4": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CC-B5": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CC-B6": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B1": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B10": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B11": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B2": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B3": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B4": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B5": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B6": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B7": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B8": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "CM-B9": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "MM-F2": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "R1121-SG-2": {
+          "plans": 3,
+          "flagged": 2
+        },
+        "SG-B1": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "SG-B2": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "SG-B3": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "SG-B4": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "SG-B5": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "SS-F3": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "SS-F8": {
+          "plans": 1,
+          "flagged": 1
+        }
+      },
+      "blockers_all_flagged": false,
+      "note": "checker_caught plans were rejected by SP-0 to SP-9 with no model call; reviewer_decisive_recall is the reviewer's own"
+    },
+    "synthetic": {
+      "family_A_checker_visible": {
+        "k": 11,
+        "n": 11,
+        "rate": 1.0,
+        "ci95": [
+          0.7412,
+          1.0
+        ]
+      },
+      "family_B_checker_invisible": {
+        "k": 7,
+        "n": 8,
+        "rate": 0.875,
+        "ci95": [
+          0.5291,
+          0.9776
+        ]
+      },
+      "family_B_by_class": {
+        "B1": {
+          "k": 1,
+          "n": 2,
+          "rate": 0.5,
+          "ci95": [
+            0.0945,
+            0.9055
+          ]
+        },
+        "B2": {
+          "k": 2,
+          "n": 2,
+          "rate": 1.0,
+          "ci95": [
+            0.3424,
+            1.0
+          ]
+        },
+        "B3": {
+          "k": 2,
+          "n": 2,
+          "rate": 1.0,
+          "ci95": [
+            0.3424,
+            1.0
+          ]
+        },
+        "B4": {
+          "k": 2,
+          "n": 2,
+          "rate": 1.0,
+          "ci95": [
+            0.3424,
+            1.0
+          ]
+        }
+      },
+      "by_family_and_half": {
+        "A:held_out": {
+          "k": 11,
+          "n": 11,
+          "rate": 1.0,
+          "ci95": [
+            0.7412,
+            1.0
+          ]
+        },
+        "B:held_out": {
+          "k": 7,
+          "n": 8,
+          "rate": 0.875,
+          "ci95": [
+            0.5291,
+            0.9776
+          ]
+        }
+      },
+      "family_B_located": {
+        "k": 7,
+        "n": 8,
+        "rate": 0.875,
+        "ci95": [
+          0.5291,
+          0.9776
+        ]
+      },
+      "family_B_located_by_class": {
+        "B1": {
+          "k": 1,
+          "n": 2,
+          "rate": 0.5,
+          "ci95": [
+            0.0945,
+            0.9055
+          ]
+        },
+        "B2": {
+          "k": 2,
+          "n": 2,
+          "rate": 1.0,
+          "ci95": [
+            0.3424,
+            1.0
+          ]
+        },
+        "B3": {
+          "k": 2,
+          "n": 2,
+          "rate": 1.0,
+          "ci95": [
+            0.3424,
+            1.0
+          ]
+        },
+        "B4": {
+          "k": 2,
+          "n": 2,
+          "rate": 1.0,
+          "ci95": [
+            0.3424,
+            1.0
+          ]
+        }
+      },
+      "family_B_located_unscorable": 0,
+      "note": "synthetic recall overstates real recall; never merged. Located recall credits a seed only when a finding names an entry the seed edited; informational, not a threshold"
+    },
+    "clean_baselines": {
+      "flag_rate_raw": {
+        "k": 6,
+        "n": 10,
+        "rate": 0.6,
+        "ci95": [
+          0.3127,
+          0.8318
+        ]
+      },
+      "false_flag_rate": {
+        "k": 6,
+        "n": 10,
+        "rate": 0.6,
+        "ci95": [
+          0.3127,
+          0.8318
+        ]
+      },
+      "flags_explained_by_known_residual": 0,
+      "by_book": {
+        "the-signal-in-the-static": {
+          "plans": 2,
+          "flagged": 2,
+          "false_flags": 2
+        },
+        "the-midnight-museum": {
+          "plans": 2,
+          "flagged": 1,
+          "false_flags": 1
+        },
+        "the-mapmakers-island": {
+          "plans": 2,
+          "flagged": 2,
+          "false_flags": 2
+        },
+        "the-cave-of-echoes": {
+          "plans": 2,
+          "flagged": 1,
+          "false_flags": 1
+        },
+        "the-sky-ship-stowaway": {
+          "plans": 2,
+          "flagged": 0,
+          "false_flags": 0
+        }
+      },
+      "needed_repair_false_flags": {
+        "k": 5,
+        "n": 8,
+        "rate": 0.625,
+        "ci95": [
+          0.3057,
+          0.8632
+        ]
+      },
+      "no_repair_false_flags": {
+        "k": 1,
+        "n": 2,
+        "rate": 0.5,
+        "ci95": [
+          0.0945,
+          0.9055
+        ]
+      },
+      "books": 5
+    },
+    "run_agreement": {
+      "k": 18,
+      "n": 22,
+      "rate": 0.8181818181818182,
+      "ci95": [
+        0.6148,
+        0.9269
+      ]
+    },
+    "reject_everything_diagnostic": {
+      "reviewer_run_plans_flagged": {
+        "k": 15,
+        "n": 22,
+        "rate": 0.6818181818181818,
+        "ci95": [
+          0.4732,
+          0.8364
+        ]
+      },
+      "clean_baselines_flagged": {
+        "k": 6,
+        "n": 10,
+        "rate": 0.6,
+        "ci95": [
+          0.3127,
+          0.8318
+        ]
+      },
+      "seeds_flagged": {
+        "k": 7,
+        "n": 8,
+        "rate": 0.875,
+        "ci95": [
+          0.5291,
+          0.9776
+        ]
+      },
+      "threshold": 0.9,
+      "warning": false
+    },
+    "checker_only_clean_plans_rejected": 10
+  },
+  "g3b": {
+    "passed": false,
+    "checks": [
+      {
+        "name": "held-out half",
+        "passed": true,
+        "detail": "half is held_out"
+      },
+      {
+        "name": "live reviewer",
+        "passed": true,
+        "detail": "a dry run never passes G3b"
+      },
+      {
+        "name": "run complete",
+        "passed": true,
+        "detail": "every selected plan was run within the budget"
+      },
+      {
+        "name": "defective plans >= 15",
+        "passed": true,
+        "detail": "17 real defective plans"
+      },
+      {
+        "name": "clean baselines cover >= 5 books (D12 amended)",
+        "passed": true,
+        "detail": "5 books, 10 baselines, unamended minimum 15 plans"
+      },
+      {
+        "name": "defect recall >= 0.9",
+        "passed": false,
+        "detail": "15/17 = 0.88 (95% 0.66 to 0.97)"
+      },
+      {
+        "name": "every blocker entry flagged",
+        "passed": false,
+        "detail": "26 blocker entries"
+      },
+      {
+        "name": "clean false-flag rate <= 0.2",
+        "passed": false,
+        "detail": "6/10 = 0.60 (95% 0.31 to 0.83)"
+      },
+      {
+        "name": "run agreement >= 0.9",
+        "passed": false,
+        "detail": "18/22 = 0.82 (95% 0.61 to 0.93)"
+      }
+    ]
+  },
+  "checker_only_clean_plans": {
+    "PL-c1": [
+      "SP-2",
+      "SP-6"
+    ],
+    "PL-d3": [
+      "SP-2",
+      "SP-6",
+      "SP-9"
+    ],
+    "PL-e1": [
+      "SP-3"
+    ],
+    "PL-e2": [
+      "SP-2",
+      "SP-6",
+      "SP-9"
+    ],
+    "PL-e3": [
+      "SP-2",
+      "SP-3"
+    ],
+    "PL-e4": [],
+    "PL-e5": [
+      "SP-2"
+    ],
+    "PL-f1": [],
+    "PL-f2": [
+      "SP-2",
+      "SP-3"
+    ],
+    "PL-f3": [
+      "SP-2",
+      "SP-3"
+    ],
+    "PL-f4": [
+      "SP-2"
+    ],
+    "PL-f5": [
+      "SP-9"
+    ],
+    "PL-the-midnight-museum-postfix": []
+  },
+  "plans": [
+    {
+      "id": "PL-x7",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x7.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [
+        "SS-F3",
+        "SS-F8"
+      ],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-1",
+        "SP-2",
+        "SP-6",
+        "SP-8"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-1",
+          "checker_error:SP-2",
+          "checker_error:SP-6",
+          "checker_error:SP-8"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-x8",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x8.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [
+        "SG-B1",
+        "SG-B2",
+        "SG-B3",
+        "SG-B4",
+        "SG-B5"
+      ],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-x9",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-midnight-museum",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x9.plan.json",
+        "book": "out/the-midnight-museum.filled.json"
+      },
+      "blockers": [
+        "MM-F2"
+      ],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-8"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-8"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-z2",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-clockwork-menagerie",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/fresh-corpus-2026-11-21/plans/z2.plan.json",
+        "book": "out/the-clockwork-menagerie.filled.json"
+      },
+      "blockers": [
+        "CM-B1",
+        "CM-B2",
+        "CM-B3",
+        "CM-B4",
+        "CM-B5",
+        "CM-B6",
+        "CM-B7",
+        "CM-B8",
+        "CM-B9",
+        "CM-B10",
+        "CM-B11"
+      ],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-9"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-9"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-z3",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-clocktower-cipher",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/fresh-corpus-2026-11-21/plans/z3.plan.json",
+        "book": "out/the-clocktower-cipher.filled.json"
+      },
+      "blockers": [
+        "CC-B1",
+        "CC-B2",
+        "CC-B3",
+        "CC-B4",
+        "CC-B5",
+        "CC-B6"
+      ],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-c2",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/continuity-reader/clean-plans/plans/c2.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-c3",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/continuity-reader/clean-plans/plans/c3.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [
+        "R1121-SG-2"
+      ],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-c4",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/continuity-reader/clean-plans/plans/c4.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-c5",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/continuity-reader/clean-plans/plans/c5.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-d1",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/continuity-reader/clean-plans/plans/d1.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-d2",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/continuity-reader/clean-plans/plans/d2.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-d4",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/continuity-reader/clean-plans/plans/d4.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [
+        "R1121-SG-2"
+      ],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-d5",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/continuity-reader/clean-plans/plans/d5.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "c_retreat",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The intent for c_retreat says Maya turns back 'while the way out is still dry', but the target node la_retreat_pool describes her going 'back through rising water'.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.312692,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "PL-the-sky-ship-stowaway-postfix",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "out/the-sky-ship-stowaway.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [
+        "SP-8"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-8"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-the-signal-in-the-static-postfix",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "out/the-signal-in-the-static.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [
+        "R1121-SG-2"
+      ],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "pass",
+        "confidence": 0.95,
+        "findings": [],
+        "reasons": [],
+        "run_verdicts": [
+          "pass",
+          "pass"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.23034,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "PL-the-cave-of-echoes-postfix",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "out/the-cave-of-echoes.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "c_retreat",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The choice intent promises to 'turn back while the way is dry', but the target node la_retreat_pool has Maya turn back 'through rising water'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "lighthouse_ranger",
+            "class": "state_contradiction",
+            "severity": "minor",
+            "reason": "The fact lighthouse_ranger and the event in da_bat_back state Maya will ask her aunt about the bats, but the cast entry lighthouse_ranger describes a separate offstage adult.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "ra_islet",
+            "class": "state_contradiction",
+            "severity": "should-fix",
+            "reason": "Node ra_islet's event states Maya 'pockets a few shells', which contradicts the fact glowing_islet it establishes, which states she 'takes a jar of shells'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "ra_islet",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The ending gift promises 'a jar of glowing shells', but its node ra_islet's event states Maya only 'pockets a few shells'.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.2373966,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "PL-the-mapmakers-island-postfix",
+      "source": "real",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "out/the-mapmakers-island.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "pass",
+        "confidence": 0.95,
+        "findings": [],
+        "reasons": [],
+        "run_verdicts": [
+          "pass",
+          "pass"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.2170206,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-A-SP-1-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-1",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-1-1.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "c_left"
+      ],
+      "reviewer_findings_at_entry": {
+        "c_left": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-1"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-1"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-9-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-9",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-9-1.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "maya_explorer"
+      ],
+      "reviewer_findings_at_entry": {
+        "maya_explorer": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-9"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-9"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-2-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-2",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-2-1.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "mg_creek"
+      ],
+      "reviewer_findings_at_entry": {
+        "mg_creek": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-7-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-7",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-7-1.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "e_tw_stair_fail"
+      ],
+      "reviewer_findings_at_entry": {
+        "e_tw_stair_fail": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-7"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-7"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-8-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-8",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-8-1.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "c_n_start_1",
+        "c_n_start_2",
+        "c_n_start_3",
+        "c_n_start_4",
+        "c_n_start_5"
+      ],
+      "reviewer_findings_at_entry": {
+        "c_n_start_1": [],
+        "c_n_start_2": [],
+        "c_n_start_3": [],
+        "c_n_start_4": [],
+        "c_n_start_5": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-8"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-8"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-4-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-4",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-4-1.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "n_shelf"
+      ],
+      "reviewer_findings_at_entry": {
+        "n_shelf": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-4"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-4"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-6-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-6",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-6-1.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "e_he_okafor",
+        "has_battery"
+      ],
+      "reviewer_findings_at_entry": {
+        "e_he_okafor": [],
+        "has_battery": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-6"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-6"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-4-2",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-midnight-museum",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-4",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-4-2.plan.json",
+        "book": "out/the-midnight-museum.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "n_desk_chalk"
+      ],
+      "reviewer_findings_at_entry": {
+        "n_desk_chalk": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-4"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-4"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-5-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-midnight-museum",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-5",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-5-1.plan.json",
+        "book": "out/the-midnight-museum.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "read_back"
+      ],
+      "reviewer_findings_at_entry": {
+        "read_back": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-5"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-5"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-3-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-3",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-3-1.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "hold_holds_salt_fish",
+        "n_start"
+      ],
+      "reviewer_findings_at_entry": {
+        "hold_holds_salt_fish": [],
+        "n_start": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-9-2",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-9",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-9-2.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "bree_dreams_sky"
+      ],
+      "reviewer_findings_at_entry": {
+        "bree_dreams_sky": []
+      },
+      "located": false,
+      "checker_error_rules": [
+        "SP-9"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-9"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-B-B1-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B1",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B1-1.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "c_lakeback"
+      ],
+      "reviewer_findings_at_entry": {
+        "c_lakeback": [
+          {
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix"
+          }
+        ]
+      },
+      "located": true,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "c_lakeback",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The intent of c_lakeback is to 'wait on the shelf until the tide turns', but the target node ra_lake_back has Maya retreat to daylight instead.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_retreat",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The intent of c_retreat is to 'get out while the way is dry', but the target node la_retreat_pool has Maya carry Biscuit back 'through rising water'.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.140764,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B3-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B3",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B3-1.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "da_bat_back"
+      ],
+      "reviewer_findings_at_entry": {
+        "da_bat_back": [
+          {
+            "class": "ending_gift_mismatch",
+            "severity": "blocker"
+          }
+        ]
+      },
+      "located": true,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "da_bat_back",
+            "class": "ending_gift_mismatch",
+            "severity": "blocker",
+            "reason": "The gift states that turning back 'nearly cost her Biscuit, proving that turning back is not safe', which directly contradicts the truth statement that 'Turning back at any risk point always gets Maya and Biscuit out safely' and its own node's event.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_retreat",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The intent is to 'get out while the way is dry', but the target node 'la_retreat_pool' has Maya carry Biscuit back 'through rising water', doing the opposite of the intent.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.13566,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B2-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "B",
+      "defect_class": "B2",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B2-1.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "alder_sailed_home",
+        "tw_enter"
+      ],
+      "reviewer_findings_at_entry": {
+        "alder_sailed_home": [
+          {
+            "class": "truth_contradiction",
+            "severity": "blocker"
+          }
+        ],
+        "tw_enter": []
+      },
+      "located": true,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 1.0,
+        "findings": [
+          {
+            "entry": "alder_sailed_home",
+            "class": "truth_contradiction",
+            "severity": "blocker",
+            "reason": "The fact 'alder_sailed_home' states that Alder finished the chart and sailed home safely, which contradicts the truth statement that a storm took the boat and Alder never came back.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.321052,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B3-2",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B3",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B3-2.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "e_count_wait"
+      ],
+      "reviewer_findings_at_entry": {
+        "e_count_wait": [
+          {
+            "class": "ending_gift_mismatch",
+            "severity": "blocker"
+          },
+          {
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix"
+          }
+        ]
+      },
+      "located": true,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "e_count_wait",
+            "class": "ending_gift_mismatch",
+            "severity": "blocker",
+            "reason": "The ending's gift celebrates that 'the loop is saved, and Kell and Marin are on the phone together by morning', which contradicts its negative/setback valence and its own event where 'the tide killed the relay's power... and the loop is gone'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_count_wait",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The gift for e_count_wait claims 'the loop is saved, and Kell and Marin are on the phone together by morning', which contradicts its negative setback valence and its event where the tide kills the power and the loop is gone.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.263117,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B4-1",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B4",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B4-1.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "has_battery"
+      ],
+      "reviewer_findings_at_entry": {
+        "has_battery": [
+          {
+            "class": "payoff_shows_mismatch",
+            "severity": "should-fix"
+          }
+        ]
+      },
+      "located": true,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.95,
+        "findings": [
+          {
+            "entry": "has_battery",
+            "class": "payoff_shows_mismatch",
+            "severity": "should-fix",
+            "reason": "The payoff for choice c_f_st_power_1 shows Wren splicing grandpa's headset across the terminals, but the thread is has_battery and the planting choice c_n_shelf_1 gave her the spare battery.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_re_log",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The ending's event states that Wren logs twenty-three stations, but the gift claims a hundred strangers keep calling, which is a different number.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.30236,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B1-2",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-midnight-museum",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B1",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B1-2.plan.json",
+        "book": "out/the-midnight-museum.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "c_alarm_hide"
+      ],
+      "reviewer_findings_at_entry": {
+        "c_alarm_hide": []
+      },
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "pass",
+        "confidence": 0.95,
+        "findings": [],
+        "reasons": [],
+        "run_verdicts": [
+          "pass",
+          "pass"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.1705152,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B4-2",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-midnight-museum",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B4",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B4-2.plan.json",
+        "book": "out/the-midnight-museum.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "has_chalk"
+      ],
+      "reviewer_findings_at_entry": {
+        "has_chalk": [
+          {
+            "class": "payoff_shows_mismatch",
+            "severity": "should-fix"
+          }
+        ]
+      },
+      "located": true,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "has_chalk",
+            "class": "payoff_shows_mismatch",
+            "severity": "should-fix",
+            "reason": "The payoff shows for choice c_dark_chalk says 'the borrowed lantern lights a path', but the choice's intent and cost explicitly state that she gives up the lantern to mark a chalk trail.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_map_follow",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The cost of choice c_map_follow says it 'gives up the photos', but its target node v_map_follow establishes photographed_paintings and its event says she photographs them.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.252356,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B2-2",
+      "source": "synthetic",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "B",
+      "defect_class": "B2",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B2-2.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [
+        "b_hold_deep",
+        "quill_sells_calf"
+      ],
+      "reviewer_findings_at_entry": {
+        "b_hold_deep": [],
+        "quill_sells_calf": [
+          {
+            "class": "truth_contradiction",
+            "severity": "blocker"
+          }
+        ]
+      },
+      "located": true,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.95,
+        "findings": [
+          {
+            "entry": "quill_sells_calf",
+            "class": "truth_contradiction",
+            "severity": "blocker",
+            "reason": "The fact 'quill_sells_calf' states that Captain Quill plans to sell the calf at the hunters' market, which directly contradicts the truth that she is secretly carrying him to the haven.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.1902378,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-e1",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": true,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-e1.baseline.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [
+        "r_relay_1",
+        "r_relay_beat"
+      ],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "unsure",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "e_re_log",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The ending's event states Wren logs 'twenty-three stations', but its gift celebrates 'a hundred strangers', a mismatch in the specific number.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [
+          "runs_disagree"
+        ],
+        "run_verdicts": [
+          "pass",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.296564,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-e2",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-midnight-museum",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": true,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-e2.baseline.plan.json",
+        "book": "out/the-midnight-museum.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [
+        "e_win_mystery_solved"
+      ],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "pass",
+        "confidence": 0.95,
+        "findings": [],
+        "reasons": [],
+        "run_verdicts": [
+          "pass",
+          "pass"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.152686,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-e3",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": true,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-e3.baseline.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [
+        "L_cove",
+        "c_L_cove_1",
+        "c_tf_gully_1",
+        "cf_bench",
+        "e_tw_log",
+        "mg_blind",
+        "tf_gap",
+        "tf_gully"
+      ],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "unsure",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "summit_signal",
+            "class": "state_contradiction",
+            "severity": "blocker",
+            "reason": "The event for summit_signal states Wren uses Alder's mirror, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the mirror via c_L_camp_3.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "ch_sightings",
+            "class": "state_contradiction",
+            "severity": "blocker",
+            "reason": "The event for ch_sightings states Wren uses Alder's spyglass, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the spyglass via c_L_camp_3.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "ch_ink",
+            "class": "state_contradiction",
+            "severity": "blocker",
+            "reason": "The event for ch_ink states Wren uses Alder's good pen, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the pen via c_L_camp_3.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [
+          "runs_disagree"
+        ],
+        "run_verdicts": [
+          "pass",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.340156,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-e4",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": false,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-e4.baseline.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "c_retreat",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The choice c_retreat has the intent 'get out while the way is dry', but its target node la_retreat_pool describes Maya carrying Biscuit back 'through rising water'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_poolback",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The choice intent 'get out before the channel floods' contradicts the required fact 'channel_flooding' and the target node 'ra_pool_back' where she bursts out as the sea pours in.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.1794832,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-e5",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": true,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-e5.baseline.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "nimbus_reaches_haven",
+            "class": "state_contradiction",
+            "severity": "minor",
+            "reason": "The facts 'nimbus_reaches_haven' and 'nimbus_delayed' represent mutually exclusive outcomes for Nimbus and cannot both hold on one reading, but they are not marked as contradicting each other.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "pass",
+          "pass"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.369256,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-f1",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-cave-of-echoes",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": false,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-f1.baseline.plan.json",
+        "book": "out/the-cave-of-echoes.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "pass",
+        "confidence": 0.95,
+        "findings": [],
+        "reasons": [],
+        "run_verdicts": [
+          "pass",
+          "pass"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.170012,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-f2",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-sky-ship-stowaway",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": true,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-f2.baseline.plan.json",
+        "book": "out/the-sky-ship-stowaway.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "pass",
+        "confidence": 0.95,
+        "findings": [],
+        "reasons": [],
+        "run_verdicts": [
+          "pass",
+          "pass"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.2652078,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-f3",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-signal-in-the-static",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": true,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-f3.baseline.plan.json",
+        "book": "out/the-signal-in-the-static.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [
+        "r_relay_1",
+        "r_relay_beat"
+      ],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "e_st_alder_refuse",
+            "class": "truth_contradiction",
+            "severity": "blocker",
+            "reason": "The event calls Wren's promise that Marin is listening a 'false promise', but the truth states that Marin has been listening all along, making the promise factually true.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_r_re_cellar2_2",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The intent is to 'get out safely', but the target event e_re_cellar has Wren fall ill for three days.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.366044,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-f4",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-mapmakers-island",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": true,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-f4.baseline.plan.json",
+        "book": "out/the-mapmakers-island.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [
+        "L_cove",
+        "c_L_cove_1",
+        "c_tf_gully_1",
+        "cf_bench",
+        "e_tw_log",
+        "mg_blind",
+        "tf_gap",
+        "tf_gully"
+      ],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "unsure",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "c_ch_sign_3",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The intent of c_ch_sign_3 is to 'decorate the margins with the island's life', but its target ch_seal_final's event merely offers the choice to do so ('Wren can hand it over or ring its margins').",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_summit_signal_2",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The intent of c_summit_signal_2 promises to 'signal quickly', but its target ch_gather's event completely ignores the signalling and only describes preparing to draw the chart.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [
+          "runs_disagree"
+        ],
+        "run_verdicts": [
+          "pass",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.4480042,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-f5",
+      "source": "baseline",
+      "half": "held_out",
+      "unit": "the-midnight-museum",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": true,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-f5.baseline.plan.json",
+        "book": "out/the-midnight-museum.filled.json"
+      },
+      "blockers": [],
+      "residual_entries": [
+        "e_win_mystery_solved"
+      ],
+      "seeded_entry_ids": [],
+      "reviewer_findings_at_entry": {},
+      "located": false,
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "unsure",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "has_chalk",
+            "class": "payoff_shows_mismatch",
+            "severity": "should-fix",
+            "reason": "The payoff at c_records_note credits the guard seeing the chalked board, which corresponds to chalk_message, rather than the thread's plant fact kept_chalk.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [
+          "runs_disagree"
+        ],
+        "run_verdicts": [
+          "reject",
+          "pass"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.1930256,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    }
+  ]
+}

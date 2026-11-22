@@ -1,0 +1,37 @@
+{
+  "plan_id": "SY-B-B1-1",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "c_lakeback",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The intent of c_lakeback is to 'wait on the shelf until the tide turns', but the target node ra_lake_back has Maya retreat to daylight instead.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_retreat",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The intent of c_retreat is to 'get out while the way is dry', but the target node la_retreat_pool has Maya carry Biscuit back 'through rising water'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 14869,
+  "output_tokens": 2986,
+  "reasoning_tokens": 2793,
+  "cost_usd": 0.06557,
+  "latency_ms": 28044,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"c_lakeback\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The intent of c_lakeback is to 'wait on the shelf until the tide turns', but the target node ra_lake_back has Maya retreat to daylight instead.\"\n    },\n    {\n      \"entry\": \"c_retreat\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The intent of c_retreat is to 'get out while the way is dry', but the target node la_retreat_pool has Maya carry Biscuit back 'through rising water'.\"\n    }\n  ]\n}"
+}

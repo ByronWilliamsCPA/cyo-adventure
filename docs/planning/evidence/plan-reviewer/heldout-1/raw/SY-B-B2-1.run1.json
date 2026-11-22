@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B2-1",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 1.0,
+    "findings": [
+      {
+        "entry": "alder_sailed_home",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "The fact 'alder_sailed_home' states that Alder finished the chart and sailed home safely, which contradicts the truth statement that a storm took the boat and Alder never came back.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 41959,
+  "output_tokens": 8466,
+  "reasoning_tokens": 8373,
+  "cost_usd": 0.18551,
+  "latency_ms": 66179,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 1.0, \"findings\": [{\"entry\": \"alder_sailed_home\", \"class\": \"truth_contradiction\", \"severity\": \"blocker\", \"reason\": \"The fact 'alder_sailed_home' states that Alder finished the chart and sailed home safely, which contradicts the truth statement that a storm took the boat and Alder never came back.\"}]}"
+}

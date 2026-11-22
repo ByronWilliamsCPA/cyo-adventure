@@ -1,0 +1,29 @@
+{
+  "plan_id": "CBL-PL-e5",
+  "run": 1,
+  "verdict": {
+    "verdict": "pass",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "nimbus_reaches_haven",
+        "class": "state_contradiction",
+        "severity": "minor",
+        "reason": "The facts 'nimbus_reaches_haven' and 'nimbus_delayed' represent mutually exclusive outcomes for Nimbus and cannot both hold on one reading, but they are not marked as contradicting each other.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 21556,
+  "output_tokens": 12810,
+  "reasoning_tokens": 12713,
+  "cost_usd": 0.196832,
+  "latency_ms": 85884,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"pass\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"nimbus_reaches_haven\", \"class\": \"state_contradiction\", \"severity\": \"minor\", \"reason\": \"The facts 'nimbus_reaches_haven' and 'nimbus_delayed' represent mutually exclusive outcomes for Nimbus and cannot both hold on one reading, but they are not marked as contradicting each other.\"}]}"
+}

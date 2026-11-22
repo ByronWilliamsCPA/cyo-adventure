@@ -1,0 +1,37 @@
+{
+  "plan_id": "CBL-PL-f4",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "c_ch_sign_3",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The intent of c_ch_sign_3 is to 'decorate the margins with the island's life', but its target ch_seal_final's event merely offers the choice to do so ('Wren can hand it over or ring its margins').",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_summit_signal_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The intent of c_summit_signal_2 promises to 'signal quickly', but its target ch_gather's event completely ignores the signalling and only describes preparing to draw the chart.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 34288,
+  "output_tokens": 15280,
+  "reasoning_tokens": 15092,
+  "cost_usd": 0.1930202,
+  "latency_ms": 94748,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"c_ch_sign_3\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The intent of c_ch_sign_3 is to 'decorate the margins with the island's life', but its target ch_seal_final's event merely offers the choice to do so ('Wren can hand it over or ring its margins').\"}, {\"entry\": \"c_summit_signal_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The intent of c_summit_signal_2 promises to 'signal quickly', but its target ch_gather's event completely ignores the signalling and only describes preparing to draw the chart.\"}]}"
+}

@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B4-2",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 1.0,
+    "findings": [
+      {
+        "entry": "has_chalk",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff shows text for choice c_dark_chalk credits the borrowed lantern, which belongs to the alternative choice c_dark_lantern, rather than the chalk from the thread's plant.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24587,
+  "output_tokens": 8029,
+  "reasoning_tokens": 7934,
+  "cost_usd": 0.145522,
+  "latency_ms": 64957,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 1.0, \"findings\": [{\"entry\": \"has_chalk\", \"class\": \"payoff_shows_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The payoff shows text for choice c_dark_chalk credits the borrowed lantern, which belongs to the alternative choice c_dark_lantern, rather than the chalk from the thread's plant.\"}]}"
+}

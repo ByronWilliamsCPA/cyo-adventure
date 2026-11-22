@@ -261,3 +261,18 @@ These come from the checker, not from any model, and hold whatever the reviewer 
 - One reader per book labelled the real set; a clean label is the latest verified state, not a proof of no defect.
 - The reviewer's price is assumed when `core/pricing.py` has no row, so the spend figures can be off by that ratio;
   `--price-in` and `--price-out` correct it, and the vendor's own per-call charge wins when the provider reports one.
+
+## Outcome of the first validation (2026-11-22)
+
+| Run | Half | Prompt | Spend | Result |
+| --- | --- | --- | --- | --- |
+| [`tuning-1`](./tuning-1/report.md) | tuning | first | 1.68 USD | Both clean baselines rejected; 3 of 9 findings true |
+| [`tuning-2`](./tuning-2/report.md) | tuning | calibrated | 1.39 USD | Fewer findings; both clean baselines still rejected |
+| [`heldout-1`](./heldout-1/report.md) | held out | calibrated | 5.55 USD | **G3b FAIL** |
+
+Reviewer `google/gemini-3.1-pro-preview`, writer `anthropic/claude-sonnet-5.5`. Held-out figures against the
+pre-registered D12 values: defect recall 15/17 = 0.88 (needs 0.90; 13 of 17 checker-caught, the reviewer's own recall
+2 of 4); one blocker entry not flagged; clean false-flag rate 6/10 = 0.60 (needs 0.20; per book 2/2 Signal, 2/2
+Mapmaker's, 1/2 Museum, 1/2 Cave, 0/2 Sky-Ship); run agreement 18/22 = 0.82 (needs 0.90); family A 11/11; family B
+located 7/8. No validated pairing was written. The reviewer stays disabled and the owner reads every plan until an owner
+decision changes that (see the WP-3.7 outcome in `story-plan-implementation-plan.md`).

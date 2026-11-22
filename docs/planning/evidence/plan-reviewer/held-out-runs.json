@@ -1,0 +1,17 @@
+{
+  "schema": "held-out-runs/v1",
+  "rule": "D12: a held-out run per pairing, then one prompt revision after a failed first run, then stop; a prompt hash already run is refused",
+  "runs": [
+    {
+      "run_id": "heldout-1",
+      "writer_model": "anthropic/claude-sonnet-5.5",
+      "reviewer_model": "google/gemini-3.1-pro-preview",
+      "prompt_hash": "sha256:6a3be10872416bfa179cbbff7278b1c28b9b636af70ed38668a8a54014e4371e",
+      "started": "2026-11-22T05:05:42+00:00",
+      "finished": true,
+      "g3b_passed": false,
+      "partial": false,
+      "spend_stopped": false
+    }
+  ]
+}

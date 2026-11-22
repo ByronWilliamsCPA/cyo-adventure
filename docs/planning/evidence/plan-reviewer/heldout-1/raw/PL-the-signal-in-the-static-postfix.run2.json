@@ -1,0 +1,20 @@
+{
+  "plan_id": "PL-the-signal-in-the-static-postfix",
+  "run": 2,
+  "verdict": {
+    "verdict": "pass",
+    "confidence": 0.95,
+    "findings": [],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 20175,
+  "output_tokens": 6457,
+  "reasoning_tokens": 6428,
+  "cost_usd": 0.117834,
+  "latency_ms": 56484,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"pass\",\n  \"confidence\": 0.95,\n  \"findings\": []\n}"
+}

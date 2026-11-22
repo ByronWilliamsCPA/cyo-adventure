@@ -866,7 +866,7 @@ class TestHarnessEndToEnd:
         )
         out = tree.root / "out" / "t3"
         report = (out / "report.md").read_text("utf-8")
-        assert "**G3b: FAIL**" in report
+        assert "G3b: **FAIL**" in report
         assert "| Figure | Value |" in report
         assert "## Limits" in report
         for path in out.rglob("*"):

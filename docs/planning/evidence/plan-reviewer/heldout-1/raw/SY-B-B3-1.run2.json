@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B3-1",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "da_bat_back",
+        "class": "ending_gift_mismatch",
+        "severity": "blocker",
+        "reason": "The ending's gift states 'proving that turning back is not safe', which directly contradicts the truth statement ('Turning back at any risk point always gets Maya and Biscuit out safely') and the node's own event.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 14865,
+  "output_tokens": 4322,
+  "reasoning_tokens": 4221,
+  "cost_usd": 0.081594,
+  "latency_ms": 34940,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"da_bat_back\", \"class\": \"ending_gift_mismatch\", \"severity\": \"blocker\", \"reason\": \"The ending's gift states 'proving that turning back is not safe', which directly contradicts the truth statement ('Turning back at any risk point always gets Maya and Biscuit out safely') and the node's own event.\"}]}"
+}

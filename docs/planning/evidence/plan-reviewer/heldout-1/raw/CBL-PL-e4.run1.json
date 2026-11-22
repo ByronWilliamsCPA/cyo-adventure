@@ -1,0 +1,29 @@
+{
+  "plan_id": "CBL-PL-e4",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "c_retreat",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice c_retreat has the intent 'get out while the way is dry', but its target node la_retreat_pool describes Maya carrying Biscuit back 'through rising water'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 14863,
+  "output_tokens": 6753,
+  "reasoning_tokens": 6662,
+  "cost_usd": 0.110762,
+  "latency_ms": 51251,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"c_retreat\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice c_retreat has the intent 'get out while the way is dry', but its target node la_retreat_pool describes Maya carrying Biscuit back 'through rising water'.\"}]}"
+}

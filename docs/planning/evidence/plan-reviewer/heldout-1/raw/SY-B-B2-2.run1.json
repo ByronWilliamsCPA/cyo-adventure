@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B2-2",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "quill_sells_calf",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "The fact 'quill_sells_calf' states that Captain Quill plans to sell the calf at the hunters' market, which directly contradicts the truth that she is secretly carrying him to the haven.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 21591,
+  "output_tokens": 3533,
+  "reasoning_tokens": 3435,
+  "cost_usd": 0.085578,
+  "latency_ms": 28556,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"quill_sells_calf\", \"class\": \"truth_contradiction\", \"severity\": \"blocker\", \"reason\": \"The fact 'quill_sells_calf' states that Captain Quill plans to sell the calf at the hunters' market, which directly contradicts the truth that she is secretly carrying him to the haven.\"}]}"
+}

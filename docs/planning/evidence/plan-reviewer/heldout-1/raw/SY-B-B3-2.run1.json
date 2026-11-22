@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B3-2",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "e_count_wait",
+        "class": "ending_gift_mismatch",
+        "severity": "blocker",
+        "reason": "The ending's gift celebrates that 'the loop is saved, and Kell and Marin are on the phone together by morning', which contradicts its negative/setback valence and its own event where 'the tide killed the relay's power... and the loop is gone'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28448,
+  "output_tokens": 4845,
+  "reasoning_tokens": 4734,
+  "cost_usd": 0.115036,
+  "latency_ms": 42848,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"e_count_wait\", \"class\": \"ending_gift_mismatch\", \"severity\": \"blocker\", \"reason\": \"The ending's gift celebrates that 'the loop is saved, and Kell and Marin are on the phone together by morning', which contradicts its negative/setback valence and its own event where 'the tide killed the relay's power... and the loop is gone'.\"}]}"
+}

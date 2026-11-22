@@ -1,0 +1,29 @@
+{
+  "plan_id": "PL-d5",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "c_retreat",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The intent for c_retreat says Maya turns back 'while the way out is still dry', but the target node la_retreat_pool describes her going 'back through rising water'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 14786,
+  "output_tokens": 4955,
+  "reasoning_tokens": 4863,
+  "cost_usd": 0.089032,
+  "latency_ms": 44216,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"c_retreat\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The intent for c_retreat says Maya turns back 'while the way out is still dry', but the target node la_retreat_pool describes her going 'back through rising water'.\"}]}"
+}

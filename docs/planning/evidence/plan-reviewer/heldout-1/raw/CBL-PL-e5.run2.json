@@ -1,0 +1,20 @@
+{
+  "plan_id": "CBL-PL-e5",
+  "run": 2,
+  "verdict": {
+    "verdict": "pass",
+    "confidence": 0.95,
+    "findings": [],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 21556,
+  "output_tokens": 10776,
+  "reasoning_tokens": 10750,
+  "cost_usd": 0.172424,
+  "latency_ms": 80101,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"pass\", \"confidence\": 0.95, \"findings\": []}"
+}

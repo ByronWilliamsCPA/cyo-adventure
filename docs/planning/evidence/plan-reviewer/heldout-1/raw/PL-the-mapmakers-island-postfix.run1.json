@@ -1,0 +1,20 @@
+{
+  "plan_id": "PL-the-mapmakers-island-postfix",
+  "run": 1,
+  "verdict": {
+    "verdict": "pass",
+    "confidence": 0.95,
+    "findings": [],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 36003,
+  "output_tokens": 6061,
+  "reasoning_tokens": 6035,
+  "cost_usd": 0.144738,
+  "latency_ms": 49760,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"pass\", \"confidence\": 0.95, \"findings\": []}"
+}

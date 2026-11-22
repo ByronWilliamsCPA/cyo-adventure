@@ -1,0 +1,37 @@
+{
+  "plan_id": "PL-the-cave-of-echoes-postfix",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "ra_islet",
+        "class": "state_contradiction",
+        "severity": "should-fix",
+        "reason": "Node ra_islet's event states Maya 'pockets a few shells', which contradicts the fact glowing_islet it establishes, which states she 'takes a jar of shells'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "ra_islet",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The ending gift promises 'a jar of glowing shells', but its node ra_islet's event states Maya only 'pockets a few shells'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 13143,
+  "output_tokens": 7961,
+  "reasoning_tokens": 7766,
+  "cost_usd": 0.1018506,
+  "latency_ms": 72984,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"ra_islet\",\n      \"class\": \"state_contradiction\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"Node ra_islet's event states Maya 'pockets a few shells', which contradicts the fact glowing_islet it establishes, which states she 'takes a jar of shells'.\"\n    },\n    {\n      \"entry\": \"ra_islet\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The ending gift promises 'a jar of glowing shells', but its node ra_islet's event states Maya only 'pockets a few shells'.\"\n    }\n  ]\n}"
+}

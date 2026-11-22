@@ -1,0 +1,45 @@
+{
+  "plan_id": "CBL-PL-e3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "summit_signal",
+        "class": "state_contradiction",
+        "severity": "blocker",
+        "reason": "The event for summit_signal states Wren uses Alder's mirror, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the mirror via c_L_camp_3.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "ch_sightings",
+        "class": "state_contradiction",
+        "severity": "blocker",
+        "reason": "The event for ch_sightings states Wren uses Alder's spyglass, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the spyglass via c_L_camp_3.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "ch_ink",
+        "class": "state_contradiction",
+        "severity": "blocker",
+        "reason": "The event for ch_ink states Wren uses Alder's good pen, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the pen via c_L_camp_3.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 41923,
+  "output_tokens": 7654,
+  "reasoning_tokens": 7345,
+  "cost_usd": 0.175694,
+  "latency_ms": 37626,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"summit_signal\",\n      \"class\": \"state_contradiction\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The event for summit_signal states Wren uses Alder's mirror, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the mirror via c_L_camp_3.\"\n    },\n    {\n      \"entry\": \"ch_sightings\",\n      \"class\": \"state_contradiction\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The event for ch_sightings states Wren uses Alder's spyglass, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the spyglass via c_L_camp_3.\"\n    },\n    {\n      \"entry\": \"ch_ink\",\n      \"class\": \"state_contradiction\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The event for ch_ink states Wren uses Alder's good pen, but it does not require wren_carries_alder_tools, meaning Wren can reach this node without the pen via c_L_camp_3.\"\n    }\n  ]\n}"
+}

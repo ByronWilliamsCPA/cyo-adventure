@@ -986,7 +986,7 @@ def render_report(context: Mapping[str, object]) -> str:
     clean = _mapping(figures["clean_baselines"])
     live = bool(run.get("live"))
     held_out = run["half"] == "held_out"
-    verdict = f"**G3b: {'PASS' if g3b['passed'] else 'FAIL'}**" + (
+    verdict = f"G3b: **{'PASS' if g3b['passed'] else 'FAIL'}**" + (
         "" if held_out else _TUNING_NOTE
     )
     thresholds = f"Thresholds are the owner's D12 values, fixed before any prompt was written: recall at least {RECALL_MIN} and every blocker entry; clean flag rate at most {CLEAN_FLAG_MAX}; run agreement at least {AGREEMENT_MIN}; at least {MIN_DEFECTIVE} defective plans; the clean minimum met by baselines of {MIN_CLEAN_BOOKS} books, reported per book. Synthetic recall is reported and is not a threshold."

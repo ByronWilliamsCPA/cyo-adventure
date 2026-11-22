@@ -1,0 +1,37 @@
+{
+  "plan_id": "SY-B-B3-1",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "da_bat_back",
+        "class": "ending_gift_mismatch",
+        "severity": "blocker",
+        "reason": "The gift states that turning back 'nearly cost her Biscuit, proving that turning back is not safe', which directly contradicts the truth statement that 'Turning back at any risk point always gets Maya and Biscuit out safely' and its own node's event.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_retreat",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The intent is to 'get out while the way is dry', but the target node 'la_retreat_pool' has Maya carry Biscuit back 'through rising water', doing the opposite of the intent.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 14865,
+  "output_tokens": 2028,
+  "reasoning_tokens": 1810,
+  "cost_usd": 0.054066,
+  "latency_ms": 18464,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"da_bat_back\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The gift states that turning back 'nearly cost her Biscuit, proving that turning back is not safe', which directly contradicts the truth statement that 'Turning back at any risk point always gets Maya and Biscuit out safely' and its own node's event.\"\n    },\n    {\n      \"entry\": \"c_retreat\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The intent is to 'get out while the way is dry', but the target node 'la_retreat_pool' has Maya carry Biscuit back 'through rising water', doing the opposite of the intent.\"\n    }\n  ]\n}"
+}

@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B4-1",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "has_battery",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff shows text for choice c_f_st_power_1 says she splices 'grandpa's headset', but the thread's plant is took_battery and the choice's intent is to splice in the spare battery.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28442,
+  "output_tokens": 6517,
+  "reasoning_tokens": 6410,
+  "cost_usd": 0.135088,
+  "latency_ms": 52002,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"has_battery\", \"class\": \"payoff_shows_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The payoff shows text for choice c_f_st_power_1 says she splices 'grandpa's headset', but the thread's plant is took_battery and the choice's intent is to splice in the spare battery.\"}]}"
+}

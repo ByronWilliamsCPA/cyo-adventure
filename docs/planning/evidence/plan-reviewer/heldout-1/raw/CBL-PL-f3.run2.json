@@ -1,0 +1,29 @@
+{
+  "plan_id": "CBL-PL-f3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "e_st_alder_refuse",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "The event describes Wren's promise that Marin is listening as a 'false promise', but the truth states that Marin has been listening all along, making the promise true.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 27641,
+  "output_tokens": 11181,
+  "reasoning_tokens": 11094,
+  "cost_usd": 0.189454,
+  "latency_ms": 88666,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"e_st_alder_refuse\", \"class\": \"truth_contradiction\", \"severity\": \"blocker\", \"reason\": \"The event describes Wren's promise that Marin is listening as a 'false promise', but the truth states that Marin has been listening all along, making the promise true.\"}]}"
+}

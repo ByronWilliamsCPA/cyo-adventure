@@ -1,0 +1,37 @@
+{
+  "plan_id": "SY-B-B4-1",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 1.0,
+    "findings": [
+      {
+        "entry": "has_battery",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff for choice c_f_st_power_1 shows Wren splicing grandpa's headset across the terminals, but the thread is has_battery and the planting choice c_n_shelf_1 gave her the spare battery.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_re_log",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The ending's event states that Wren logs twenty-three stations, but the gift claims a hundred strangers keep calling, which is a different number.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28442,
+  "output_tokens": 9199,
+  "reasoning_tokens": 8997,
+  "cost_usd": 0.167272,
+  "latency_ms": 73408,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 1.0,\n  \"findings\": [\n    {\n      \"entry\": \"has_battery\",\n      \"class\": \"payoff_shows_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The payoff for choice c_f_st_power_1 shows Wren splicing grandpa's headset across the terminals, but the thread is has_battery and the planting choice c_n_shelf_1 gave her the spare battery.\"\n    },\n    {\n      \"entry\": \"e_re_log\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The ending's event states that Wren logs twenty-three stations, but the gift claims a hundred strangers keep calling, which is a different number.\"\n    }\n  ]\n}"
+}

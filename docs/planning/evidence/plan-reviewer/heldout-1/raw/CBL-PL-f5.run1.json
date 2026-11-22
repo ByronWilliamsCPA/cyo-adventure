@@ -1,0 +1,29 @@
+{
+  "plan_id": "CBL-PL-f5",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "has_chalk",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff at c_records_note credits the guard seeing the chalked board, which corresponds to chalk_message, rather than the thread's plant fact kept_chalk.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24587,
+  "output_tokens": 4830,
+  "reasoning_tokens": 4717,
+  "cost_usd": 0.0703276,
+  "latency_ms": 36375,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"has_chalk\",\n      \"class\": \"payoff_shows_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The payoff at c_records_note credits the guard seeing the chalked board, which corresponds to chalk_message, rather than the thread's plant fact kept_chalk.\"\n    }\n  ]\n}"
+}

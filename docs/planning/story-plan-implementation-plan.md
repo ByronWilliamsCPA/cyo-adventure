@@ -736,6 +736,20 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   no plan the reader judges blocking that the reviewer passed. **Gate G3b.** If it does not after one prompt revision
   on the tuning half, the reviewer is not enabled: plan approval stays with the owner for every plan, WP-2.4 ships
   with the reviewer path disabled, and on-demand generation in the pilot runs with the owner reading every plan.
+- **Outcome, 2026-11-22: G3b failed; the reviewer is not enabled.** One prompt revision was made on the tuning half
+  (`evidence/plan-reviewer/tuning-1` to `tuning-2`, a calibration of the prompt after checking every finding on the two
+  clean tuning plans against the books), then the held-out half was run once with `google/gemini-3.1-pro-preview`
+  against the production writer `anthropic/claude-sonnet-5.5`
+  ([`heldout-1`](./evidence/plan-reviewer/heldout-1/report.md), 5.55 USD, prompt hash recorded in
+  `held-out-runs.json`). Against the pre-registered D12 thresholds: defect recall 15/17 = 0.88 (needs 0.90), of which 13
+  of 17 were caught by the checker alone and the reviewer's own recall is 2 of 4 (it passed the Signal post-fix plan,
+  which carries a blocker, and Mapmaker's post-fix plan, which carries should-fixes); a blocker entry was missed; the
+  clean false-flag rate is 6/10 = 0.60 (needs 0.20), flagged on 4 of 5 books; run agreement 18/22 = 0.82 (needs 0.90).
+  Checker-invisible seeds were found at their seeded entry 7 of 8 times. By the acceptance rule above, **plan approval
+  stays with the owner for every plan, WP-2.4 ships with the reviewer path disabled** (`story_plan_reviewer_enabled`
+  defaults to `False` and no validated pairing exists), and on-demand generation in the pilot runs with the owner
+  reading every plan. A further prompt revision, a different reviewer model, or changing what the reviewer is shown is an
+  owner decision: the held-out half has now been seen once and must not guide tuning.
 - **Voiding.** A change of writer model, reviewer model or prompt voids the validation until `validate_plan_reviewer.py`
   passes again for the new pairing; the worker refuses an unvalidated pairing.
 - **Depends on.** WP-1.4, WP-1.5, WP-3.1, D12; part (b) also WP-2.3. **Size.** M. **Spend.** Re-estimated 2026-11-22 from the real prompts (about 40,000 input tokens and

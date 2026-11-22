@@ -1,0 +1,37 @@
+{
+  "plan_id": "SY-B-B4-2",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "has_chalk",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff shows for choice c_dark_chalk says 'the borrowed lantern lights a path', but the choice's intent and cost explicitly state that she gives up the lantern to mark a chalk trail.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_map_follow",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The cost of choice c_map_follow says it 'gives up the photos', but its target node v_map_follow establishes photographed_paintings and its event says she photographs them.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24587,
+  "output_tokens": 4805,
+  "reasoning_tokens": 4636,
+  "cost_usd": 0.106834,
+  "latency_ms": 36321,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"has_chalk\", \"class\": \"payoff_shows_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The payoff shows for choice c_dark_chalk says 'the borrowed lantern lights a path', but the choice's intent and cost explicitly state that she gives up the lantern to mark a chalk trail.\"}, {\"entry\": \"c_map_follow\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The cost of choice c_map_follow says it 'gives up the photos', but its target node v_map_follow establishes photographed_paintings and its event says she photographs them.\"}]}"
+}

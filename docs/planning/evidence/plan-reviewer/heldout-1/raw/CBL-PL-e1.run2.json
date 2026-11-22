@@ -1,0 +1,29 @@
+{
+  "plan_id": "CBL-PL-e1",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "e_re_log",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The ending's event states Wren logs 'twenty-three stations', but its gift celebrates 'a hundred strangers', a mismatch in the specific number.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28445,
+  "output_tokens": 11064,
+  "reasoning_tokens": 10977,
+  "cost_usd": 0.189658,
+  "latency_ms": 80916,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"e_re_log\", \"class\": \"ending_gift_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The ending's event states Wren logs 'twenty-three stations', but its gift celebrates 'a hundred strangers', a mismatch in the specific number.\"}]}"
+}
