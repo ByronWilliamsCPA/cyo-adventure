@@ -13,7 +13,7 @@ budget 2, cap 2 USD, owner-approved. Driver: `scripts/smoke_plan_generation.py -
 | Outcome | `failed_checks`: 1 SP-3 ERROR, repair failed to load | `failed_checks`: 6 SP-2 ERRORs, plan loads |
 | Calls | 8 | 9 (pitch, spine, 4 scenes, 1 re-ask, 2 scene repairs) |
 | Cost, time | 0.59 USD, about 4 minutes | 0.70 USD, about 4 minutes |
-| Facts, empty passages | 79; 0 of 108 | 87; 0 of 132 |
+| Facts, empty passages | 79; 0 of 108 | 87; 0 of 108 |
 | Load errors at the end | 1 (undeclared fact in the repaired scene) | none |
 
 ## What it shows
