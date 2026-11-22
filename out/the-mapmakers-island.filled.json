@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_open",
-      "body": "The rowboat scraped onto the sand at first light, and Wren climbed out with a satchel, a flask, and one blank sheet of paper. The mate pointed at the island and made the rule plain. Fill that paper with a true chart before the ship returns at dusk, or the apprenticeship goes to somebody else. Then the oars dipped and the little boat pulled away, and Wren stood alone on a shore that no map had ever named.",
+      "body": "The rowboat scraped onto the sand at first light. Wren climbed out with a satchel, a flask, a sketchbook for field notes, and one blank sheet of paper. The mate pointed at the island and made the rule plain. Fill that paper with a true chart before the ship returns at dusk, or the apprenticeship at the Chart House goes to somebody else. Then the oars dipped and the little boat pulled away, and Wren stood alone on a shore that no map had ever named.",
       "is_ending": false,
       "choices": [
         {
@@ -740,7 +740,7 @@
     },
     {
       "id": "cv_upflow",
-      "body": "The way to the spring ran upstream, against the cold current, and Wren climbed it steadily, boots braced on the streambed. The higher the climb, the sweeter the water tasted. The roof lifted overhead. At last the passage opened into a bright chamber where a shaft of daylight fell straight down from a crack far above. It lit a still pool at the bottom. Wren stood in that shaft of light and understood. This was the underground face of the island's spring, where the fresh water first welled up out of the rock. The daylight climbed away above, toward the world of green and wind.",
+      "body": "The way on ran upstream, against the cold current, and Wren climbed it steadily, boots braced on the streambed. The higher the climb, the sweeter the water tasted. The roof lifted overhead. At last the passage opened into a bright chamber where a shaft of daylight fell straight down from a crack far above. It lit a still pool at the bottom. Wren stood in that shaft of light and understood. This was the underground face of the island's spring, where the fresh water first welled up out of the rock. The daylight climbed away above, toward the world of green and wind.",
       "is_ending": false,
       "choices": [
         {
@@ -797,7 +797,7 @@
     },
     {
       "id": "cv_deepglow",
-      "body": "Wren pushed toward the glow, and it grew from a thread to a crack to a bright seam of daylight. Squeezing up toward it, boots scrabbling, Wren tumbled out blinking into open air. A hidden shelf of beach lay ringed all around by high cliffs. It was a hidden cove, its calm water lapping quiet inside the reef. Wren stood in the sudden brightness, half laughing with relief. Back the way the passage had come, a side branch murmured with lapping water, deeper and darker. Ahead lay the cove itself, and a way up. Wren looked from the light to the dark and chose.",
+      "body": "Wren pushed toward a faint glow, and it grew from a thread to a crack to a bright seam of daylight. Squeezing up toward it, boots scrabbling, Wren tumbled out blinking into open air. A hidden shelf of beach lay ringed all around by high cliffs. It was a hidden cove, its calm water lapping quiet inside the reef. Wren stood in the sudden brightness, half laughing with relief. Back the way the passage had come, a side branch murmured with lapping water, deeper and darker. Ahead lay the cove itself, and a way up. Wren looked from the light to the dark and chose.",
       "is_ending": false,
       "choices": [
         {
@@ -1518,7 +1518,7 @@
     },
     {
       "id": "camp_journal",
-      "body": "Wren read the journal, and it told the whole of it. Alder mapping alone, season after season, loving the island more with every page. Naming the hidden cove. Fixing the spring and the reef, and dreaming of the far wild shore. And at the end, waiting on the ridge for a ship that came too late. The storm rising, the writing growing thin and hopeful, then stopping altogether. The last full line was a wish, plain and open. Whoever finds this, finish the chart, and give the island its name. Wren closed the cover gently, the wish settling like a weight and a gift at once. Carry Alder's wish on toward the summit, or close the journal, moved, and keep it safe.",
+      "body": "Wren read the journal, and it told the whole of it. Alder mapping alone, season after season, loving the island more with every page. Naming a hidden cove. Fixing a spring and the reef, and dreaming of the far wild shore. And at the end, waiting on the ridge for a ship that came too late. The storm rising, the writing growing thin and hopeful, then stopping altogether. The last full line was a wish, plain and open. Whoever finds this, finish the chart, and give the island its name. Wren closed the cover gently, the wish settling like a weight and a gift at once. Carry Alder's wish on toward the summit, or close the journal, moved, and keep it safe.",
       "is_ending": false,
       "choices": [
         {
@@ -1721,7 +1721,7 @@
     },
     {
       "id": "ch_gather",
-      "body": "Sheltered from the wind in the lee of the cairn, Wren spread Alder's chart and the whole day's sketches out together. The stones held them flat, and the island came whole. Coast and cave, ridge and reef, spring and shore, every piece fitting against Alder's careful half like two halves of one puzzle. It was all there. Everything seen, everything fixed, everything understood. The work of the mapmaker who came first and the mapmaker who finished it, side by side, making a single true thing. Only the drawing itself remained now, the last and best hour of the day. Wren took up a pen and made ready to draw it.",
+      "body": "Sheltered from the wind in the lee of the cairn, Wren spread Alder's chart and the whole day's sketches out together. The stones held them flat, and whatever the sketches lacked lay in plain sight below the summit, there to be read straight off the land. Coast and cave, ridge and reef, spring and shore, every piece could be set against Alder's careful half like two halves of one puzzle. It was all there. Everything seen, everything within reach, everything understood. The work of the mapmaker who came first and the mapmaker who would finish it, side by side, making a single true thing. Only the drawing itself remained now, the last and best hour of the day. Wren took up a pen and made ready to draw it.",
       "is_ending": false,
       "choices": [
         {
@@ -1784,7 +1784,7 @@
     },
     {
       "id": "e_ch_dusk",
-      "body": "Wren could not stop adding to the soft pencil map. One more cove, drawn in. One more current, traced. One more tiny cave marked, one more reef, the hand moving and moving. The sun sank to a red rim on the sea, and the ship's horn sounded low across the water, once, twice. Wren ran for the beach at last with a wonderful, unfinished thing rolled tight, too detailed ever to call done. The mate took one look and sighed. A map you never finish, the mate said, is no map at all. Wren climbed aboard with the loveliest half-drawn island in the world, and the lesson that done beats perfect, every time.",
+      "body": "Wren could not stop adding to the soft pencil map. One more cove, shaded finer. One more current, traced. One more tiny cave marked, one more reef, the hand moving and moving. The sun sank to a red rim on the sea, and the ship's horn sounded low across the water, once, twice. Wren ran for the beach at last with a wonderful thing rolled tight and still unsigned, too detailed ever to call done. The mate took one look and sighed. A map you never finish, the mate said, is no map at all. Wren climbed aboard with the loveliest never-finished island in the world, and the lesson that done beats perfect, every time.",
       "is_ending": true,
       "ending": {
         "id": "e_never_finished",
@@ -2903,7 +2903,7 @@
     },
     {
       "id": "e_tw_nofuel",
-      "body": "Wren poked about the cold brazier and the rocks around it, hunting for the fuel store. There was nothing but rust and old ash and a great deal of wind. There was no way to light the thing and precious little worth drawing, and the search had swallowed a good hour for a plain dead end. A little cross with the wasted time, Wren straightened up and brushed the ash from both hands. Then Wren turned back toward the ridge. The dead beacon was barely worth a dot on the paper. Not every corner rewards the looking, and a mapmaker learns, sometimes hard, when to cut a loss and move on.",
+      "body": "Wren let the fuel store go and gave the dead beacon one last look instead. There was nothing in the brazier but rust and old ash, and nothing around it but a great deal of wind. There was no way to light the thing and precious little worth drawing, and the long trek out along the headland had swallowed a good hour for a plain dead end. A little cross with the wasted time, Wren straightened up and brushed the ash from both hands. Then Wren turned back toward the ridge. The dead beacon was barely worth a dot on the paper. Not every corner rewards the looking, and a mapmaker learns, sometimes hard, when to cut a loss and move on.",
       "is_ending": true,
       "ending": {
         "id": "e_dead_beacon",
@@ -3189,7 +3189,7 @@
     },
     {
       "id": "cv_glowworm",
-      "body": "Wren sat down beneath the glowing ceiling and drew the rift by its own blue light. The worms strung overhead, the still pool doubling them below, a page that looked like a piece of the night sky brought underground. It was quiet, patient work, and utterly lovely. When it was done, the glow showed an easy way on as well. The ground sloped off gently toward a sound Wren had been half hearing all along, the trickle of the spring somewhere ahead. Wren could follow that easy way toward the spring and the higher country, or stay a while longer in the glowing dark.",
+      "body": "Wren sat down beneath the glowing ceiling and drew the rift by its own blue light. The worms strung overhead, the still pool doubling them below, a page that looked like a piece of the night sky brought underground. It was quiet, patient work, and utterly lovely. When it was done, the glow showed an easy way on as well. The ground sloped off gently toward a sound Wren had been half hearing all along, the trickle of a spring somewhere ahead. Wren could follow that easy way toward the spring and the higher country, or stay a while longer in the glowing dark.",
       "is_ending": false,
       "choices": [
         {

@@ -74,7 +74,10 @@
       "text": "Wren must fill one blank sheet with a true chart of the island before the ship returns at dusk, or the apprenticeship goes to someone else."
     },
     "wren_alone": {
-      "text": "Wren is alone on the island with a satchel, a flask and one blank sheet; the rowboat has gone."
+      "text": "Wren is alone on the island with a satchel, a flask, a sketchbook for field notes and one blank sheet; the rowboat has gone."
+    },
+    "wren_sketchbook": {
+      "text": "Wren carries a sketchbook for field notes and copies, apart from the one blank sheet that must hold the chart."
     },
     "unnamed_island": {
       "text": "No map has ever named the island."
@@ -83,7 +86,7 @@
       "text": "Five ways lead inland: the mangrove coast, the cloud-forest ridge, the sink-hole caverns, the survey tower on the headland, and the tidal flats."
     },
     "chart_house": {
-      "text": "Wren trains under the Chart House, whose rules and teaching Wren knows."
+      "text": "Wren is up for an apprenticeship at the Chart House, whose rules and teaching Wren knows."
     },
     "alder_named": {
       "text": "A mapmaker named Alder came to the island before Wren and left marks, notes and tools for whoever followed."
@@ -432,7 +435,7 @@
       "text": "A beacon needs a fuel store somewhere near."
     },
     "no_fuel_found": {
-      "text": "Wren found no fuel and lost an hour at the cold beacon."
+      "text": "Wren let the fuel store go and turned back from the cold beacon; the trek out along the headland had cost an hour."
     },
     "alder_last_note": {
       "text": "In the fuel store Alder chalked: \"Gone to finish the ridge chart, back by the storm.\""
@@ -603,7 +606,7 @@
       "text": "Alder's journal ends with a wish: whoever finds this, finish the chart and give the island its name."
     },
     "alder_named_cove": {
-      "text": "Alder named the hidden cove in the journal."
+      "text": "Alder named a hidden cove in the journal."
     },
     "journal_kept": {
       "text": "Wren read the journal all afternoon and rowed out with a blank chart."
@@ -636,7 +639,7 @@
       "text": "Wren drew the never-mapped windward shore through the glass."
     },
     "chart_gathered": {
-      "text": "Wren laid Alder's chart beside the day's sketches; the whole island fits."
+      "text": "Wren laid Alder's chart beside the day's sketches, with the island in plain view below the summit to supply what the sketches lacked."
     },
     "chart_inked": {
       "text": "Wren inked the finished chart in bold lines with Alder's pen."
@@ -645,7 +648,7 @@
       "text": "Wren pencilled every small detail into the chart."
     },
     "chart_unfinished_dusk": {
-      "text": "Wren kept adding detail until the ship's horn; the chart was never done."
+      "text": "Wren kept adding detail until the ship's horn; the chart was never signed or called done."
     },
     "chart_doubled": {
       "text": "Wren drew two copies of the finished chart."
@@ -699,12 +702,14 @@
   "nodes": {
     "n_open": {
       "function": "open",
-      "event": "Wren is set ashore alone at first light to chart the island before dusk or lose the apprenticeship.",
+      "event": "Wren is set ashore alone at first light, with a sketchbook and one blank sheet, to chart the island before dusk or lose the Chart House apprenticeship.",
       "requires": [],
       "establishes": [
         "wren_test",
         "wren_alone",
-        "unnamed_island"
+        "unnamed_island",
+        "wren_sketchbook",
+        "chart_house"
       ]
     },
     "n_start": {
@@ -1021,7 +1026,8 @@
       "event": "The ways rejoin among clustered cairns below the camp cliff.",
       "requires": [
         "cairns_to_camp",
-        "camp_exists"
+        "camp_exists",
+        "wren_sketchbook"
       ],
       "establishes": []
     },
@@ -1402,7 +1408,8 @@
       "event": "Wren is cut off and wades back chest-deep.",
       "requires": [
         "sandbar_wreck",
-        "flats_rule"
+        "flats_rule",
+        "wren_sketchbook"
       ],
       "establishes": [
         "stranded_on_flats"
@@ -1651,7 +1658,7 @@
     },
     "camp_journal": {
       "function": "decision",
-      "event": "The journal tells Alder's island life (the far shore only dreamed of) and asks the finder to finish and name the island.",
+      "event": "The journal tells Alder's island life (a hidden cove named, a spring and the reef fixed, the far shore only dreamed of) and asks the finder to finish and name the island.",
       "requires": [
         "alder_trunk_tools"
       ],
@@ -1794,9 +1801,10 @@
     },
     "ch_gather": {
       "function": "continue",
-      "event": "Alder's chart and the day's sketches fit as one island.",
+      "event": "Alder's chart, the day's sketches and the island in plain view below the summit together give the whole island to draw.",
       "requires": [
-        "wren_carries_half_chart"
+        "wren_carries_half_chart",
+        "summit_view"
       ],
       "establishes": [
         "chart_gathered"
@@ -1832,7 +1840,7 @@
     },
     "e_ch_dusk": {
       "function": "ending",
-      "event": "Wren keeps adding detail until the ship's horn; the chart is never done.",
+      "event": "Wren keeps adding detail until the ship's horn; the chart is never signed or called done.",
       "requires": [
         "chart_pencilled",
         "wren_test"
@@ -2022,7 +2030,8 @@
       "function": "ending",
       "event": "Wren trusts the dugout too far and it sinks.",
       "requires": [
-        "dugout"
+        "dugout",
+        "wren_sketchbook"
       ],
       "establishes": [
         "canoe_sank"
@@ -2134,7 +2143,8 @@
       "function": "ending",
       "event": "Wren scrambles too fast and slides into the pool.",
       "requires": [
-        "waterfall_ways"
+        "waterfall_ways",
+        "wren_sketchbook"
       ],
       "establishes": [
         "slipped_falls"
@@ -2241,7 +2251,8 @@
       "function": "ending",
       "event": "Wren studies Alder's charts and leaves this island blank.",
       "requires": [
-        "alder_wall_charts"
+        "alder_wall_charts",
+        "wren_sketchbook"
       ],
       "establishes": [
         "wall_charts_studied"
@@ -2439,7 +2450,8 @@
       "function": "ending",
       "event": "Wren watches the rookery too long.",
       "requires": [
-        "chick_saved"
+        "chick_saved",
+        "wren_sketchbook"
       ],
       "establishes": [
         "rookery_drawn"
@@ -2488,7 +2500,8 @@
       "function": "ending",
       "event": "Wren lingers in the canopy and draws one view.",
       "requires": [
-        "alder_treetop"
+        "alder_treetop",
+        "wren_sketchbook"
       ],
       "establishes": [
         "canopy_lingered"
@@ -2535,7 +2548,8 @@
       "function": "ending",
       "event": "Wren poles in haste; the raft tips.",
       "requires": [
-        "black_lake_raft"
+        "black_lake_raft",
+        "wren_sketchbook"
       ],
       "establishes": [
         "raft_capsized"
@@ -2605,7 +2619,7 @@
     },
     "e_tw_nofuel": {
       "function": "ending",
-      "event": "No fuel found; an hour lost.",
+      "event": "Wren gives up on the dead beacon; the trek out has cost an hour for nothing.",
       "requires": [
         "beacon_fuel"
       ],
@@ -4021,7 +4035,7 @@
     },
     "c_tw_brazier_2": {
       "intent": "give up on the dead beacon and turn back",
-      "cost": "gives up"
+      "cost": "gives up; the trek out has already cost an hour"
     },
     "c_tw_fuelstore_1": {
       "intent": "copy Alder's last message and cross to the ridge",
@@ -4545,7 +4559,7 @@
     "approver": null,
     "authoring_minutes": 8,
     "book_file": "out/the-mapmakers-island.filled.json",
-    "book_sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+    "book_sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
     "notes": [
       "Migrated from the 0.0 dialect. Superseded 0.0 binding: book sha256 2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1; shape hash sha256:398921e315b5840d3424dd10dcff02560a0f2dbe736384bf148fb9d0f0bde7cb (sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order); shape id was null. Binding is now provenance.book_sha256.",
       "threads_note: The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
@@ -4570,7 +4584,8 @@
       "continuity_notes: PROSE BUG (not continuity): e_cove_tin ends 'and could not bring itself to mind', a pronoun slip for Wren, who otherwise never takes a pronoun.",
       "continuity_notes: Authoring note: intents for 39 of the 40 single-continue choices were derived mechanically from their labels; every multi-choice intent is the label paraphrased and its cost hand-written.",
       "wp04_second_read: 2026-11-21: WP-0.4 second reader (control book, continuity only) fixed every continuity note above except the items marked SOFT time, UNPAID SETUP and PROSE BUG, which are recorded in docs/planning/evidence/story-plan-retro/findings-the-mapmakers-island.md and left as written. Facts, requires and establishes updated to the fixed book; continuity_notes are kept as the pre-fix record.",
-      "sp9_condensed 2026-11-21: pitch.ending_kind; pre-condensation text at commit 315a79d"
+      "sp9_condensed 2026-11-21: pitch.ending_kind; pre-condensation text at commit 315a79d",
+      "residual fixes 2026-11-22: MI-1, MI-2, MI-5, MI-7, MI-8, MI-9, MI-10, MI-11 (docs/planning/evidence/continuity-reader/residuals-2026-11-21.md; record in fixes-2026-11-22-the-mapmakers-island.md). Control book: continuity only. Facts wren_sketchbook added; chart_house now also established at n_open; wren_alone, alder_named_cove, no_fuel_found, chart_gathered and chart_unfinished_dusk reworded; ch_gather requires summit_view; the eight sketchbook passages require wren_sketchbook. MI-3, MI-4 and MI-6 judged not defects and left."
     ]
   }
 }
