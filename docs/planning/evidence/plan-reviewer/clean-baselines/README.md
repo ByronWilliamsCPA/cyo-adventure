@@ -107,3 +107,12 @@ uv run python scripts/build_validation_set.py --check     # the set that says wh
 
 Exit codes: 0 ok; 1 drift, or a baseline that is not checker-clean; 2 a pinned git revision missing from the checkout.
 The sources are pinned by git revision, so a shallow clone cannot rebuild; the unit tests skip there.
+
+## Plan-only residuals (added 2026-11-22)
+
+Checking the plan reviewer's first live findings against the fixed books showed that two tuning plans still carry
+pre-fix wording that the book no longer has. They are recorded as `known_residuals` with ids starting `PO-` (plan-only)
+and are not repaired, so the plans stay as written: the orchard `c_b2t_m_2` cost and `e_b2tb` gift (`PO-O2`, `PO-O3`)
+and the lighthouse `e_set_stair` event (`PO-L4`). A reviewer flag at these entries is a true positive. The table is
+`PLAN_ONLY_RESIDUALS` in `scripts/build_clean_baselines.py`. Evidence:
+[tuning-1](../tuning-1/report.md); lesson `AL-900`.

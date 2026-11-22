@@ -174,7 +174,17 @@ def test_manifest_item_fields(doc: JsonObj, items: list[JsonObj]) -> None:
         assert item["kind"] == "plan"
         assert item["half"] == source["half"]
         assert item["book"] == source["book"]
-        assert item["known_residuals"] == source["known_residuals"]
+        residuals = cast("list[JsonObj]", item["known_residuals"])
+        inherited = cast("list[JsonObj]", source["known_residuals"])
+        assert residuals[: len(inherited)] == inherited
+        extra = residuals[len(inherited) :]
+        # Plan-only residuals (tuning-1 verification) are appended after the
+        # inherited ones, only on the two tuning plans they were found in.
+        assert all(str(r["id"]).startswith("PO-") for r in extra)
+        assert bool(extra) == (
+            pid
+            in {"PL-the-vanishing-orchard-postfix", "PL-the-hollow-lighthouse-postfix"}
+        )
         assert item["expected_verdict"] == "pass"
         assert item["scored_for"] == "D12"
         assert item["label_strength"] == "strong"

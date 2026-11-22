@@ -572,7 +572,19 @@
       "half": "tuning",
       "id": "CBL-PL-the-hollow-lighthouse-postfix",
       "kind": "plan",
-      "known_residuals": [],
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "other",
+          "id": "PO-L4",
+          "nodes": [
+            "e_set_stair"
+          ],
+          "note": "plan-only defect: the fixed book is correct and the hand-written plan still carries the pre-fix wording; found by checking the reviewer's tuning-1 findings against the book (docs/planning/evidence/plan-reviewer/tuning-1/); a reviewer flag here is a true positive; the plan's event quotes the eighteenth step, the book says the nineteenth",
+          "severity": "minor",
+          "source": "docs/planning/evidence/plan-reviewer/tuning-1/report.md"
+        }
+      ],
       "label_strength": "strong",
       "needed_repair": false,
       "plan": {
@@ -611,6 +623,26 @@
           ],
           "note": "'Pull back from it.' leads to an ending where Rowan held on too long; found by the plan-review pilot, missed by the WP-0.4 read, verified against the book. Not fixed. A reader flag here is a true positive, not a false flag.",
           "source": "docs/planning/evidence/plan-review-pilot-2026-11-21/README.md"
+        },
+        {
+          "choice": "c_b2t_m_2",
+          "defect_class": "label_outcome_mismatch",
+          "id": "PO-O2",
+          "nodes": [],
+          "note": "plan-only defect: the fixed book is correct and the hand-written plan still carries the pre-fix wording; found by checking the reviewer's tuning-1 findings against the book (docs/planning/evidence/plan-reviewer/tuning-1/); a reviewer flag here is a true positive",
+          "severity": "should-fix",
+          "source": "docs/planning/evidence/plan-reviewer/tuning-1/report.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "ending_gift_mismatch",
+          "id": "PO-O3",
+          "nodes": [
+            "e_b2tb"
+          ],
+          "note": "plan-only defect: the fixed book is correct and the hand-written plan still carries the pre-fix wording; found by checking the reviewer's tuning-1 findings against the book (docs/planning/evidence/plan-reviewer/tuning-1/); a reviewer flag here is a true positive",
+          "severity": "minor",
+          "source": "docs/planning/evidence/plan-reviewer/tuning-1/report.md"
         }
       ],
       "label_strength": "strong",

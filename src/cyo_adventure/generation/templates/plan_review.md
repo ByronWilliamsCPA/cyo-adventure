@@ -40,12 +40,17 @@ Only the classes in items 1 to 5 carry authority. The advisory classes have no m
 
 ## Calibration
 
-This section is where tuning edits go; keep each rule short and keep the sections above stable.
+This section is where tuning edits go; keep each rule short and keep the sections above stable. Where a rule here is stricter than a section above, this section wins.
 
-- Report at most 20 findings, most serious first, one entry per finding. Prefer the 3 to 6 that matter.
+- Report at most 4 findings, most serious first, one per entry; zero findings is a valid and common answer. Leave out a doubtful finding, or mark it `minor`. A plan with only `minor` findings passes.
 - A finding must name a single plan entry id in `entry` (a node, choice, fact, thread or ending id). Put the other entries involved in the `reason` by id.
 - Do not report a problem the checker's findings already list.
 - A reason is one or two sentences, names entries by id, and never quotes the plan or the story. If you want to quote, say which entry instead.
+- Severity: `blocker` is only a contradiction a reader would meet, two entries whose texts cannot both be true. Wording, emphasis and craft are never `blocker`. Reject only on a `blocker`, or on a `should-fix` that names two entry ids whose texts cannot both be true.
+- Read every statement in its most charitable natural reading first, and report a contradiction only when no natural reading is compatible. Do not add "only", "never" or "all" to a statement, and do not widen it: a scoped statement ("of it", "each renewal", a character's own belief) is not a contradiction of a wider one. A fact that restates a clause of `truth.statement` is consistent with it by construction.
+- A choice's `intent` and `cost` mean only the words written. Never infer a goal that is not stated.
+- Label and outcome: report a mismatch only when the target does the opposite of the intent, or when a cost names a specific thing (a person, an object, a number) that the target's `event` or the facts rule out. An outcome that merely implies a cost the label does not spell out is not a mismatch.
+- Gifts: an ending's `event` is a one-line summary of a passage you cannot see. Report a gift only when it contradicts the ending's valence, its kind, its own `event` or the truth, or names a different object or number than that event does. A gift whose lesson the passage can reasonably carry is fine.
 
 ## Output
 

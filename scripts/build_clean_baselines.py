@@ -195,6 +195,52 @@ def is_clean_sample(item: JsonObj) -> bool:
     )
 
 
+# Plan-only defects found by checking the plan reviewer's first live findings against
+# the fixed books (tuning-1, 2026-11-22): the book is right, the hand-written plan
+# still carries the pre-fix wording. They are recorded, not repaired, so the plans
+# stay as written and a reviewer flag at these entries is a true positive.
+_PLAN_ONLY_NOTE: Final = (
+    "plan-only defect: the fixed book is correct and the hand-written plan still "
+    "carries the pre-fix wording; found by checking the reviewer's tuning-1 findings "
+    "against the book (docs/planning/evidence/plan-reviewer/tuning-1/); a reviewer "
+    "flag here is a true positive"
+)
+PLAN_ONLY_RESIDUALS: Final[dict[str, list[JsonObj]]] = {
+    "PL-the-vanishing-orchard-postfix": [
+        {
+            "id": "PO-O2",
+            "nodes": [],
+            "choice": "c_b2t_m_2",
+            "defect_class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "source": "docs/planning/evidence/plan-reviewer/tuning-1/report.md",
+            "note": _PLAN_ONLY_NOTE,
+        },
+        {
+            "id": "PO-O3",
+            "nodes": ["e_b2tb"],
+            "choice": None,
+            "defect_class": "ending_gift_mismatch",
+            "severity": "minor",
+            "source": "docs/planning/evidence/plan-reviewer/tuning-1/report.md",
+            "note": _PLAN_ONLY_NOTE,
+        },
+    ],
+    "PL-the-hollow-lighthouse-postfix": [
+        {
+            "id": "PO-L4",
+            "nodes": ["e_set_stair"],
+            "choice": None,
+            "defect_class": "other",
+            "severity": "minor",
+            "source": "docs/planning/evidence/plan-reviewer/tuning-1/report.md",
+            "note": _PLAN_ONLY_NOTE
+            + "; the plan's event quotes the eighteenth step, the book says the nineteenth",
+        },
+    ],
+}
+
+
 def clean_plan_ids(items: dict[str, JsonObj]) -> list[str]:
     """Return the ids that get a baseline, in validation-set order.
 
@@ -259,7 +305,10 @@ def _build_item(plan_id: str, items: dict[str, JsonObj]) -> tuple[JsonObj, str]:
         "repairs": repairs,
         "repair_count": len(repairs),
         "checker_clean": True,
-        "known_residuals": copy.deepcopy(source.item["known_residuals"]),
+        "known_residuals": [
+            *copy.deepcopy(cast("list[JsonObj]", source.item["known_residuals"])),
+            *copy.deepcopy(PLAN_ONLY_RESIDUALS.get(plan_id, [])),
+        ],
         "expected_verdict": "pass",
         "scored_for": SCORED_FOR,
         "label_strength": "strong",
