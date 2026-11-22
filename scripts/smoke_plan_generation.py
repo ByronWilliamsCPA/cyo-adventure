@@ -129,6 +129,7 @@ MAX_REPAIRS: Final = 2  # generation/worker.py::_PLAN_MAX_REPAIRS
 TIMEOUT_SECONDS: Final = 900
 PANEL: Final = Path("docs/planning/evidence/short-request-panel/panel.json")
 REASONING_BUDGET: list[int | None] = [None]  # set from --reasoning-budget
+CONTINUE_ON_LENGTH: list[bool] = [False]  # set from --continue-on-length (AL-871)
 OUT: Final = Path("docs/planning/evidence/plan-generation-smoke-2026-11-21")
 MEDIUM_SHAPE: Final = "the-lantern-keepers-list"
 MEDIUM_REQUEST: Final = "G03"
@@ -271,7 +272,7 @@ class SpendGuard:
         )
         self.calls.append(record)
         self.texts.append(result.text)
-        if result.finish_reason == "length":
+        if result.finish_reason == "length" and not CONTINUE_ON_LENGTH[0]:
             msg = (
                 f"call {index} stopped at max_tokens ({usage.reasoning_tokens} "
                 "reasoning tokens)"
@@ -542,6 +543,7 @@ def dry_run(specs: list[RunSpec]) -> int:
 async def main_async(args: argparse.Namespace) -> int:
     specs = run_specs()
     REASONING_BUDGET[0] = args.reasoning_budget
+    CONTINUE_ON_LENGTH[0] = args.continue_on_length
     if args.only:
         specs = [s for s in specs if s.n in set(args.only)]
     if args.dry_run:
@@ -581,6 +583,11 @@ async def main_async(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--continue-on-length",
+        action="store_true",
+        help="record a cut-off answer and return it so the generator's truncation handling runs (AL-871)",
+    )
     parser.add_argument(
         "--reasoning-budget",
         type=int,
