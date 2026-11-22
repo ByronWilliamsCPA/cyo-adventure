@@ -694,6 +694,9 @@ async def _one_run(  # noqa: PLR0913 - one run's inputs, all independent
                 plan=plan_id,
                 run=run,
                 error=type(exc).__name__,
+                # The provider's own message (status and category, never a
+                # credential), so a 402 credit failure is not logged as a bare class.
+                detail=str(exc)[:200],
             )
             return ReviewCall(
                 run=run,
