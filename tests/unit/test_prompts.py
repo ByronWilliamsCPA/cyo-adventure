@@ -874,6 +874,14 @@ _CODE_DERIVED_TOKENS = frozenset(
         # Every dynamic plan payload goes through `_fill_plan_template`'s
         # neutralized values instead.
         "{plan_instructions}",
+        # AL-855: the chunked plan's part-repair template inlines the spine or
+        # scene template's own static regions (its system block, itself the
+        # plan.md system block plus fixed text, and its user block BEFORE any
+        # substitution, still holding bare placeholders). Neither carries a
+        # payload; every dynamic value is neutralized by `_fill_plan_template`
+        # afterwards, in the single substitution pass.
+        "{part_instructions}",
+        "{part_user}",
         # No failure-feedback token is exempt any more. `{violations_block}`,
         # `{fidelity_violations}`, `{validator_report}` and `{failing_node_ids}`
         # were all listed here and none qualified; see

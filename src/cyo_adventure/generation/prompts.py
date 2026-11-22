@@ -30,7 +30,7 @@ import json
 import re
 from dataclasses import dataclass
 from importlib.resources import files
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
 from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.generation.merge_notes import render_merge_notes
@@ -60,8 +60,12 @@ __all__ = [
     "build_fill_subset_prompt",
     "build_interpret_bind_prompt",
     "build_pitch_prompt",
+    "build_plan_chunk_prompt",
+    "build_plan_chunk_repair_prompt",
     "build_plan_prompt",
     "build_plan_repair_prompt",
+    "build_plan_spine_prompt",
+    "build_plan_spine_repair_prompt",
     "build_prose_prompt",
     "build_reading_level_repair_prompt",
     "build_repair_prompt",
@@ -1383,12 +1387,13 @@ def build_repair_prompt(
 # Story Plan prompts (ADR-033, WP-2.3): pitch, plan, plan repair
 # ---------------------------------------------------------------------------
 
-# The placeholders the three Story Plan templates own. Substitution is one
+# The placeholders the Story Plan templates own (pitch, plan, plan repair, and
+# the chunked spine, scene and part-repair templates). Substitution is one
 # regex pass over the template (``_fill_plan_template``), so a payload that
 # itself spells ``{shape}`` or ``{request}`` is never rescanned and cannot pull
 # another payload into its own position.
 _PLAN_PLACEHOLDER_RE = re.compile(
-    r"\{(cell|shape|pitch|request|findings|previous_plan)\}"
+    r"\{(cell|shape|pitch|request|findings|previous_plan|scenes|note|spine|entry|chunk|scene)\}"
 )
 
 
@@ -1550,5 +1555,293 @@ def build_plan_repair_prompt(  # noqa: PLR0913 - two keyword-only repair inputs
             "shape": _neutralize_fence(shape_json),
             "pitch": _pitch_block(pitch),
             "request": _request_block(request_brief),
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# Chunked Story Plan prompts (AL-844, AL-855): spine, scene, part repair
+# ---------------------------------------------------------------------------
+
+# A note added to the spine prompt when the first spine answer was cut off at
+# the output cap: the retry must change the request (AL-855), so it asks for a
+# ledger that holds only what the book-level sections need.
+_SPINE_COMPACT_NOTE: Final = """
+## Keep the spine short
+
+Your previous answer for this spine was cut off at the output limit. Write the
+ledger with only the facts the truth, the cast's `knows`, the threads' plants
+and the `contradicts` marks need, plus at most two facts per scene; the scene
+writers add the rest as new facts. Keep every summary, gift and payoff line
+short.
+"""
+
+
+def _plan_part_template(name: str) -> str:
+    """Return a chunked-plan template with the plan instructions inlined.
+
+    The spine and scene templates open with ``{plan_instructions}``: the plan
+    prompt's whole system block (the record, the rules and the three ADR-033
+    conventions), so every part reads them exactly as a one-call plan does.
+
+    Args:
+        name: ``plan_spine.md`` or ``plan_chunk.md``.
+
+    Returns:
+        str: The template text, ``{plan_instructions}`` substituted.
+    """
+    instructions = _split_stage_prompt(_load_template("plan.md")).system
+    return _load_template(name).replace("{plan_instructions}", instructions)
+
+
+def _plan_part_repair_template(name: str) -> str:
+    """Return the repair template for a chunked-plan part.
+
+    Its system block is the part's system block plus the repair instruction;
+    its user block is the findings, the previous answer and then the part's
+    own user block, so the repair carries the same context as the first call.
+
+    Args:
+        name: ``plan_spine.md`` or ``plan_chunk.md``.
+
+    Returns:
+        str: The template text with one ``<!-- @user -->`` marker.
+    """
+    part = _split_stage_prompt(_plan_part_template(name))
+    return (
+        _load_template("plan_part_repair.md")
+        .replace("{part_user}", part.user)
+        .replace("{part_instructions}", part.system)
+    )
+
+
+def _spine_values(  # noqa: PLR0913 - every spine payload, keyword-only
+    *,
+    shape_json: str,
+    scenes_json: str,
+    pitch: Mapping[str, str],
+    request_brief: Mapping[str, object],
+    compact: bool,
+) -> dict[str, str]:
+    """Return the neutralized spine payloads.
+
+    Args:
+        shape_json: The rendered shape view, JSON.
+        scenes_json: Scene id to its node aliases, JSON (code-derived).
+        pitch: The chosen pitch's five fields.
+        request_brief: The request brief fields (UNTRUSTED).
+        compact: Whether to add the short-spine note (a retry after a cut-off).
+
+    Returns:
+        dict[str, str]: Placeholder name to value.
+    """
+    return {
+        "scenes": _neutralize_fence(scenes_json),
+        "note": _SPINE_COMPACT_NOTE if compact else "",
+        "shape": _neutralize_fence(shape_json),
+        "pitch": _pitch_block(pitch),
+        "request": _request_block(request_brief),
+    }
+
+
+def _chunk_values(  # noqa: PLR0913 - every scene payload, keyword-only
+    *,
+    scene_id: str,
+    chunk_json: str,
+    spine_json: str,
+    entry_json: str,
+    pitch: Mapping[str, str],
+    request_brief: Mapping[str, object],
+) -> dict[str, str]:
+    """Return the neutralized scene payloads.
+
+    Args:
+        scene_id: The scene id (code-derived).
+        chunk_json: The scene's alias-only subgraph, JSON.
+        spine_json: The spine (model text: cast, truth, ledger, threads,
+            scene summaries), JSON.
+        entry_json: Boundary node alias to the facts guaranteed on entry, JSON.
+        pitch: The chosen pitch's five fields.
+        request_brief: The request brief fields (UNTRUSTED).
+
+    Returns:
+        dict[str, str]: Placeholder name to value.
+    """
+    # #CRITICAL: security: the spine and the entry facts are model-derived
+    # (fact ids and text, summaries, gifts), so both sit inside an
+    # UNTRUSTED_USER_INPUT fence and are defanged like the request itself.
+    # #VERIFY: test_storyplan_chunked.py::
+    # test_chunk_prompts_fence_the_spine_and_request plants both delimiters.
+    return {
+        "scene": _neutralize_fence(scene_id),
+        "chunk": _neutralize_fence(chunk_json),
+        "spine": _neutralize_fence(spine_json),
+        "entry": _neutralize_fence(entry_json),
+        "pitch": _pitch_block(pitch),
+        "request": _request_block(request_brief),
+    }
+
+
+def _repair_values(previous: str | None, findings: Sequence[str]) -> dict[str, str]:
+    """Return the neutralized repair payloads for a chunked-plan part.
+
+    Args:
+        previous: The part's previous answer in alias form, JSON, or None.
+        findings: One line per finding routed to this part, already aliased.
+
+    Returns:
+        dict[str, str]: Placeholder name to value.
+    """
+    return {
+        "findings": _neutralize_fence(
+            "\n".join(f"- {line}" for line in findings) or "- (none recorded)"
+        ),
+        "previous_plan": _neutralize_fence(
+            previous or "(your previous answer could not be read as JSON)"
+        ),
+    }
+
+
+def build_plan_spine_prompt(  # noqa: PLR0913 - spine payloads plus the retry flag
+    shape_json: str,
+    scenes_json: str,
+    pitch: Mapping[str, str],
+    request_brief: Mapping[str, object],
+    *,
+    compact: bool = False,
+) -> StagePrompt:
+    """Build the chunked plan's spine prompt (cast, truth, ledger, threads, gifts).
+
+    Args:
+        shape_json: The rendered shape view, JSON.
+        scenes_json: Scene id to its node aliases, JSON.
+        pitch: The chosen pitch's five fields (model text, fenced).
+        request_brief: The request brief fields (UNTRUSTED, fenced).
+        compact: True on the one retry after a spine answer was cut off.
+
+    Returns:
+        The spine :class:`StagePrompt`.
+    """
+    return _fill_plan_template(
+        _plan_part_template("plan_spine.md"),
+        _spine_values(
+            shape_json=shape_json,
+            scenes_json=scenes_json,
+            pitch=pitch,
+            request_brief=request_brief,
+            compact=compact,
+        ),
+    )
+
+
+def build_plan_spine_repair_prompt(  # noqa: PLR0913 - spine payloads plus repair inputs
+    shape_json: str,
+    scenes_json: str,
+    pitch: Mapping[str, str],
+    request_brief: Mapping[str, object],
+    *,
+    previous: str | None,
+    findings: Sequence[str],
+) -> StagePrompt:
+    """Build the spine's repair prompt (spine findings back to the spine writer).
+
+    Args:
+        shape_json: The rendered shape view, JSON.
+        scenes_json: Scene id to its node aliases, JSON.
+        pitch: The chosen pitch's five fields.
+        request_brief: The request brief fields (UNTRUSTED, fenced).
+        previous: The previous spine in alias form, JSON, or None.
+        findings: The findings routed to the spine, aliased.
+
+    Returns:
+        The spine repair :class:`StagePrompt`.
+    """
+    return _fill_plan_template(
+        _plan_part_repair_template("plan_spine.md"),
+        {
+            **_spine_values(
+                shape_json=shape_json,
+                scenes_json=scenes_json,
+                pitch=pitch,
+                request_brief=request_brief,
+                compact=False,
+            ),
+            **_repair_values(previous, findings),
+        },
+    )
+
+
+def build_plan_chunk_prompt(  # noqa: PLR0913, PLR0917 - every scene payload
+    scene_id: str,
+    chunk_json: str,
+    spine_json: str,
+    entry_json: str,
+    pitch: Mapping[str, str],
+    request_brief: Mapping[str, object],
+) -> StagePrompt:
+    """Build one scene's prompt (node and choice entries for that scene only).
+
+    Args:
+        scene_id: The scene id.
+        chunk_json: The scene's alias-only subgraph, JSON.
+        spine_json: The spine in alias form, JSON (model text, fenced).
+        entry_json: Boundary node alias to the facts guaranteed on entry, JSON.
+        pitch: The chosen pitch's five fields (model text, fenced).
+        request_brief: The request brief fields (UNTRUSTED, fenced).
+
+    Returns:
+        The scene :class:`StagePrompt`.
+    """
+    return _fill_plan_template(
+        _plan_part_template("plan_chunk.md"),
+        _chunk_values(
+            scene_id=scene_id,
+            chunk_json=chunk_json,
+            spine_json=spine_json,
+            entry_json=entry_json,
+            pitch=pitch,
+            request_brief=request_brief,
+        ),
+    )
+
+
+def build_plan_chunk_repair_prompt(  # noqa: PLR0913, PLR0917 - scene payloads plus repair inputs
+    scene_id: str,
+    chunk_json: str,
+    spine_json: str,
+    entry_json: str,
+    pitch: Mapping[str, str],
+    request_brief: Mapping[str, object],
+    *,
+    previous: str | None,
+    findings: Sequence[str],
+) -> StagePrompt:
+    """Build one scene's repair prompt (that scene's findings only).
+
+    Args:
+        scene_id: The scene id.
+        chunk_json: The scene's alias-only subgraph, JSON.
+        spine_json: The spine in alias form, JSON.
+        entry_json: Boundary node alias to the facts guaranteed on entry, JSON.
+        pitch: The chosen pitch's five fields.
+        request_brief: The request brief fields (UNTRUSTED, fenced).
+        previous: The scene's previous entries in alias form, JSON, or None.
+        findings: The findings routed to this scene, aliased.
+
+    Returns:
+        The scene repair :class:`StagePrompt`.
+    """
+    return _fill_plan_template(
+        _plan_part_repair_template("plan_chunk.md"),
+        {
+            **_chunk_values(
+                scene_id=scene_id,
+                chunk_json=chunk_json,
+                spine_json=spine_json,
+                entry_json=entry_json,
+                pitch=pitch,
+                request_brief=request_brief,
+            ),
+            **_repair_values(previous, findings),
         },
     )
