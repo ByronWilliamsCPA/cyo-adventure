@@ -13,18 +13,23 @@ tuned on the other's held-out half.
 
 Every item is regenerated from committed sources: the frozen WP-1.3 answer key
 (``known-defects.json``), the WP-0.4 findings files, the WP-1.6 second reads,
-the 2026-11-20 structural-verification evidence, the WP-1.4 and WP-1.6 blind
-plan manifests, the hand-written post-fix plans and the WP-2.3 smoke runs. The
-findings files are prose, so their entries are transcribed below as
-``FINDINGS`` rows; each row is checked against its source file (the finding id
-and every node id must appear there) and against the exact book revision it
-names (every node id must exist there, and the file must hash to the pinned
-sha256).
+the 2026-11-20 structural-verification evidence, the two residual checks of
+the five held-out post-fix books (2026-11-21, and 2026-11-22 after the fixes),
+the WP-1.4, WP-1.6 and clean-plan blind plan manifests, the hand-written
+post-fix plans and the WP-2.3 smoke runs. The findings files are prose, so
+their entries are transcribed below as ``FINDINGS`` rows (and the 2026-11-22
+minor residuals as ``RESIDUAL_MINORS`` rows); each row is checked against its
+source file (the finding id and every node id must appear there) and against
+the exact book revision it names (every node id must exist there, and the file
+must hash to the pinned sha256).
 
 The split is computed, not hand-picked: books seen in reviewer-prompt design
 are forced into tuning, and the free books are assigned by an exhaustive
 search that maximises held-out balance, ties broken by a per-book coin flip
-seeded with ``SPLIT_SEED``. The README beside the JSON documents every field.
+seeded with ``SPLIT_SEED``. The split is also frozen: the search is re-run on
+every build and must reproduce ``RECORDED_SPLIT``, so new items can never move
+a book between halves as a side effect. The README beside the JSON documents
+every field.
 
 Reads no network and calls no model.
 
@@ -55,6 +60,9 @@ FRESH: Final = f"{EV}/fresh-corpus-2026-11-21"
 SV: Final = f"{EV}/structural-verification-2026-11-20"
 SMOKE: Final = f"{EV}/plan-generation-smoke-2026-11-21"
 PILOT: Final = f"{EV}/plan-review-pilot-2026-11-21/README.md"
+CR: Final = f"{EV}/continuity-reader"
+R21: Final = f"{CR}/residuals-2026-11-21.md"
+R22: Final = f"{CR}/residuals-2026-11-22.md"
 
 # The full hash of commit 990054d ("docs(planning): record D12 and D6 as
 # decided"), fixed before the split was first computed.
@@ -147,6 +155,7 @@ def _fill(label: str, unit: str, sha: str) -> Pinned:
 PRE: Final = "pre-fix (WP-0.4 input)"
 POST: Final = "post-fix (WP-0.4 output)"
 CAT: Final = "catalog book as read (WP-1.6); never fixed"
+FIXED: Final = "fixed 2026-11-22 (residual check)"
 
 BOOKS: Final[tuple[Pinned, ...]] = (
     _out(
@@ -160,6 +169,12 @@ BOOKS: Final[tuple[Pinned, ...]] = (
         "e9adcd1",
         "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
         POST,
+    ),
+    _out(
+        "the-sky-ship-stowaway",
+        "da5c467",
+        "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
+        FIXED,
     ),
     _out(
         "the-hollow-lighthouse",
@@ -192,6 +207,12 @@ BOOKS: Final[tuple[Pinned, ...]] = (
         POST,
     ),
     _out(
+        "the-midnight-museum",
+        "fcd389e",
+        "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+        FIXED,
+    ),
+    _out(
         "the-signal-in-the-static",
         "aa5fd8c",
         "f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db",
@@ -202,6 +223,12 @@ BOOKS: Final[tuple[Pinned, ...]] = (
         "38f6a5a",
         "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
         POST,
+    ),
+    _out(
+        "the-signal-in-the-static",
+        "161e1e7",
+        "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+        FIXED,
     ),
     _out(
         "the-cave-of-echoes",
@@ -216,6 +243,12 @@ BOOKS: Final[tuple[Pinned, ...]] = (
         POST,
     ),
     _out(
+        "the-cave-of-echoes",
+        "a6b399d",
+        "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+        FIXED,
+    ),
+    _out(
         "the-mapmakers-island",
         "846d9fc",
         "b2d5a0dc960979c4f08bbe0bc770a9d965c6ec9ed9ada47fa968b866b2973d91",
@@ -226,6 +259,12 @@ BOOKS: Final[tuple[Pinned, ...]] = (
         "16932c1",
         "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
         POST,
+    ),
+    _out(
+        "the-mapmakers-island",
+        "c085d3c",
+        "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+        FIXED,
     ),
     _out(
         "the-vanishing-orchard",
@@ -340,6 +379,21 @@ POSTFIX_OF: Final[dict[str, str]] = {
     "the-mapmakers-island": "the-mapmakers-island@16932c1",
     "the-vanishing-orchard": "the-vanishing-orchard@db7fb22",
 }
+
+# The five held-out books fixed on 2026-11-22 after the 2026-11-21 residual
+# check found defects in their WP-0.4 post-fix revisions (fix records:
+# continuity-reader/fixes-2026-11-22-<slug>.md). These revisions, not the
+# post-fix ones, are the clean books and the clean plans' books.
+FIXED_OF: Final[dict[str, str]] = {
+    "the-sky-ship-stowaway": "the-sky-ship-stowaway@da5c467",
+    "the-midnight-museum": "the-midnight-museum@fcd389e",
+    "the-signal-in-the-static": "the-signal-in-the-static@161e1e7",
+    "the-cave-of-echoes": "the-cave-of-echoes@a6b399d",
+    "the-mapmakers-island": "the-mapmakers-island@c085d3c",
+}
+
+# Post-fix books still clean under WP-0.4 ('Open continuity findings: 0').
+WP04_CLEAN_UNITS: Final = ("the-hollow-lighthouse", "the-vanishing-orchard")
 
 PREFIX_OF: Final[dict[str, str]] = {
     "the-sky-ship-stowaway": "the-sky-ship-stowaway@60f1001",
@@ -828,6 +882,101 @@ _CLOCKTOWER = FindingSource(
     _CLOCKTOWER_ROWS,
 )
 
+# ---------------------------------------------------------------------------
+# Residual check of the five held-out post-fix books (2026-11-21)
+# ---------------------------------------------------------------------------
+#
+# The ten blind c/d plans of the WP-0.4 post-fix revisions raised suspects that
+# an independent check verified with StoryEngine witnesses. Every verdict
+# "real: blocker / should-fix / minor" is transcribed here as a defect of the
+# post-fix revision. The nine "not a defect" verdicts (SS-4, SG-3, MI-3, MI-4,
+# MI-6, CE-3, MM-1, MM-2, MM-3) are left out: the set has no item kind for a
+# verified clean judgement at a node (``node_assertion`` is defect-only).
+
+_R21_PREFIX: Final = "R1121"
+_R21_SEVERITY: Final = (
+    "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; "
+    "'not a defect' verdicts are left out"
+)
+
+
+def _residual_source(book: str, rows: tuple[Row, ...]) -> FindingSource:
+    """Return the 2026-11-21 residual rows of one post-fix book."""
+    return FindingSource(
+        R21,
+        book,
+        _R21_PREFIX,
+        frozenset(r[0] for r in rows),  # the report states every class
+        _R21_SEVERITY,
+        rows,
+    )
+
+
+_R21_SKY = _residual_source(
+    "the-sky-ship-stowaway@e9adcd1",
+    (
+        ("SS-1", "M", "u", "e_win_discovery"),
+        ("SS-2", "M", "u", "b_free1"),
+        ("SS-3", "S", "s", "c_nest_a f_rig_a"),
+    ),
+)
+
+_R21_SIGNAL = _residual_source(
+    "the-signal-in-the-static@38f6a5a",
+    (
+        ("SG-1", "M", "u", "m_numbers_1"),
+        ("SG-2", "B", "u", "m_num_countdown n_b2"),
+        ("SG-4", "S", "t", "m_who_article f_he_colleague e_he_dead"),
+        ("SG-5", "S", "u", "e_he_complete"),
+        ("SG-6", "M", "u", "r_re_hut"),
+    ),
+)
+
+_R21_ISLAND = _residual_source(
+    "the-mapmakers-island@16932c1",
+    (
+        (
+            "MI-1",
+            "M",
+            "u",
+            (
+                "tf_enter mg_readmarks cv_ochre e_cv_paintings cove_starrock "
+                "e_star_map ch_double e_ch_alder_name e_ch_spare signal_flash "
+                "mg_ruin e_ch_clean e_cv_fish e_tf_bell"
+            ),
+        ),
+        (
+            "MI-2",
+            "S",
+            "u",
+            (
+                "e_tf_stranded camp_ascent4 e_mg_canoe e_cf_slip e_tw_charts "
+                "e_mg_chick e_cf_canopy e_cv_raft"
+            ),
+        ),
+        ("MI-5", "M", "u", "camp_journal"),
+        ("MI-7", "M", "u", "cv_upflow cv_glowworm"),
+        ("MI-8", "M", "u", "cv_deepglow"),
+        ("MI-9", "S", "lo", "tw_brazier c_tw_brazier_2 e_tw_nofuel"),
+        ("MI-10", "S", "s", "ch_pencil e_ch_dusk"),
+        ("MI-11", "S", "u", "ch_gather summit_signal"),
+    ),
+)
+
+_R21_CAVE = _residual_source(
+    "the-cave-of-echoes@1e2c853",
+    (
+        ("CE-1", "M", "u", "da_skylight da_coins2"),
+        ("CE-2", "M", "u", "ra_starfish2"),
+        ("CE-4", "S", "lo", "da_compass c_da_out da_compass2"),
+    ),
+)
+
+_R21_MUSEUM = _residual_source(
+    "the-midnight-museum@a0b61e9",
+    (("MM-4", "M", "u", "k_study c_base_study e_win_hero_curator"),),
+)
+
 FINDINGS: Final[tuple[FindingSource, ...]] = (
     _SKY,
     _LH,
@@ -839,6 +988,11 @@ FINDINGS: Final[tuple[FindingSource, ...]] = (
     _THORNWOOD,
     _CLOCKWORK,
     _CLOCKTOWER,
+    _R21_SKY,
+    _R21_SIGNAL,
+    _R21_ISLAND,
+    _R21_CAVE,
+    _R21_MUSEUM,
 )
 
 # Run A merge openings (structural-verification-2026-11-20.md section 3).
@@ -863,9 +1017,14 @@ MERGE_NODE_TOTALS: Final[dict[str, int]] = {
     "the-clockwork-menagerie": 12,
 }
 
-# The orchard pilot finding a post-fix control still carries (pilot README).
+# Known residuals of a clean book revision, keyed by its BOOK_BY_KEY key: a
+# verified defect left unfixed. A reader flag or a plan-review reject citing
+# one is a true positive, not a false flag; it is not a reader defect item and
+# does not turn the book's plans into ``reject``. The orchard pilot finding is
+# one a post-fix control still carries (pilot README); the 2026-11-22 minors
+# below are added by known_residuals().
 KNOWN_RESIDUALS: Final[dict[str, list[JsonObj]]] = {
-    "the-vanishing-orchard": [
+    "the-vanishing-orchard@db7fb22": [
         {
             "nodes": ["b1a_dec", "e_b1a"],
             "choice": "c_b1a_dec_2",
@@ -879,6 +1038,75 @@ KNOWN_RESIDUALS: Final[dict[str, list[JsonObj]]] = {
             ),
         }
     ],
+}
+
+# The 2026-11-22 check of the fixed revisions found them clean (no blocker, no
+# should-fix) with nine minor residuals, left unfixed. They are verified the
+# same way as FINDINGS rows (id and nodes in the source, nodes in the pinned
+# fixed revision) and become known residuals, not reader defect items. Cave of
+# Echoes and Sky-Ship have none.
+_R22_NOTE: Final = (
+    "minor residual found by the 2026-11-22 check of the fixed book and left "
+    "unfixed. A reader flag or plan-review reject citing it is a true "
+    "positive, not a false flag."
+)
+
+RESIDUAL_MINORS: Final[tuple[FindingSource, ...]] = (
+    FindingSource(
+        R22,
+        "the-signal-in-the-static@161e1e7",
+        "",
+        _ids("SG-7 SG-8"),
+        "bottom line per book: every residual is minor",
+        (
+            ("SG-7", "M", "u", "r_relay_beat"),
+            ("SG-8", "M", "u", "r_relay_1 r_relay_beat"),
+        ),
+    ),
+    FindingSource(
+        R22,
+        "the-midnight-museum@fcd389e",
+        "",
+        _ids("MM-5"),
+        "bottom line per book: every residual is minor",
+        (("MM-5", "M", "u", "e_win_mystery_solved"),),
+    ),
+    FindingSource(
+        R22,
+        "the-mapmakers-island@c085d3c",
+        "",
+        _ids("MI-12 MI-13 MI-14 MI-15 MI-16 MI-17"),
+        "bottom line per book: every residual is minor",
+        (
+            ("MI-12", "M", "u", "e_tw_log"),
+            ("MI-13", "M", "u", "cf_bench"),
+            ("MI-14", "M", "u", "tf_gap"),
+            ("MI-15", "M", "u", "tf_gully c_tf_gully_1"),
+            ("MI-16", "M", "u", "L_cove c_L_cove_1"),
+            ("MI-17", "M", "u", "mg_blind"),
+        ),
+    ),
+)
+
+# The split as first computed (before the 2026-11-22 sources were added). It
+# is frozen: tuning prompts are written against it, so a book moving halves
+# would leak held-out data into tuning. build() re-runs the search and fails
+# if it would move any unit; a new split must be an explicit owner decision.
+RECORDED_SPLIT: Final[dict[str, str]] = {
+    "the-hollow-lighthouse": TUNING,
+    "the-lantern-keepers-list": TUNING,
+    "the-locked-carousel": TUNING,
+    "the-orchard-signal": TUNING,
+    "the-thornwood-trial": TUNING,
+    "the-vanishing-orchard": TUNING,
+    "the-cave-of-echoes": HELD_OUT,
+    "the-clocktower-cipher": HELD_OUT,
+    "the-clockwork-menagerie": HELD_OUT,
+    "the-last-train-north": HELD_OUT,
+    "the-mapmakers-island": HELD_OUT,
+    "the-midnight-museum": HELD_OUT,
+    "the-signal-in-the-static": HELD_OUT,
+    "the-sky-ship-stowaway": HELD_OUT,
 }
 
 # ---------------------------------------------------------------------------
@@ -1009,8 +1237,20 @@ def _anchor_ok(text: str, fid: str) -> bool:
     return any(re.search(p, text, re.MULTILINE) for p in patterns)
 
 
-def _finding_item(src: FindingSource, row: Row, text: str) -> JsonObj:
-    fid, sev, cls, nodes_text = row
+def _verify_row(
+    src: FindingSource, row: Row, text: str
+) -> tuple[Pinned, list[str], list[str]]:
+    """Check a transcribed row against its source text and its pinned book.
+
+    Returns:
+        tuple: The book pin, the row's ids in order, and those that are
+        choice ids.
+
+    Raises:
+        SourceError: The id is not an entry in the source, a node id is not
+            named there, or a node id is not in the pinned book.
+    """
+    fid, _, _, nodes_text = row
     nodes = nodes_text.split()
     where = f"{src.doc} {fid}"
     if not _anchor_ok(text, fid):
@@ -1021,7 +1261,12 @@ def _finding_item(src: FindingSource, row: Row, text: str) -> JsonObj:
         msg = f"{where}: node ids not named in the source: {absent}"
         raise SourceError(msg)
     pin = BOOK_BY_KEY[src.book]
-    choices = _resolve_nodes(pin, nodes, where)
+    return pin, nodes, _resolve_nodes(pin, nodes, where)
+
+
+def _finding_item(src: FindingSource, row: Row, text: str) -> JsonObj:
+    fid, sev, cls, _ = row
+    pin, nodes, choices = _verify_row(src, row, text)
     return {
         "id": f"{src.prefix}-{fid}",
         "kind": "node_assertion",
@@ -1047,6 +1292,38 @@ def finding_items() -> list[JsonObj]:
         text = _read_repo(src.doc).decode("utf-8")
         items.extend(_finding_item(src, row, text) for row in src.rows)
     return items
+
+
+def known_residuals() -> dict[str, list[JsonObj]]:
+    """Return every clean revision's known residuals, keyed by book key.
+
+    ``KNOWN_RESIDUALS`` plus the verified ``RESIDUAL_MINORS`` rows.
+
+    Raises:
+        SourceError: A row does not verify, is not minor, or names more than
+            one choice.
+    """
+    out = {k: list(v) for k, v in KNOWN_RESIDUALS.items()}
+    for src in RESIDUAL_MINORS:
+        text = _read_repo(src.doc).decode("utf-8")
+        for row in src.rows:
+            fid, sev, cls, _ = row
+            _, nodes, choices = _verify_row(src, row, text)
+            if SEVERITIES[sev] != "minor" or len(choices) > 1:
+                msg = f"{src.doc} {fid}: a known residual is one minor defect"
+                raise SourceError(msg)
+            out.setdefault(src.book, []).append(
+                {
+                    "id": fid,
+                    "nodes": [n for n in nodes if n not in choices],
+                    "choice": choices[0] if choices else None,
+                    "defect_class": CLASSES[cls],
+                    "severity": SEVERITIES[sev],
+                    "source": src.doc,
+                    "note": _R22_NOTE,
+                }
+            )
+    return out
 
 
 def _kd_entries() -> list[JsonObj]:
@@ -1212,26 +1489,74 @@ def merge_items() -> list[JsonObj]:
     return items
 
 
-def clean_items(reader: list[JsonObj]) -> list[JsonObj]:
-    """Return one ``clean_book`` item per post-fix book, plus B-lkl-new-1 (weak)."""
+_WP04_CLEAN_SOURCE: Final[JsonObj] = {
+    "doc": "post-fix book (WP-0.4 'Open continuity findings: 0')"
+}
+_R22_CLEAN_SOURCE: Final[JsonObj] = {
+    "doc": R22,
+    "anchor": "Bottom line per book",
+}
+
+
+def _defect_items(reader: list[JsonObj], book_key: str) -> list[JsonObj]:
+    return [
+        i
+        for i in reader
+        if cast("JsonObj", i["book"])["key"] == book_key
+        and i["expected_verdict"] == "defect"
+        and i["kind"] in {"node_assertion", "payoff_judgment"}
+    ]
+
+
+def clean_items(
+    reader: list[JsonObj], residuals: dict[str, list[JsonObj]]
+) -> list[JsonObj]:
+    """Return one ``clean_book`` item per clean revision, plus B-lkl-new-1 (weak).
+
+    The clean revisions are the two WP-0.4 post-fix books still clean
+    (``fixed_nodes``: the primary node of each pre-fix defect) and the five
+    books fixed on 2026-11-22 (``fixed_nodes``: every node a 2026-11-21
+    residual of the post-fix revision names).
+
+    Raises:
+        SourceError: A fixed revision has no residual behind it, or a node is
+            both a fixed node and a known residual.
+    """
     items: list[JsonObj] = []
-    for unit, key in POSTFIX_OF.items():
-        pin = BOOK_BY_KEY[key]
+    for unit in WP04_CLEAN_UNITS:
+        pin = BOOK_BY_KEY[POSTFIX_OF[unit]]
         node_ids, _ = _book_ids(pin)
-        prefix_key = PREFIX_OF[unit]
         fixed = sorted(
             {
                 cast("str", i["node"])
                 for i in reader
-                if cast("JsonObj", i["book"])["key"] == prefix_key
+                if cast("JsonObj", i["book"])["key"] == PREFIX_OF[unit]
                 and i["node"] in node_ids
             }
         )
-        items.append(
-            _clean_item(pin, len(node_ids), fixed, KNOWN_RESIDUALS.get(unit, []))
+        res = residuals.get(pin.key, [])
+        items.append(_clean_item(pin, len(node_ids), fixed, res, _WP04_CLEAN_SOURCE))
+    for unit, key in FIXED_OF.items():
+        pin = BOOK_BY_KEY[key]
+        node_ids, _ = _book_ids(pin)
+        before = _defect_items(reader, POSTFIX_OF[unit])
+        if not before:
+            msg = f"{key}: no 2026-11-21 residual on {POSTFIX_OF[unit]}"
+            raise SourceError(msg)
+        named = (
+            n
+            for i in before
+            for n in [cast("str", i["node"]), *cast("list[str]", i["other_nodes"])]
         )
+        fixed = sorted({n for n in named if n in node_ids})
+        res = residuals.get(key, [])
+        both = set(fixed) & {n for r in res for n in cast("list[str]", r["nodes"])}
+        if both:
+            msg = f"{key}: nodes both fixed and a known residual: {sorted(both)}"
+            raise SourceError(msg)
+        items.append(_clean_item(pin, len(node_ids), fixed, res, _R22_CLEAN_SOURCE))
     lkl = BOOK_BY_KEY["B-lkl-new-1"]
-    weak = _clean_item(lkl, len(_book_ids(lkl)[0]), [], [])
+    weak = _clean_item(lkl, len(_book_ids(lkl)[0]), [], [], _WP04_CLEAN_SOURCE)
     weak["label_strength"] = "weak"
     weak["note"] = (
         "no answer-key entry and every plant-payoff pair judged connected, but "
@@ -1243,7 +1568,11 @@ def clean_items(reader: list[JsonObj]) -> list[JsonObj]:
 
 
 def _clean_item(
-    pin: Pinned, node_count: int, fixed: list[str], residuals: list[JsonObj]
+    pin: Pinned,
+    node_count: int,
+    fixed: list[str],
+    residuals: list[JsonObj],
+    source: JsonObj,
 ) -> JsonObj:
     return {
         "id": f"CB-{pin.key}",
@@ -1258,7 +1587,7 @@ def _clean_item(
         "class_source": None,
         "severity": None,
         "severity_source": None,
-        "source": {"doc": "post-fix book (WP-0.4 'Open continuity findings: 0')"},
+        "source": dict(source),
         "scored_for": "D6",
         "label_strength": "strong",
     }
@@ -1293,33 +1622,27 @@ def _manifest_plans(manifest: str, plans_dir: str, prompt: str) -> list[JsonObj]
     return out
 
 
-def _plan_label(book_key: str, reader: list[JsonObj]) -> list[JsonObj]:
-    """Return the defects a book revision carries, as plan-label entries."""
-    return [
+def _plan_label(book_key: str, reader: list[JsonObj]) -> JsonObj:
+    """Return a plan's label fields from the defects its book revision carries.
+
+    Only reader defect items count. A clean revision's known residuals are
+    not defect items, so a plan of a clean revision stays ``pass``.
+    """
+    # #ASSUME: data-integrity: every defect of a book revision is a reader
+    # defect item keyed to that exact revision; known residuals never are.
+    # #VERIFY: the unit test asserts every e/f plan is ``pass`` with
+    # non-empty known_residuals where the book has minors.
+    defects: list[JsonObj] = [
         {
             "id": i["id"],
             "defect_class": i["defect_class"],
             "severity": i["severity"],
         }
-        for i in reader
-        if cast("JsonObj", i["book"])["key"] == book_key
-        and i["expected_verdict"] == "defect"
-        and i["kind"] in {"node_assertion", "payoff_judgment"}
+        for i in _defect_items(reader, book_key)
     ]
-
-
-def _plan_item(spec: JsonObj, reader: list[JsonObj]) -> JsonObj:
-    pin = cast("Pinned", spec["book_pin"])
-    defects = _plan_label(pin.key, reader)
     severities = [cast("str", d["severity"]) for d in defects]
     worst = min(severities, key=SEVERITY_RANK.__getitem__) if severities else None
-    weak = pin.key == "B-lkl-new-1"
     return {
-        "id": f"PL-{spec['plan_id']}",
-        "kind": "plan",
-        "book": _book_ref(pin),
-        "plan": spec["plan"],
-        "producer": spec["producer"],
         "expected_verdict": "reject" if defects else "pass",
         "defect_class": sorted({cast("str", d["defect_class"]) for d in defects}),
         "class_source": "the book's reader items",
@@ -1327,6 +1650,22 @@ def _plan_item(spec: JsonObj, reader: list[JsonObj]) -> JsonObj:
         "severity_source": "highest severity among the book's defects",
         "blocker_entries": sum(1 for s in severities if s == "blocker"),
         "defects": defects,
+    }
+
+
+def _plan_item(
+    spec: JsonObj, reader: list[JsonObj], residuals: dict[str, list[JsonObj]]
+) -> JsonObj:
+    pin = cast("Pinned", spec["book_pin"])
+    weak = pin.key == "B-lkl-new-1"
+    return {
+        "id": f"PL-{spec['plan_id']}",
+        "kind": "plan",
+        "book": _book_ref(pin),
+        "plan": spec["plan"],
+        "producer": spec["producer"],
+        **_plan_label(pin.key, reader),
+        "known_residuals": residuals.get(pin.key, []),
         "source": {"doc": spec["manifest"], "anchor": spec["plan_id"]},
         "scored_for": "D12",
         "label_strength": "weak" if weak else "strong",
@@ -1339,8 +1678,15 @@ def _plan_item(spec: JsonObj, reader: list[JsonObj]) -> JsonObj:
     }
 
 
-def blind_plan_items(reader: list[JsonObj]) -> list[JsonObj]:
-    """Return the WP-1.4, G1 re-run and WP-1.6 blind plans, labelled by their book."""
+def blind_plan_items(
+    reader: list[JsonObj], residuals: dict[str, list[JsonObj]]
+) -> list[JsonObj]:
+    """Return every blind plan, labelled by the defects of its book revision.
+
+    WP-1.4, the G1 re-run and WP-1.6, then the clean-plan passes: c/d of the
+    five WP-0.4 post-fix revisions (``reject`` since the 2026-11-21 residual
+    check) and e/f of the revisions fixed on 2026-11-22 (``pass``).
+    """
     specs = [
         *_manifest_plans(
             f"{RETRO}/plans/manifest.json",
@@ -1355,12 +1701,35 @@ def blind_plan_items(reader: list[JsonObj]) -> list[JsonObj]:
         *_manifest_plans(
             f"{FRESH}/manifest.json", f"{FRESH}/plans", "EXTRACTION-PROMPT-v2.md"
         ),
+        *_manifest_plans(
+            f"{CR}/clean-plans/manifest.json",
+            f"{CR}/clean-plans/plans",
+            "EXTRACTION-PROMPT-v2.md",
+        ),
+        *_manifest_plans(
+            f"{CR}/clean-plans-fixed/manifest.json",
+            f"{CR}/clean-plans-fixed/plans",
+            "EXTRACTION-PROMPT-v2.md",
+        ),
     ]
-    return [_plan_item(s, reader) for s in specs]
+    return [_plan_item(s, reader, residuals) for s in specs]
 
 
-def postfix_plan_items() -> list[JsonObj]:
-    """Return the seven hand-written post-fix plans as clean (``pass``) items."""
+_POSTFIX_REJECT_NOTE: Final = (
+    "binds the WP-0.4 post-fix revision, which the 2026-11-21 residual check "
+    "found to carry defects; labelled with them. The clean plans of this book "
+    "are the e/f blind plans of the revision fixed on 2026-11-22"
+)
+
+
+def postfix_plan_items(
+    reader: list[JsonObj], residuals: dict[str, list[JsonObj]]
+) -> list[JsonObj]:
+    """Return the seven hand-written post-fix plans, labelled by their book.
+
+    Lighthouse and orchard stay ``pass``; the five held-out ones bind
+    post-fix revisions that now carry 2026-11-21 residuals, so ``reject``.
+    """
     items: list[JsonObj] = []
     for plan_pin in POSTFIX_PLANS:
         plan = _load_obj(read_pinned(plan_pin))
@@ -1369,7 +1738,11 @@ def postfix_plan_items() -> list[JsonObj]:
         if prov.get("book_sha256") != book_pin.sha256:
             msg = f"{plan_pin.key}: provenance.book_sha256 is not the post-fix book"
             raise SourceError(msg)
-        residuals = KNOWN_RESIDUALS.get(plan_pin.unit, [])
+        label = _plan_label(book_pin.key, reader)
+        rejected = label["expected_verdict"] == "reject"
+        if not rejected:
+            label["class_source"] = None
+            label["severity_source"] = None
         items.append(
             {
                 "id": f"PL-{plan_pin.unit}-postfix",
@@ -1382,17 +1755,12 @@ def postfix_plan_items() -> list[JsonObj]:
                     "pointer": None,
                 },
                 "producer": "hand-written (WP-0.3), revised with the WP-0.4 fixes",
-                "expected_verdict": "pass",
-                "defect_class": [],
-                "class_source": None,
-                "severity": None,
-                "severity_source": None,
-                "blocker_entries": 0,
-                "defects": [],
-                "known_residuals": residuals,
+                **label,
+                "known_residuals": residuals.get(book_pin.key, []),
                 "source": {"doc": plan_pin.path},
                 "scored_for": "D12",
                 "label_strength": "strong",
+                "note": _POSTFIX_REJECT_NOTE if rejected else None,
             }
         )
     return items
@@ -1506,13 +1874,35 @@ def compute_split(items: list[JsonObj]) -> dict[str, str]:
     return {u: HELD_OUT if u in best[1] else TUNING for u in UNIT_BANDS}
 
 
+def frozen_split(items: list[JsonObj]) -> dict[str, str]:
+    """Return the split, checked against ``RECORDED_SPLIT``.
+
+    Raises:
+        SourceError: The search would move a unit to the other half.
+    """
+    # #CRITICAL: data-integrity: a prompt tuned on the tuning half must never
+    # be scored on a book it saw. New items change the search's counts, so a
+    # silently recomputed split could move a tuned book into held_out.
+    # #VERIFY: compare with the recorded split and fail the build on drift.
+    split = compute_split(items)
+    moved = sorted(u for u in UNIT_BANDS if split[u] != RECORDED_SPLIT[u])
+    if moved:
+        msg = (
+            f"the split search would move {moved}; the split is frozen at "
+            "RECORDED_SPLIT, so change it only by an owner decision"
+        )
+        raise SourceError(msg)
+    return split
+
+
 # ---------------------------------------------------------------------------
 # Thresholds (quoted from the plan, decided 2026-11-21)
 # ---------------------------------------------------------------------------
 
 THRESHOLDS: Final[JsonObj] = {
     "source": "docs/planning/story-plan-implementation-plan.md, decision table "
-    "rows D6 and D12 and the note 'D12 as decided 2026-11-21'",
+    "rows D6 and D12 (with its 2026-11-21 amendment) and the note 'D12 as "
+    "decided 2026-11-21'",
     "decided": "2026-11-21 (owner, in session), before any WP-3.2 or WP-3.7 "
     "prompt was written",
     "D6": {
@@ -1531,6 +1921,17 @@ THRESHOLDS: Final[JsonObj] = {
         "minimum_validation_size": "at least 15 defective and 15 clean held-out "
         "plans, supplemented with seeded-defect plans reported as synthetic; if "
         "the minimum cannot be met the reviewer is not validated",
+        "minimum_validation_size_amended": (
+            "amended 2026-11-21 (AL-853): the clean held-out minimum is met "
+            "by a fresh blind extraction plus a second independent blind "
+            "extraction of each of the five held-out post-fix books, results "
+            "reported per book (the effective clean sample is five books); "
+            "synthetic defective plans seed both checker-visible defects (the "
+            "WP-1.2 witnesses) and checker-invisible ones (a choice outcome "
+            "contradicting its label, a fact contradicting truth), each reported "
+            "separately. Since the 2026-11-21 residual check, the five books are "
+            "the revisions fixed on 2026-11-22 and the two passes are the e/f plans"
+        ),
         "sample_rate": "1 in 10 in steady state; 100 percent through the pilot "
         "(WP-4.2, WP-4.3)",
         "suspension": "the owner overturns any blocker-class pass, or more than 1 "
@@ -1597,24 +1998,41 @@ def _summary(items: list[JsonObj], split: dict[str, str]) -> JsonObj:
             "plans_with_blocker": sum(
                 1 for i in plans if (cast("int | None", i["blocker_entries"]) or 0)
             ),
+            "d12_plans_by_unit": _d12_by_unit(plans),
         }
     return out
+
+
+def _d12_by_unit(plans: list[JsonObj]) -> JsonObj:
+    """Count D12-scored plans per book unit by verdict and label strength."""
+    by_unit: dict[str, Counter[str]] = {}
+    for i in plans:
+        if i["scored_for"] != "D12":
+            continue
+        key = f"{i['expected_verdict']}/{i['label_strength']}"
+        by_unit.setdefault(_unit_of(i), Counter())[key] += 1
+    return {u: dict(sorted(c.items())) for u, c in sorted(by_unit.items())}
 
 
 def build() -> JsonObj:
     """Build the whole validation-set document."""
     kd = kd_items()
+    residuals = known_residuals()
     reader = [*kd, *finding_items()]
     reader += payoff_items(kd)
     reader += merge_items()
-    reader += clean_items(reader)
-    plans = [*blind_plan_items(reader), *postfix_plan_items(), *smoke_plan_items()]
+    reader += clean_items(reader, residuals)
+    plans = [
+        *blind_plan_items(reader, residuals),
+        *postfix_plan_items(reader, residuals),
+        *smoke_plan_items(),
+    ]
     items = [*reader, *plans]
     ids = [cast("str", i["id"]) for i in items]
     if len(ids) != len(set(ids)):
         msg = "duplicate item ids"
         raise SourceError(msg)
-    split = compute_split(items)
+    split = frozen_split(items)
     for item in items:
         item["half"] = split[_unit_of(item)]
     return {
@@ -1630,6 +2048,11 @@ def build() -> JsonObj:
             "method": "forced units to tuning; exhaustive search over the free "
             "units maximising (min(held-out defective plans, held-out clean "
             "plans), held-out band cells, agreement with seeded coin flips)",
+            "frozen": (
+                "the search is re-run on every build and must reproduce "
+                "the split as first recorded; a build whose search would move a "
+                "unit fails rather than change the split"
+            ),
             "forced_tuning": FORCED_TUNING,
             "units": {
                 u: {"half": split[u], "band": UNIT_BANDS[u], "coin": coin(u)}

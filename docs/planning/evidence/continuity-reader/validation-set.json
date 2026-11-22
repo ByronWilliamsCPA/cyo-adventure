@@ -7876,6 +7876,578 @@
     },
     {
       "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@e9adcd1",
+        "revision": "git:e9adcd1",
+        "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-SS-1",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "e_win_discovery",
+      "other_nodes": [],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "SS-1",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@e9adcd1",
+        "revision": "git:e9adcd1",
+        "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-SS-2",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "b_free1",
+      "other_nodes": [],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "SS-2",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@e9adcd1",
+        "revision": "git:e9adcd1",
+        "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "state_contradiction",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-SS-3",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "c_nest_a",
+      "other_nodes": [
+        "f_rig_a"
+      ],
+      "scored_for": "D6",
+      "severity": "should-fix",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "SS-3",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@38f6a5a",
+        "revision": "git:38f6a5a",
+        "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+        "unit": "the-signal-in-the-static"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-SG-1",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "m_numbers_1",
+      "other_nodes": [],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "SG-1",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@38f6a5a",
+        "revision": "git:38f6a5a",
+        "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+        "unit": "the-signal-in-the-static"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-SG-2",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "m_num_countdown",
+      "other_nodes": [
+        "n_b2"
+      ],
+      "scored_for": "D6",
+      "severity": "blocker",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "SG-2",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@38f6a5a",
+        "revision": "git:38f6a5a",
+        "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+        "unit": "the-signal-in-the-static"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "two_backstories",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-SG-4",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "m_who_article",
+      "other_nodes": [
+        "f_he_colleague",
+        "e_he_dead"
+      ],
+      "scored_for": "D6",
+      "severity": "should-fix",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "SG-4",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@38f6a5a",
+        "revision": "git:38f6a5a",
+        "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+        "unit": "the-signal-in-the-static"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-SG-5",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "e_he_complete",
+      "other_nodes": [],
+      "scored_for": "D6",
+      "severity": "should-fix",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "SG-5",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@38f6a5a",
+        "revision": "git:38f6a5a",
+        "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+        "unit": "the-signal-in-the-static"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-SG-6",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "r_re_hut",
+      "other_nodes": [],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "SG-6",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MI-1",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "tf_enter",
+      "other_nodes": [
+        "mg_readmarks",
+        "cv_ochre",
+        "e_cv_paintings",
+        "cove_starrock",
+        "e_star_map",
+        "ch_double",
+        "e_ch_alder_name",
+        "e_ch_spare",
+        "signal_flash",
+        "mg_ruin",
+        "e_ch_clean",
+        "e_cv_fish",
+        "e_tf_bell"
+      ],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MI-1",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MI-2",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "e_tf_stranded",
+      "other_nodes": [
+        "camp_ascent4",
+        "e_mg_canoe",
+        "e_cf_slip",
+        "e_tw_charts",
+        "e_mg_chick",
+        "e_cf_canopy",
+        "e_cv_raft"
+      ],
+      "scored_for": "D6",
+      "severity": "should-fix",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MI-2",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MI-5",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "camp_journal",
+      "other_nodes": [],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MI-5",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MI-7",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "cv_upflow",
+      "other_nodes": [
+        "cv_glowworm"
+      ],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MI-7",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MI-8",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "cv_deepglow",
+      "other_nodes": [],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MI-8",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "choice_ids": [
+        "c_tw_brazier_2"
+      ],
+      "class_source": "source",
+      "defect_class": "label_outcome_mismatch",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MI-9",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "tw_brazier",
+      "other_nodes": [
+        "c_tw_brazier_2",
+        "e_tw_nofuel"
+      ],
+      "scored_for": "D6",
+      "severity": "should-fix",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MI-9",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "state_contradiction",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MI-10",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "ch_pencil",
+      "other_nodes": [
+        "e_ch_dusk"
+      ],
+      "scored_for": "D6",
+      "severity": "should-fix",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MI-10",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MI-11",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "ch_gather",
+      "other_nodes": [
+        "summit_signal"
+      ],
+      "scored_for": "D6",
+      "severity": "should-fix",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MI-11",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@1e2c853",
+        "revision": "git:1e2c853",
+        "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+        "unit": "the-cave-of-echoes"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-CE-1",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "da_skylight",
+      "other_nodes": [
+        "da_coins2"
+      ],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "CE-1",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@1e2c853",
+        "revision": "git:1e2c853",
+        "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+        "unit": "the-cave-of-echoes"
+      },
+      "choice_ids": [],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-CE-2",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "ra_starfish2",
+      "other_nodes": [],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "CE-2",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@1e2c853",
+        "revision": "git:1e2c853",
+        "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+        "unit": "the-cave-of-echoes"
+      },
+      "choice_ids": [
+        "c_da_out"
+      ],
+      "class_source": "source",
+      "defect_class": "label_outcome_mismatch",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-CE-4",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "da_compass",
+      "other_nodes": [
+        "c_da_out",
+        "da_compass2"
+      ],
+      "scored_for": "D6",
+      "severity": "should-fix",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "CE-4",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@a0b61e9",
+        "revision": "git:a0b61e9",
+        "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
+        "unit": "the-midnight-museum"
+      },
+      "choice_ids": [
+        "c_base_study"
+      ],
+      "class_source": "source",
+      "defect_class": "unestablished_fact_on_route",
+      "expected_verdict": "defect",
+      "half": "held_out",
+      "id": "R1121-MM-4",
+      "kind": "node_assertion",
+      "label_strength": "strong",
+      "node": "k_study",
+      "other_nodes": [
+        "c_base_study",
+        "e_win_hero_curator"
+      ],
+      "scored_for": "D6",
+      "severity": "minor",
+      "severity_source": "verdict column 'real: blocker', 'real: should-fix' or 'real: minor'; 'not a defect' verdicts are left out",
+      "source": {
+        "anchor": "MM-4",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+      }
+    },
+    {
+      "book": {
         "file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-lkl-new-1/filled.json",
         "key": "B-lkl-new-1",
         "revision": "working-tree",
@@ -8963,41 +9535,6 @@
     },
     {
       "book": {
-        "file": "out/the-sky-ship-stowaway.filled.json",
-        "key": "the-sky-ship-stowaway@e9adcd1",
-        "revision": "git:e9adcd1",
-        "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
-        "unit": "the-sky-ship-stowaway"
-      },
-      "class_source": null,
-      "defect_class": null,
-      "expected_verdict": "clean",
-      "fixed_nodes": [
-        "b_steer1",
-        "b_steer_purr",
-        "e_neu_kite",
-        "f_cabin1",
-        "n_bridge",
-        "n_secret",
-        "p_people1",
-        "p_people_b"
-      ],
-      "half": "held_out",
-      "id": "CB-the-sky-ship-stowaway@e9adcd1",
-      "kind": "clean_book",
-      "known_residuals": [],
-      "label_strength": "strong",
-      "node": null,
-      "node_count": 123,
-      "scored_for": "D6",
-      "severity": null,
-      "severity_source": null,
-      "source": {
-        "doc": "post-fix book (WP-0.4 'Open continuity findings: 0')"
-      }
-    },
-    {
-      "book": {
         "file": "out/the-hollow-lighthouse.filled.json",
         "key": "the-hollow-lighthouse@3e29e04",
         "revision": "git:3e29e04",
@@ -9036,215 +9573,6 @@
       "label_strength": "strong",
       "node": null,
       "node_count": 164,
-      "scored_for": "D6",
-      "severity": null,
-      "severity_source": null,
-      "source": {
-        "doc": "post-fix book (WP-0.4 'Open continuity findings: 0')"
-      }
-    },
-    {
-      "book": {
-        "file": "out/the-midnight-museum.filled.json",
-        "key": "the-midnight-museum@a0b61e9",
-        "revision": "git:a0b61e9",
-        "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
-        "unit": "the-midnight-museum"
-      },
-      "class_source": null,
-      "defect_class": null,
-      "expected_verdict": "clean",
-      "fixed_nodes": [
-        "a_gems_hide",
-        "c_archive1",
-        "c_archive_chalk",
-        "ci_clock_pendulum",
-        "e_set_caught",
-        "e_win_donate",
-        "e_win_lost_wing",
-        "k_display_careful",
-        "k_stairs_up",
-        "n_key",
-        "n_open",
-        "n_rotunda",
-        "n_vault",
-        "ro_records_guard",
-        "v_letter",
-        "v_map",
-        "v_share",
-        "v_share_curator",
-        "v_share_museum"
-      ],
-      "half": "held_out",
-      "id": "CB-the-midnight-museum@a0b61e9",
-      "kind": "clean_book",
-      "known_residuals": [],
-      "label_strength": "strong",
-      "node": null,
-      "node_count": 108,
-      "scored_for": "D6",
-      "severity": null,
-      "severity_source": null,
-      "source": {
-        "doc": "post-fix book (WP-0.4 'Open continuity findings: 0')"
-      }
-    },
-    {
-      "book": {
-        "file": "out/the-signal-in-the-static.filled.json",
-        "key": "the-signal-in-the-static@38f6a5a",
-        "revision": "git:38f6a5a",
-        "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
-        "unit": "the-signal-in-the-static"
-      },
-      "class_source": null,
-      "defect_class": null,
-      "expected_verdict": "clean",
-      "fixed_nodes": [
-        "e_he_complete",
-        "e_he_safe",
-        "e_re_answer",
-        "e_re_photo",
-        "e_st_record",
-        "e_st_wait",
-        "e_who_warn",
-        "f_he_act",
-        "f_he_cg",
-        "m_numbers_1",
-        "mm_count_1",
-        "mm_count_tide",
-        "mm_list_daughter",
-        "mm_listener_1",
-        "n_b2_under",
-        "n_b3_choice",
-        "n_open",
-        "r_coord_base_out"
-      ],
-      "half": "held_out",
-      "id": "CB-the-signal-in-the-static@38f6a5a",
-      "kind": "clean_book",
-      "known_residuals": [],
-      "label_strength": "strong",
-      "node": null,
-      "node_count": 139,
-      "scored_for": "D6",
-      "severity": null,
-      "severity_source": null,
-      "source": {
-        "doc": "post-fix book (WP-0.4 'Open continuity findings: 0')"
-      }
-    },
-    {
-      "book": {
-        "file": "out/the-cave-of-echoes.filled.json",
-        "key": "the-cave-of-echoes@1e2c853",
-        "revision": "git:1e2c853",
-        "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
-        "unit": "the-cave-of-echoes"
-      },
-      "class_source": null,
-      "defect_class": null,
-      "expected_verdict": "clean",
-      "fixed_nodes": [
-        "da_cache_back",
-        "da_compass",
-        "da_roost",
-        "la_bell3",
-        "la_crystal_take",
-        "la_song",
-        "ra_islet",
-        "ra_lake2",
-        "ra_starfish"
-      ],
-      "half": "held_out",
-      "id": "CB-the-cave-of-echoes@1e2c853",
-      "kind": "clean_book",
-      "known_residuals": [],
-      "label_strength": "strong",
-      "node": null,
-      "node_count": 65,
-      "scored_for": "D6",
-      "severity": null,
-      "severity_source": null,
-      "source": {
-        "doc": "post-fix book (WP-0.4 'Open continuity findings: 0')"
-      }
-    },
-    {
-      "book": {
-        "file": "out/the-mapmakers-island.filled.json",
-        "key": "the-mapmakers-island@16932c1",
-        "revision": "git:16932c1",
-        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
-        "unit": "the-mapmakers-island"
-      },
-      "class_source": null,
-      "defect_class": null,
-      "expected_verdict": "clean",
-      "fixed_nodes": [
-        "L_fresh",
-        "L_summit",
-        "camp_ascent5",
-        "camp_chart",
-        "camp_journal",
-        "camp_ready",
-        "cf_bench",
-        "cf_campapproach",
-        "cf_dellcarve",
-        "cf_fallpool",
-        "cf_shelf",
-        "cf_shrine",
-        "cf_treetop",
-        "cf_upper",
-        "ch_farshore",
-        "ch_ink",
-        "ch_pencil",
-        "ch_sightings",
-        "ch_sign",
-        "cove_ridge",
-        "cove_rise",
-        "cove_rockpool",
-        "cove_seacave",
-        "cv_deepglow",
-        "cv_enter",
-        "cv_ochre",
-        "cv_tohigh",
-        "e_ascent_daunted",
-        "e_ch_clean",
-        "e_ch_survey",
-        "e_rescue_pup",
-        "e_rescue_turtle",
-        "fresh_cairn",
-        "meet_boat",
-        "mg_blind",
-        "mg_dam",
-        "mg_readmarks",
-        "mg_ruin",
-        "mg_seep",
-        "race_down",
-        "ship_turns",
-        "summit_signal",
-        "tf_cargo",
-        "tf_cliffgap",
-        "tf_deck",
-        "tw_cache",
-        "tw_cellar",
-        "tw_fuelstore",
-        "tw_salvage",
-        "tw_seachest",
-        "tw_top",
-        "tw_toridge",
-        "tw_tube",
-        "tw_viewdial",
-        "tw_wallcharts"
-      ],
-      "half": "held_out",
-      "id": "CB-the-mapmakers-island@16932c1",
-      "kind": "clean_book",
-      "known_residuals": [],
-      "label_strength": "strong",
-      "node": null,
-      "node_count": 225,
       "scored_for": "D6",
       "severity": null,
       "severity_source": null,
@@ -9327,6 +9655,300 @@
       "severity_source": null,
       "source": {
         "doc": "post-fix book (WP-0.4 'Open continuity findings: 0')"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@da5c467",
+        "revision": "git:da5c467",
+        "sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "class_source": null,
+      "defect_class": null,
+      "expected_verdict": "clean",
+      "fixed_nodes": [
+        "b_free1",
+        "c_nest_a",
+        "e_win_discovery",
+        "f_rig_a"
+      ],
+      "half": "held_out",
+      "id": "CB-the-sky-ship-stowaway@da5c467",
+      "kind": "clean_book",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "node": null,
+      "node_count": 123,
+      "scored_for": "D6",
+      "severity": null,
+      "severity_source": null,
+      "source": {
+        "anchor": "Bottom line per book",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@fcd389e",
+        "revision": "git:fcd389e",
+        "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+        "unit": "the-midnight-museum"
+      },
+      "class_source": null,
+      "defect_class": null,
+      "expected_verdict": "clean",
+      "fixed_nodes": [
+        "e_win_hero_curator",
+        "k_study"
+      ],
+      "half": "held_out",
+      "id": "CB-the-midnight-museum@fcd389e",
+      "kind": "clean_book",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MM-5",
+          "nodes": [
+            "e_win_mystery_solved"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "node": null,
+      "node_count": 108,
+      "scored_for": "D6",
+      "severity": null,
+      "severity_source": null,
+      "source": {
+        "anchor": "Bottom line per book",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@161e1e7",
+        "revision": "git:161e1e7",
+        "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+        "unit": "the-signal-in-the-static"
+      },
+      "class_source": null,
+      "defect_class": null,
+      "expected_verdict": "clean",
+      "fixed_nodes": [
+        "e_he_complete",
+        "e_he_dead",
+        "f_he_colleague",
+        "m_num_countdown",
+        "m_numbers_1",
+        "m_who_article",
+        "n_b2",
+        "r_re_hut"
+      ],
+      "half": "held_out",
+      "id": "CB-the-signal-in-the-static@161e1e7",
+      "kind": "clean_book",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "SG-7",
+          "nodes": [
+            "r_relay_beat"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "SG-8",
+          "nodes": [
+            "r_relay_1",
+            "r_relay_beat"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "node": null,
+      "node_count": 139,
+      "scored_for": "D6",
+      "severity": null,
+      "severity_source": null,
+      "source": {
+        "anchor": "Bottom line per book",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@a6b399d",
+        "revision": "git:a6b399d",
+        "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+        "unit": "the-cave-of-echoes"
+      },
+      "class_source": null,
+      "defect_class": null,
+      "expected_verdict": "clean",
+      "fixed_nodes": [
+        "da_coins2",
+        "da_compass",
+        "da_compass2",
+        "da_skylight",
+        "ra_starfish2"
+      ],
+      "half": "held_out",
+      "id": "CB-the-cave-of-echoes@a6b399d",
+      "kind": "clean_book",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "node": null,
+      "node_count": 65,
+      "scored_for": "D6",
+      "severity": null,
+      "severity_source": null,
+      "source": {
+        "anchor": "Bottom line per book",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+      }
+    },
+    {
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@c085d3c",
+        "revision": "git:c085d3c",
+        "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+        "unit": "the-mapmakers-island"
+      },
+      "class_source": null,
+      "defect_class": null,
+      "expected_verdict": "clean",
+      "fixed_nodes": [
+        "camp_ascent4",
+        "camp_journal",
+        "ch_double",
+        "ch_gather",
+        "ch_pencil",
+        "cove_starrock",
+        "cv_deepglow",
+        "cv_glowworm",
+        "cv_ochre",
+        "cv_upflow",
+        "e_cf_canopy",
+        "e_cf_slip",
+        "e_ch_alder_name",
+        "e_ch_clean",
+        "e_ch_dusk",
+        "e_ch_spare",
+        "e_cv_fish",
+        "e_cv_paintings",
+        "e_cv_raft",
+        "e_mg_canoe",
+        "e_mg_chick",
+        "e_star_map",
+        "e_tf_bell",
+        "e_tf_stranded",
+        "e_tw_charts",
+        "e_tw_nofuel",
+        "mg_readmarks",
+        "mg_ruin",
+        "signal_flash",
+        "summit_signal",
+        "tf_enter",
+        "tw_brazier"
+      ],
+      "half": "held_out",
+      "id": "CB-the-mapmakers-island@c085d3c",
+      "kind": "clean_book",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-12",
+          "nodes": [
+            "e_tw_log"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-13",
+          "nodes": [
+            "cf_bench"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-14",
+          "nodes": [
+            "tf_gap"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": "c_tf_gully_1",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-15",
+          "nodes": [
+            "tf_gully"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": "c_L_cove_1",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-16",
+          "nodes": [
+            "L_cove"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-17",
+          "nodes": [
+            "mg_blind"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "node": null,
+      "node_count": 225,
+      "scored_for": "D6",
+      "severity": null,
+      "severity_source": null,
+      "source": {
+        "anchor": "Bottom line per book",
+        "doc": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
       }
     },
     {
@@ -9481,6 +10103,7 @@
       "half": "tuning",
       "id": "PL-x1",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -9521,6 +10144,7 @@
       "half": "tuning",
       "id": "PL-x2",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -9553,6 +10177,7 @@
       "half": "tuning",
       "id": "PL-x3",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "weak",
       "note": "negative control in the WP-1.4 manifest: no answer-key entry, but the book never had a full continuity read",
       "plan": {
@@ -9599,6 +10224,7 @@
       "half": "tuning",
       "id": "PL-x4",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -9650,6 +10276,7 @@
       "half": "tuning",
       "id": "PL-x5",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -9701,6 +10328,7 @@
       "half": "tuning",
       "id": "PL-x5b",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -9746,6 +10374,7 @@
       "half": "tuning",
       "id": "PL-x6",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -9823,6 +10452,7 @@
       "half": "held_out",
       "id": "PL-x7",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -9957,6 +10587,7 @@
       "half": "held_out",
       "id": "PL-x8",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -10091,6 +10722,7 @@
       "half": "held_out",
       "id": "PL-x9",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -10142,6 +10774,7 @@
       "half": "tuning",
       "id": "PL-y1",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -10283,6 +10916,7 @@
       "half": "tuning",
       "id": "PL-y2",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -10328,6 +10962,7 @@
       "half": "tuning",
       "id": "PL-y3",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -10368,6 +11003,7 @@
       "half": "tuning",
       "id": "PL-y4",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -10414,6 +11050,7 @@
       "half": "tuning",
       "id": "PL-y5",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -10578,6 +11215,7 @@
       "half": "tuning",
       "id": "PL-z1",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -10860,6 +11498,7 @@
       "half": "held_out",
       "id": "PL-z2",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -11041,6 +11680,7 @@
       "half": "held_out",
       "id": "PL-z3",
       "kind": "plan",
+      "known_residuals": [],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -11060,21 +11700,1147 @@
     {
       "blocker_entries": 0,
       "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@a0b61e9",
+        "revision": "git:a0b61e9",
+        "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
+        "unit": "the-midnight-museum"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MM-4",
+          "severity": "minor"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-c1",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/c1.plan.json",
+        "pointer": null,
+        "sha256": "feba4370df505d6d706977dd995974e8e50d3be10424566f7acdbfb050ef75e6"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "minor",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "c1",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@1e2c853",
+        "revision": "git:1e2c853",
+        "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+        "unit": "the-cave-of-echoes"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "label_outcome_mismatch",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-CE-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-CE-2",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "label_outcome_mismatch",
+          "id": "R1121-CE-4",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-c2",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/c2.plan.json",
+        "pointer": null,
+        "sha256": "f67d3474f3e5bf4895cc1a70208e05529324eab86d63b1113b8829f5a5ebeb9d"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "c2",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 1,
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@38f6a5a",
+        "revision": "git:38f6a5a",
+        "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+        "unit": "the-signal-in-the-static"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "two_backstories",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-2",
+          "severity": "blocker"
+        },
+        {
+          "defect_class": "two_backstories",
+          "id": "R1121-SG-4",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-5",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-6",
+          "severity": "minor"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-c3",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/c3.plan.json",
+        "pointer": null,
+        "sha256": "cacd4e8b36620b0dc8e73a5512a98107949d9c9b906dd2f3b5e63f9a5d6c0cfb"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "blocker",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "c3",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "label_outcome_mismatch",
+        "state_contradiction",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-2",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-5",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-7",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-8",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "label_outcome_mismatch",
+          "id": "R1121-MI-9",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "state_contradiction",
+          "id": "R1121-MI-10",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-11",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-c4",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/c4.plan.json",
+        "pointer": null,
+        "sha256": "7bc76a32d5ce2e89fb1be1e0fc330a10f18f7b3b4647bd8cabd1e1a2fced28a0"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "c4",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
         "file": "out/the-sky-ship-stowaway.filled.json",
         "key": "the-sky-ship-stowaway@e9adcd1",
         "revision": "git:e9adcd1",
         "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
         "unit": "the-sky-ship-stowaway"
       },
-      "class_source": null,
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "state_contradiction",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SS-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SS-2",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "state_contradiction",
+          "id": "R1121-SS-3",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-c5",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/c5.plan.json",
+        "pointer": null,
+        "sha256": "a471438e0e7c4267f49fedd4e3701a3de401c4a6a297dead1cd47b3a19ef8fe0"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "c5",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@e9adcd1",
+        "revision": "git:e9adcd1",
+        "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "state_contradiction",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SS-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SS-2",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "state_contradiction",
+          "id": "R1121-SS-3",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-d1",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/d1.plan.json",
+        "pointer": null,
+        "sha256": "6d618d48a51becb24ae04e787b067cf72c39cb28fb50622ad3baaad87bc75192"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "d1",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@16932c1",
+        "revision": "git:16932c1",
+        "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+        "unit": "the-mapmakers-island"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "label_outcome_mismatch",
+        "state_contradiction",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-2",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-5",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-7",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-8",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "label_outcome_mismatch",
+          "id": "R1121-MI-9",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "state_contradiction",
+          "id": "R1121-MI-10",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-11",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-d2",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/d2.plan.json",
+        "pointer": null,
+        "sha256": "6a4a4b334f753a5dc41041b48d93a3ee7ad9f377a89bc8615031c2dadab74977"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "d2",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@a0b61e9",
+        "revision": "git:a0b61e9",
+        "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
+        "unit": "the-midnight-museum"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MM-4",
+          "severity": "minor"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-d3",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/d3.plan.json",
+        "pointer": null,
+        "sha256": "1b8e0bc6252917678c969e59a5c0a4aafdbfde4ec51af3db700927eefc46311d"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "minor",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "d3",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 1,
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@38f6a5a",
+        "revision": "git:38f6a5a",
+        "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+        "unit": "the-signal-in-the-static"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "two_backstories",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-2",
+          "severity": "blocker"
+        },
+        {
+          "defect_class": "two_backstories",
+          "id": "R1121-SG-4",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-5",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-6",
+          "severity": "minor"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-d4",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/d4.plan.json",
+        "pointer": null,
+        "sha256": "9af88ce6d5307bb79fa1bd6251224d4a64756025c260e701114d4e6b52cafc3e"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "blocker",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "d4",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@1e2c853",
+        "revision": "git:1e2c853",
+        "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+        "unit": "the-cave-of-echoes"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "label_outcome_mismatch",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-CE-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-CE-2",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "label_outcome_mismatch",
+          "id": "R1121-CE-4",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
+      "half": "held_out",
+      "id": "PL-d5",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans/plans/d5.plan.json",
+        "pointer": null,
+        "sha256": "dfca275b74bd279b525edd60c65432f32ad8afb8b3acbf32536677d9ac5bd37b"
+      },
+      "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "d5",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@161e1e7",
+        "revision": "git:161e1e7",
+        "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+        "unit": "the-signal-in-the-static"
+      },
+      "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
       "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-e1",
+      "kind": "plan",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "SG-7",
+          "nodes": [
+            "r_relay_beat"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "SG-8",
+          "nodes": [
+            "r_relay_1",
+            "r_relay_beat"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e1.plan.json",
+        "pointer": null,
+        "sha256": "2334ad03239571a889d7a60c45025db96678b3617a52a3260e8520f1d86e1f46"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "e1",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@fcd389e",
+        "revision": "git:fcd389e",
+        "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+        "unit": "the-midnight-museum"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-e2",
+      "kind": "plan",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MM-5",
+          "nodes": [
+            "e_win_mystery_solved"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e2.plan.json",
+        "pointer": null,
+        "sha256": "7be72bbf0cf8d093671321eb48d6d28bc009bed7e42170747af82536eade9043"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "e2",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@c085d3c",
+        "revision": "git:c085d3c",
+        "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+        "unit": "the-mapmakers-island"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-e3",
+      "kind": "plan",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-12",
+          "nodes": [
+            "e_tw_log"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-13",
+          "nodes": [
+            "cf_bench"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-14",
+          "nodes": [
+            "tf_gap"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": "c_tf_gully_1",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-15",
+          "nodes": [
+            "tf_gully"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": "c_L_cove_1",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-16",
+          "nodes": [
+            "L_cove"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-17",
+          "nodes": [
+            "mg_blind"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e3.plan.json",
+        "pointer": null,
+        "sha256": "ccf0fa2b196fed4cab30fc7944f8c0ed73c20b7113a61118abbe092996e29b18"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "e3",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@a6b399d",
+        "revision": "git:a6b399d",
+        "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+        "unit": "the-cave-of-echoes"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-e4",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e4.plan.json",
+        "pointer": null,
+        "sha256": "08b6569d95534832709b0249b6f36c8d10452139a1d0d3e7ea63ac2431a385b3"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "e4",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@da5c467",
+        "revision": "git:da5c467",
+        "sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-e5",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e5.plan.json",
+        "pointer": null,
+        "sha256": "620ce5dc818c43545bc01777837d78f062efaa5ba135faafa5632d06a2354464"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "e5",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@a6b399d",
+        "revision": "git:a6b399d",
+        "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+        "unit": "the-cave-of-echoes"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-f1",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f1.plan.json",
+        "pointer": null,
+        "sha256": "20642e1951248478db92d601c589e63385ca21912c78d0573c0d35fb7ee3b0fc"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "f1",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@da5c467",
+        "revision": "git:da5c467",
+        "sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-f2",
+      "kind": "plan",
+      "known_residuals": [],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f2.plan.json",
+        "pointer": null,
+        "sha256": "13558daff403348acb774d89f2140e1cb05b18aa17d0ee3c9aedeee7c5050b39"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "f2",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@161e1e7",
+        "revision": "git:161e1e7",
+        "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+        "unit": "the-signal-in-the-static"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-f3",
+      "kind": "plan",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "SG-7",
+          "nodes": [
+            "r_relay_beat"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "SG-8",
+          "nodes": [
+            "r_relay_1",
+            "r_relay_beat"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f3.plan.json",
+        "pointer": null,
+        "sha256": "281a939fdf90e5c427fced84088d967ddb6cc3796820ca5c348468518ba1ab2e"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "f3",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@c085d3c",
+        "revision": "git:c085d3c",
+        "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+        "unit": "the-mapmakers-island"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-f4",
+      "kind": "plan",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-12",
+          "nodes": [
+            "e_tw_log"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-13",
+          "nodes": [
+            "cf_bench"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-14",
+          "nodes": [
+            "tf_gap"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": "c_tf_gully_1",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-15",
+          "nodes": [
+            "tf_gully"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": "c_L_cove_1",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-16",
+          "nodes": [
+            "L_cove"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        },
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MI-17",
+          "nodes": [
+            "mg_blind"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f4.plan.json",
+        "pointer": null,
+        "sha256": "123f828c735556d7a9e77994ee000efd834199387e69bf54f36af636f59a6ea9"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "f4",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@fcd389e",
+        "revision": "git:fcd389e",
+        "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+        "unit": "the-midnight-museum"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
+      "half": "held_out",
+      "id": "PL-f5",
+      "kind": "plan",
+      "known_residuals": [
+        {
+          "choice": null,
+          "defect_class": "unestablished_fact_on_route",
+          "id": "MM-5",
+          "nodes": [
+            "e_win_mystery_solved"
+          ],
+          "note": "minor residual found by the 2026-11-22 check of the fixed book and left unfixed. A reader flag or plan-review reject citing it is a true positive, not a false flag.",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-22.md"
+        }
+      ],
+      "label_strength": "strong",
+      "note": null,
+      "plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f5.plan.json",
+        "pointer": null,
+        "sha256": "3d029dfb7f828354553f6e317f838162b2c84b616c25f4a10807409e2128d54f"
+      },
+      "producer": "blind extraction (clean-plans-fixed), opus agent, prompt EXTRACTION-PROMPT-v2.md",
+      "scored_for": "D12",
+      "severity": null,
+      "severity_source": "highest severity among the book's defects",
+      "source": {
+        "anchor": "f5",
+        "doc": "docs/planning/evidence/continuity-reader/clean-plans-fixed/manifest.json"
+      }
+    },
+    {
+      "blocker_entries": 0,
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@e9adcd1",
+        "revision": "git:e9adcd1",
+        "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "state_contradiction",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SS-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SS-2",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "state_contradiction",
+          "id": "R1121-SS-3",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
       "half": "held_out",
       "id": "PL-the-sky-ship-stowaway-postfix",
       "kind": "plan",
       "known_residuals": [],
       "label_strength": "strong",
+      "note": "binds the WP-0.4 post-fix revision, which the 2026-11-21 residual check found to carry defects; labelled with them. The clean plans of this book are the e/f blind plans of the revision fixed on 2026-11-22",
       "plan": {
         "file": "out/the-sky-ship-stowaway.plan.json",
         "pointer": null,
@@ -11083,8 +12849,8 @@
       },
       "producer": "hand-written (WP-0.3), revised with the WP-0.4 fixes",
       "scored_for": "D12",
-      "severity": null,
-      "severity_source": null,
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
       "source": {
         "doc": "out/the-sky-ship-stowaway.plan.json"
       }
@@ -11107,6 +12873,7 @@
       "kind": "plan",
       "known_residuals": [],
       "label_strength": "strong",
+      "note": null,
       "plan": {
         "file": "out/the-hollow-lighthouse.plan.json",
         "pointer": null,
@@ -11130,15 +12897,24 @@
         "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
         "unit": "the-midnight-museum"
       },
-      "class_source": null,
-      "defect_class": [],
-      "defects": [],
-      "expected_verdict": "pass",
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MM-4",
+          "severity": "minor"
+        }
+      ],
+      "expected_verdict": "reject",
       "half": "held_out",
       "id": "PL-the-midnight-museum-postfix",
       "kind": "plan",
       "known_residuals": [],
       "label_strength": "strong",
+      "note": "binds the WP-0.4 post-fix revision, which the 2026-11-21 residual check found to carry defects; labelled with them. The clean plans of this book are the e/f blind plans of the revision fixed on 2026-11-22",
       "plan": {
         "file": "out/the-midnight-museum.plan.json",
         "pointer": null,
@@ -11147,14 +12923,14 @@
       },
       "producer": "hand-written (WP-0.3), revised with the WP-0.4 fixes",
       "scored_for": "D12",
-      "severity": null,
-      "severity_source": null,
+      "severity": "minor",
+      "severity_source": "highest severity among the book's defects",
       "source": {
         "doc": "out/the-midnight-museum.plan.json"
       }
     },
     {
-      "blocker_entries": 0,
+      "blocker_entries": 1,
       "book": {
         "file": "out/the-signal-in-the-static.filled.json",
         "key": "the-signal-in-the-static@38f6a5a",
@@ -11162,15 +12938,45 @@
         "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
         "unit": "the-signal-in-the-static"
       },
-      "class_source": null,
-      "defect_class": [],
-      "defects": [],
-      "expected_verdict": "pass",
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "two_backstories",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-2",
+          "severity": "blocker"
+        },
+        {
+          "defect_class": "two_backstories",
+          "id": "R1121-SG-4",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-5",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-SG-6",
+          "severity": "minor"
+        }
+      ],
+      "expected_verdict": "reject",
       "half": "held_out",
       "id": "PL-the-signal-in-the-static-postfix",
       "kind": "plan",
       "known_residuals": [],
       "label_strength": "strong",
+      "note": "binds the WP-0.4 post-fix revision, which the 2026-11-21 residual check found to carry defects; labelled with them. The clean plans of this book are the e/f blind plans of the revision fixed on 2026-11-22",
       "plan": {
         "file": "out/the-signal-in-the-static.plan.json",
         "pointer": null,
@@ -11179,8 +12985,8 @@
       },
       "producer": "hand-written (WP-0.3), revised with the WP-0.4 fixes",
       "scored_for": "D12",
-      "severity": null,
-      "severity_source": null,
+      "severity": "blocker",
+      "severity_source": "highest severity among the book's defects",
       "source": {
         "doc": "out/the-signal-in-the-static.plan.json"
       }
@@ -11194,15 +13000,35 @@
         "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
         "unit": "the-cave-of-echoes"
       },
-      "class_source": null,
-      "defect_class": [],
-      "defects": [],
-      "expected_verdict": "pass",
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "label_outcome_mismatch",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-CE-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-CE-2",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "label_outcome_mismatch",
+          "id": "R1121-CE-4",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
       "half": "held_out",
       "id": "PL-the-cave-of-echoes-postfix",
       "kind": "plan",
       "known_residuals": [],
       "label_strength": "strong",
+      "note": "binds the WP-0.4 post-fix revision, which the 2026-11-21 residual check found to carry defects; labelled with them. The clean plans of this book are the e/f blind plans of the revision fixed on 2026-11-22",
       "plan": {
         "file": "out/the-cave-of-echoes.plan.json",
         "pointer": null,
@@ -11211,8 +13037,8 @@
       },
       "producer": "hand-written (WP-0.3), revised with the WP-0.4 fixes",
       "scored_for": "D12",
-      "severity": null,
-      "severity_source": null,
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
       "source": {
         "doc": "out/the-cave-of-echoes.plan.json"
       }
@@ -11226,15 +13052,61 @@
         "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
         "unit": "the-mapmakers-island"
       },
-      "class_source": null,
-      "defect_class": [],
-      "defects": [],
-      "expected_verdict": "pass",
+      "class_source": "the book's reader items",
+      "defect_class": [
+        "label_outcome_mismatch",
+        "state_contradiction",
+        "unestablished_fact_on_route"
+      ],
+      "defects": [
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-1",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-2",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-5",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-7",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-8",
+          "severity": "minor"
+        },
+        {
+          "defect_class": "label_outcome_mismatch",
+          "id": "R1121-MI-9",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "state_contradiction",
+          "id": "R1121-MI-10",
+          "severity": "should-fix"
+        },
+        {
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MI-11",
+          "severity": "should-fix"
+        }
+      ],
+      "expected_verdict": "reject",
       "half": "held_out",
       "id": "PL-the-mapmakers-island-postfix",
       "kind": "plan",
       "known_residuals": [],
       "label_strength": "strong",
+      "note": "binds the WP-0.4 post-fix revision, which the 2026-11-21 residual check found to carry defects; labelled with them. The clean plans of this book are the e/f blind plans of the revision fixed on 2026-11-22",
       "plan": {
         "file": "out/the-mapmakers-island.plan.json",
         "pointer": null,
@@ -11243,8 +13115,8 @@
       },
       "producer": "hand-written (WP-0.3), revised with the WP-0.4 fixes",
       "scored_for": "D12",
-      "severity": null,
-      "severity_source": null,
+      "severity": "should-fix",
+      "severity_source": "highest severity among the book's defects",
       "source": {
         "doc": "out/the-mapmakers-island.plan.json"
       }
@@ -11278,6 +13150,7 @@
         }
       ],
       "label_strength": "strong",
+      "note": null,
       "plan": {
         "file": "out/the-vanishing-orchard.plan.json",
         "pointer": null,
@@ -11495,6 +13368,7 @@
       "the-orchard-signal": "plan-review pilot: Run B fill B-os-new-1 (plan x5); B-os-new-2 is a fill of the same skeleton carrying the same public-plant defect at the same node ids, so it goes with it",
       "the-vanishing-orchard": "plan-review pilot: post-fix plan"
     },
+    "frozen": "the search is re-run on every build and must reproduce the split as first recorded; a build whose search would move a unit fails rather than change the split",
     "method": "forced units to tuning; exhaustive search over the free units maximising (min(held-out defective plans, held-out clean plans), held-out band cells, agreement with seeded coin flips)",
     "seed": "990054da2cc73d8b2b4c6b5744dc197288c40213",
     "seed_note": "full hash of commit 990054d, which recorded D6 and D12",
@@ -11575,35 +13449,63 @@
     "held_out": {
       "clean_books_strong": 5,
       "clean_nodes_strong": 660,
+      "d12_plans_by_unit": {
+        "the-cave-of-echoes": {
+          "pass/strong": 2,
+          "reject/strong": 3
+        },
+        "the-clocktower-cipher": {
+          "reject/strong": 1
+        },
+        "the-clockwork-menagerie": {
+          "reject/strong": 1
+        },
+        "the-mapmakers-island": {
+          "pass/strong": 2,
+          "reject/strong": 3
+        },
+        "the-midnight-museum": {
+          "pass/strong": 2,
+          "reject/strong": 4
+        },
+        "the-signal-in-the-static": {
+          "pass/strong": 2,
+          "reject/strong": 4
+        },
+        "the-sky-ship-stowaway": {
+          "pass/strong": 2,
+          "reject/strong": 4
+        }
+      },
       "items_by_kind": {
         "clean_book": 5,
         "merge_count": 13,
-        "node_assertion": 188,
-        "plan": 12
+        "node_assertion": 208,
+        "plan": 32
       },
       "merge_openings": 219,
       "payoff_judgments_clean": 0,
       "plans": {
-        "pass/strong": 5,
-        "reject/strong": 5,
+        "pass/strong": 10,
+        "reject/strong": 20,
         "unknown/unlabelled": 2
       },
-      "plans_with_blocker": 5,
+      "plans_with_blocker": 8,
       "reader_defects_by_class": {
         "cross_payoff_reference": 1,
-        "label_outcome_mismatch": 8,
+        "label_outcome_mismatch": 10,
         "location_or_physical_state": 36,
         "other": 14,
         "repeated_reveal": 2,
-        "state_contradiction": 6,
+        "state_contradiction": 8,
         "timeline": 9,
-        "two_backstories": 13,
-        "unestablished_fact_on_route": 99
+        "two_backstories": 14,
+        "unestablished_fact_on_route": 114
       },
       "reader_defects_by_severity": {
-        "blocker": 38,
-        "minor": 75,
-        "should-fix": 75
+        "blocker": 39,
+        "minor": 86,
+        "should-fix": 83
       },
       "units": [
         "the-cave-of-echoes",
@@ -11619,6 +13521,25 @@
     "tuning": {
       "clean_books_strong": 2,
       "clean_nodes_strong": 342,
+      "d12_plans_by_unit": {
+        "the-hollow-lighthouse": {
+          "pass/strong": 1,
+          "reject/strong": 4
+        },
+        "the-lantern-keepers-list": {
+          "pass/weak": 1,
+          "reject/strong": 2
+        },
+        "the-orchard-signal": {
+          "reject/strong": 5
+        },
+        "the-thornwood-trial": {
+          "reject/strong": 1
+        },
+        "the-vanishing-orchard": {
+          "pass/strong": 1
+        }
+      },
       "items_by_kind": {
         "clean_book": 3,
         "node_assertion": 91,
@@ -11672,6 +13593,7 @@
       "clean_flag_rate_max": "reject or unsure on at most 20 percent",
       "defect_recall": "reject or unsure on at least 90 percent of labelled defective plans, and on every blocker-severity entry",
       "minimum_validation_size": "at least 15 defective and 15 clean held-out plans, supplemented with seeded-defect plans reported as synthetic; if the minimum cannot be met the reviewer is not validated",
+      "minimum_validation_size_amended": "amended 2026-11-21 (AL-853): the clean held-out minimum is met by a fresh blind extraction plus a second independent blind extraction of each of the five held-out post-fix books, results reported per book (the effective clean sample is five books); synthetic defective plans seed both checker-visible defects (the WP-1.2 witnesses) and checker-invisible ones (a choice outcome contradicting its label, a fact contradicting truth), each reported separately. Since the 2026-11-21 residual check, the five books are the revisions fixed on 2026-11-22 and the two passes are the e/f plans",
       "run_agreement_min": "identical verdicts on at least 90 percent of plans across two runs",
       "sample_rate": "1 in 10 in steady state; 100 percent through the pilot (WP-4.2, WP-4.3)",
       "scope_of_authority": "per defect class: only classes with measured recall; others advisory",
@@ -11684,7 +13606,7 @@
       "two_run_agreement_min": 0.9
     },
     "decided": "2026-11-21 (owner, in session), before any WP-3.2 or WP-3.7 prompt was written",
-    "source": "docs/planning/story-plan-implementation-plan.md, decision table rows D6 and D12 and the note 'D12 as decided 2026-11-21'"
+    "source": "docs/planning/story-plan-implementation-plan.md, decision table rows D6 and D12 (with its 2026-11-21 amendment) and the note 'D12 as decided 2026-11-21'"
   },
   "work_package": "WP-3.1"
 }
