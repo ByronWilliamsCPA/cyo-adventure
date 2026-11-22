@@ -528,6 +528,17 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   hand-written plans pass and all six smoke plans trip; one density repair within the budget; a convention-1 section in
   `plan.md`; SP-3 treats a failure fact against the truth as a WARNING; per-attempt summaries on the job report;
   explicit OpenRouter reasoning control. Not yet re-measured on paid calls.
+- **Chunked plan writing, 2026-11-22 (`AL-844`, `AL-855`; mock providers only, no paid run yet).** Before the first
+  plan call the plan's output is estimated from the shape (110 tokens per node, 42 per choice, 150 per thread, 500
+  fixed, calibrated on the retrial runs 1 to 5) plus a reasoning allowance of `max(4000, 0.6 x content)`, and compared
+  with 90% of `resolve_output_cap`. A plan that fits is written in one call with byte-identical prompts (both short 8-11
+  shapes). One that does not (`the-lantern-keepers-list`: 45,853 estimated against 28,800) is written as a spine call
+  (cast, truth, full ledger, threads, gifts, a summary per scene) and one call per scene, in reading order; scenes are a
+  deterministic breadth-first partition sized to half the budget, and each scene sees the facts guaranteed at its
+  boundary from the scenes before it. Findings are routed to the part that owns them and each part re-written counts as
+  one repair. A cut-off one-call answer falls back to chunks once, a cut-off scene is split once, a cut-off spine is
+  retried once with a shorter-ledger note. `Settings.story_plan_write_mode` (`auto`, `single`, `chunked`); the decision
+  and estimates are on the job report as `story_plan_write_mode`.
 
 ### WP-2.4 Plan approval
 
