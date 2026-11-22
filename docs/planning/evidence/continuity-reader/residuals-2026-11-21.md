@@ -1,11 +1,3 @@
-Summary (6 lines):
-1. 28 suspects plus one related find checked against the current text; witnesses replayed, quotes matched verbatim.
-2. Real: 1 blocker (Signal `m_num_countdown`), 8 should-fix and 11 minor; 9 suspects are not defects.
-3. Midnight Museum, Sky-Ship and Cave of Echoes keep a usable clean label; each has known residuals to record.
-4. Signal fails D12's clean premise: one blocker sits in both blind plans, as a requirement the route never met.
-5. Mapmaker's Island carries four should-fix, one a same-route contradiction that both plans mark (checker ERROR).
-6. Recommendation: relabel Signal and Mapmaker now, then fix and re-extract them; record residuals on the other three.
-
 <!-- markdownlint-disable MD038 -- witness routes are code spans wrapped across lines -->
 
 # Residual check of the five post-fix held-out books (2026-11-21)
