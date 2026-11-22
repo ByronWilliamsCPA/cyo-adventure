@@ -162,7 +162,7 @@
    "text": "The count reaches zero tonight, at twenty to midnight."
   },
   "alder_refused_transfer": {
-   "text": "Kell Alder alone refused the transfer inland when the relay closed: \"somebody has to keep the channel open.\""
+   "text": "Of ten staff, Kell Alder alone refused to leave when the relay closed (eight went inland, one resigned): \"somebody has to keep the channel open.\""
   },
   "okafor_trust": {
    "text": "Wren told Mrs. Okafor the truth; she told Wren of the daughter and asked her to ring the marina if the loop looked like stopping."
@@ -464,7 +464,7 @@
   },
   "r_re_hut": {
    "function": "continue",
-   "event": "SERVICED BY K. ALDER, last month and every month for years.",
+   "event": "SERVICED BY K. ALDER, last month and every month for years: he did not leave when the station went dark.",
    "requires": [],
    "establishes": [
     "alder_name",
@@ -722,7 +722,7 @@
   },
   "m_num_countdown": {
    "function": "continue",
-   "event": "Circled: the countdown ends tonight.",
+   "event": "Circled: the countdown ends tonight. No letter is named here.",
    "requires": [],
    "establishes": [
     "count_going_down",
@@ -751,7 +751,7 @@
   },
   "m_who_article": {
    "function": "continue",
-   "event": "Kell Alder alone refused the transfer: \"somebody has to keep the channel open.\"",
+   "event": "Kell Alder alone of ten staff refused to leave; eight went inland, one resigned: \"somebody has to keep the channel open.\"",
    "requires": [],
    "establishes": [
     "alder_refused_transfer"
@@ -1270,9 +1270,11 @@
   },
   "e_he_complete": {
    "function": "ending",
-   "event": "It takes all three: Ruiz wires a spare cell, Kell holds the count, and Wren dials the circled number; Marin answers.",
+   "event": "It takes all three: Ruiz wires a spare cell, Kell holds the count, and Wren dials the number Kell has circled in his address book; Marin answers.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "circled_number"
+   ]
   },
   "e_he_takeover": {
    "function": "ending",
@@ -2124,14 +2126,15 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-signal-in-the-static.filled.json",
-  "book_sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+  "book_sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
   "authored": "2026-11-21",
   "authoring_minutes": 5,
   "checks": null,
   "approver": null,
   "notes": [
    "continuity_pass: {\"work_package\": \"WP-0.4\", \"date\": \"2026-11-21\", \"findings\": \"docs/planning/evidence/story-plan-retro/findings-the-signal-in-the-static.md\", \"pre_fix_book_sha256\": \"f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db\", \"note\": \"Book and plan updated together; every node's requires is guaranteed on entry on every reachable route and state.\"}",
-   "sp9_condensed 2026-11-21: request.tone, pitch.obstacle, pitch.stake; pre-condensation text at commit 51532b2"
+   "sp9_condensed 2026-11-21: request.tone, pitch.obstacle, pitch.stake; pre-condensation text at commit 51532b2",
+   "residual fixes 2026-11-22: SG-1, SG-2, SG-4, SG-5, SG-6 (docs/planning/evidence/continuity-reader/fixes-2026-11-22-the-signal-in-the-static.md)"
   ]
  }
 }

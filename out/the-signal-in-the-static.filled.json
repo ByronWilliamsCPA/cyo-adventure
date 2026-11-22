@@ -557,7 +557,7 @@
     },
     {
       "id": "r_re_hut",
-      "body": "She wades to the humming transformer hut through water that comes over her ankles, and lays her palm flat against its door. The building is alive under her hand, feeding power to the mast overhead. A maintenance sticker is fixed beside the lock, curling at the edges, and her flashlight finds the last line on it: SERVICED BY K. ALDER. The date beside the name is last month's. Above that line are dozens more in the same careful hand, month after month and year after year, all the way to the top of the sticker. The technician Alder, whoever he is, did not walk away when the county did. He is still coming out here with his toolbox, and by the look of it he has never missed a month.",
+      "body": "She wades to the humming transformer hut through water that comes over her ankles, and lays her palm flat against its door. The building is alive under her hand, feeding power to the mast overhead. A maintenance sticker is fixed beside the lock, curling at the edges, and her flashlight finds the last line on it: SERVICED BY K. ALDER. The date beside the name is last month's. Above that line are dozens more in the same careful hand, month after month and year after year, all the way to the top of the sticker. The technician Alder, whoever he is, did not walk away when the station went dark. He is still coming out here with his toolbox, and by the look of it he has never missed a month.",
       "is_ending": false,
       "choices": [
         {
@@ -877,7 +877,7 @@
     },
     {
       "id": "m_numbers_1",
-      "body": "She copies the numbers out in full across a fresh page and stares at them until they begin to swim. Old operators loved a book cipher, in which every group points to a page and a line in some book that both ends own. Her grandfather's logbook lies by her elbow, fetched down from the cedar trunk in the attic, and tucked inside its back cover is the one book every operator on this coast once owned: the club's printed station register. But the groups arrive on a strict beat, and when she taps her pencil along with the recording, the beat is not quite steady. It might not be writing at all. It might be time, counted out loud. Her stopwatch is in the desk drawer, the register is under her hand, and her eyes will last for one long job tonight.",
+      "body": "She copies the numbers out in full across a fresh page and stares at them until they begin to swim. Old operators loved a book cipher, in which every group points to a page and a line in some book that both ends own. Her grandfather's logbook lies by her elbow, fetched down from a cedar trunk in the attic, and tucked inside its back cover is the one book every operator on this coast once owned: the club's printed station register. But the groups arrive on a strict beat, and when she taps her pencil along with the recording, the beat is not quite steady. It might not be writing at all. It might be time, counted out loud. Her stopwatch is in the desk drawer, the register is under her hand, and her eyes will last for one long job tonight.",
       "is_ending": false,
       "choices": [
         {
@@ -1009,7 +1009,7 @@
     },
     {
       "id": "m_num_countdown",
-      "body": "Wren commits to it: she circles the date twice, hard enough that the pencil nearly goes through the paper, and only then lets herself read it properly. It is today. The intervals are closing on tonight like a hand closing, and threaded through every cycle is that one stubborn letter, M. So the loop is a countdown, and it ends tonight, whether or not a single soul is listening when it does. She looks at the circled square on the calendar, and then up at the ceiling, where the attic is.",
+      "body": "Wren commits to it: she circles the date twice, hard enough that the pencil nearly goes through the paper, and only then lets herself read it properly. It is today. The intervals are closing on tonight like a hand closing. So the loop is a countdown, and it ends tonight, whether or not a single soul is listening when it does. She looks at the circled square on the calendar, and then up at the ceiling, where the attic is.",
       "is_ending": false,
       "choices": [
         {
@@ -1066,7 +1066,7 @@
     },
     {
       "id": "m_who_article",
-      "body": "She reads the article through slowly, with a finger under the lines, while the chairs go up on the tables behind her. The man standing apart is Kell Alder, the relay's senior operator. He is the only one of nine staff who refused the transfer inland. Asked why, he gave the reporter a single sentence, which the reporter plainly took for a joke: somebody has to keep the channel open. The paper printed it under his picture as a caption. That was thirty years ago this spring, and the piece is written in the tone people use about a man who will see sense in a week or two. Wren copies the sentence onto the back of her hand, because her notebook is at the bottom of her bag.",
+      "body": "She reads the article through slowly, with a finger under the lines, while the chairs go up on the tables behind her. The man standing apart is Kell Alder, the relay's senior operator. He is the only one of ten staff who refused to leave: eight took the transfer inland, and one resigned rather than go. Asked why, he gave the reporter a single sentence, which the reporter plainly took for a joke: somebody has to keep the channel open. The paper printed it under his picture as a caption. That was thirty years ago this spring, and the piece is written in the tone people use about a man who will see sense in a week or two. Wren copies the sentence onto the back of her hand, because her notebook is at the bottom of her bag.",
       "is_ending": false,
       "choices": [
         {
@@ -2071,7 +2071,7 @@
     },
     {
       "id": "e_he_complete",
-      "body": "She gets out and goes in with Ruiz, and he does not tell her twice to stay behind. The old man at the console turns round, sees who it is, and says a word that Wren pretends not to hear. \"You owe me thirty years of conversation, Kell,\" Ruiz says, hanging up his coat as if he had left yesterday. \"This is the Callahan girl, and she has been listening, which is more than I ever had the nerve to do.\" It takes all three of them. Ruiz strips a spare cell out of the mast heater and wires it across the dying one, the old man holds the count, and Wren, because hers are the steadiest hands in the room, dials the number circled in his address book. When a woman's voice answers, both men reach for the telephone at once, and it is Ruiz who lets go.",
+      "body": "She gets out and goes in with Ruiz, and he does not tell her twice to stay behind. The old man at the console turns round, sees who it is, and says a word that Wren pretends not to hear. \"You owe me thirty years of conversation, Kell,\" Ruiz says, hanging up his coat as if he had left yesterday. \"This is the Callahan girl, and she has been listening, which is more than I ever had the nerve to do.\" It takes all three of them. Ruiz strips a spare cell out of the mast heater and wires it across the dying one, the old man holds the count, and Wren, because hers are the steadiest hands in the room, dials a number that Kell has circled so many times in his address book that the paper shines. When a woman's voice answers, both men reach for the telephone at once, and it is Ruiz who lets go.",
       "is_ending": true,
       "ending": {
         "id": "e_he_complete",
