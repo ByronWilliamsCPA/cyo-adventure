@@ -50,6 +50,7 @@ from cyo_adventure.storyplan.chunking import (
     scene_content,
     split_scene,
     stitch,
+    undeclared_facts,
 )
 from cyo_adventure.storyplan.generate import (
     DEFAULT_WRITE_MODE,
@@ -98,21 +99,24 @@ _SCENE_SHAPE = re.compile(
 _SCENE_ID = re.compile(r"^Scene (S\w+)\.$", re.MULTILINE)
 _SCENES = re.compile(r'^(\{"S1".*\})$', re.MULTILINE)
 _FINDINGS = "## The checker's findings"
+_REASK = "is not in the ledger or in your new_facts"
 
 # sha256 of the single-call plan and repair prompts for the two short 8-11
 # shapes, recorded before chunked writing was added (commit ca56952): system,
 # user, repair system, repair user. Single-call mode must not change a byte.
+# Re-pinned 2026-11-22 when convention 1 was reworded (AL-874): only the two system
+# prompts changed, the user prompts are byte for byte as before.
 _GOLDEN: dict[str, tuple[str, str, str, str]] = {
     "the-locked-carousel": (
-        "1b5ec010864f534d8e2b46a7f0987a37d69902aac0ae62300cebbe7b690e7940",
+        "ee766f7fa4b22846ffd648deed457f1df354942d9b654cec82073cbfab3b6475",
         "761b3ca5a8b7b964dffdc6e52a47c86c06f82a9d66465f3bf382af2a479f6c84",
-        "6f0c7729e3dad0bd738a11a5908d60f02cbb39dd0b1e31540bff540f0bbf9727",
+        "7ed7e59ccb9579e88c559927a39d7865b6f062b098eda97adafc9e126d50073b",
         "66f4595083c59df8a65ff82862993b33dbd20c2f5f6e4c9e57b414b8604e8a1c",
     ),
     "the-cave-of-echoes": (
-        "1b5ec010864f534d8e2b46a7f0987a37d69902aac0ae62300cebbe7b690e7940",
+        "ee766f7fa4b22846ffd648deed457f1df354942d9b654cec82073cbfab3b6475",
         "395e62c478ba6ee801ee66c255f8924add9be75fe777e92aa7e94a44b3c47bd3",
-        "6f0c7729e3dad0bd738a11a5908d60f02cbb39dd0b1e31540bff540f0bbf9727",
+        "7ed7e59ccb9579e88c559927a39d7865b6f062b098eda97adafc9e126d50073b",
         "0040961fa171088f723fc719d0b161317832158a271d73dadcc6edf84e923012",
     ),
 }
@@ -555,7 +559,9 @@ async def test_a_chunk_load_error_is_routed_to_that_chunk(
     def hook(
         scene_id: str, nodes: list[str], choices: list[str], prompt: str
     ) -> Answer | None:
-        if scene_id != "S3" or _FINDINGS in prompt:
+        # Bad on the first write and on the pre-stitch re-ask, good once the
+        # load error reaches the scene as a repair.
+        if scene_id != "S3" or (_FINDINGS in prompt and _REASK not in prompt):
             return None
         bad = json.loads(_scene_answer(alias, nodes, choices))
         bad["nodes"][nodes[0]]["requires"] = ["no_such_fact"]
@@ -569,6 +575,60 @@ async def test_a_chunk_load_error_is_routed_to_that_chunk(
     assert result.attempts[0].outcome == "load_errors"
     assert result.attempts[1].parts == ("S3",)
     assert "no_such_fact" in provider.calls[-1]
+
+
+def test_undeclared_facts_lists_unknown_ids() -> None:
+    """Only ids the ledger and the scene's own new_facts both lack are listed."""
+    entries = ChunkEntries(
+        nodes={
+            "n1": {"requires": ["in_ledger"], "establishes": ["mine", "ghost"]},
+            "n2": {"requires": ["ghost", "other_ghost"], "establishes": []},
+            "n3": {"requires": "not-a-list", "establishes": [7]},
+        },
+        choices={"c1": {"establishes": ["ghost"]}, "c2": "not-a-dict"},
+        new_facts={"mine": {"text": "A thing.", "contradicts": []}},
+    )
+    found = undeclared_facts(entries, {"in_ledger": {}})
+    assert found == {"ghost": ["c1", "n1", "n2"], "other_ghost": ["n2"]}
+    assert undeclared_facts(ChunkEntries({}, {}, {}), {"x": 1}) == {}
+
+
+@pytest.mark.asyncio
+async def test_an_undeclared_fact_is_asked_about_once_before_stitching(
+    large_view: ShapeView,
+) -> None:
+    """A scene naming an undeclared fact is re-asked once, with no repair spent."""
+    alias = large_view.to_alias(_large_sections())
+
+    def hook(
+        scene_id: str, nodes: list[str], choices: list[str], prompt: str
+    ) -> Answer | None:
+        if scene_id != "S3":
+            return None
+        answer = json.loads(_scene_answer(alias, nodes, choices))
+        first = answer["nodes"][nodes[0]]
+        first["establishes"] = [*first.get("establishes", []), "cloth_pocketed"]
+        if _REASK in prompt:
+            answer["new_facts"] = {
+                "cloth_pocketed": {
+                    "text": "Wren pocketed the cloth.",
+                    "contradicts": [],
+                }
+            }
+        return json.dumps(answer), "stop"
+
+    provider = ScriptedProvider(
+        _answerer(large_view, _large_sections(), scene_hook=hook)
+    )
+    result = await _run(large_view, provider)
+    assert result.status == "checked"
+    assert result.repairs == 0
+    scenes = len(partition_scenes(large_view.book, cap=_CAP))
+    assert result.plan_calls == 1 + scenes + 1
+    asked = [p for p in provider.calls if _REASK in p]
+    assert len(asked) == 1
+    assert "cloth_pocketed" in asked[0]
+    assert any("reask=S3:undeclared=1" in line for line in result.stage_log)
 
 
 @pytest.mark.asyncio
@@ -619,7 +679,10 @@ async def test_a_chunk_repair_counts_against_the_shared_budget(
     result = await _run(large_view, provider, max_repairs=2)
     assert result.status == "failed_checks"
     assert result.repairs == 2
-    assert result.plan_calls == 1 + len(partition_scenes(large_view.book, cap=_CAP)) + 2
+    # The spine, each scene and its one pre-stitch re-ask (the answer always names
+    # an undeclared fact), then two repairs, each also re-asked once.
+    scenes = len(partition_scenes(large_view.book, cap=_CAP))
+    assert result.plan_calls == 1 + 2 * scenes + 2 * 2
     assert result.load_errors
 
 

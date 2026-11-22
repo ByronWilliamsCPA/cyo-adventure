@@ -539,6 +539,14 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   one repair. A cut-off one-call answer falls back to chunks once, a cut-off scene is split once, a cut-off spine is
   retried once with a shorter-ledger note. `Settings.story_plan_write_mode` (`auto`, `single`, `chunked`); the decision
   and estimates are on the job report as `story_plan_write_mode`.
+- **Pre-stitch scene check, 2026-11-22 (`AL-873`).** The first paid chunked trial
+  (`evidence/plan-generation-chunked-2026-11-22/`) lost its repair budget to a scene that named a fact it never
+  declared. A scene answer is now checked before stitching: every fact id its nodes and choices name must be in the
+  ledger (the spine's facts and the facts other scenes proposed) or in the scene's own `new_facts`. A scene that fails
+  is re-asked once, with the undeclared ids named, before anything is stitched or checked; that call is not a repair,
+  and a second answer that still names one falls through to the ordinary load error and repair budget. The paid-call
+  bound is therefore two calls per scene write rather than one. The convention-1 rewording of the same day (a reversed
+  negative is worded with its time, not marked `contradicts`) is in the plan and repair prompts.
 
 ### WP-2.4 Plan approval
 

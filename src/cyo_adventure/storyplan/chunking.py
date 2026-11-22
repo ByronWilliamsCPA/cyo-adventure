@@ -63,7 +63,7 @@ from typing import TYPE_CHECKING, Final, Literal, cast
 from cyo_adventure.storyplan.checks import guaranteed_on_entry
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping, Sequence
+    from collections.abc import Collection, Iterable, Mapping, Sequence
 
     from cyo_adventure.storybook.models import Storybook
 
@@ -102,6 +102,7 @@ __all__ = [
     "scene_content",
     "split_scene",
     "stitch",
+    "undeclared_facts",
 ]
 
 PlanWriteMode = Literal["auto", "single", "chunked"]
@@ -648,6 +649,43 @@ class ChunkEntries:
     nodes: dict[str, object]
     choices: dict[str, object]
     new_facts: dict[str, object]
+
+
+def undeclared_facts(
+    entries: ChunkEntries, known: Collection[str]
+) -> dict[str, list[str]]:
+    """Return the fact ids a scene's entries name that nothing declares.
+
+    A scene may name a ledger fact, or one of its own ``new_facts``. Anything
+    else fails the plan load later, after a paid stitch and check, so the
+    caller can ask the scene once before stitching (``AL-873``).
+
+    Args:
+        entries: The scene's entries (real ids).
+        known: Every id the ledger holds without this scene's proposals.
+
+    Returns:
+        dict[str, list[str]]: Each undeclared fact id to the sorted node and
+            choice ids that name it (empty when every reference is declared).
+    """
+    # #ASSUME: data-integrity: entries are model output; a requires or
+    # establishes value that is not a list of strings is ignored here and left
+    # to the schema load, which reports it.
+    # #VERIFY: test_storyplan_chunked.py::test_undeclared_facts_lists_unknown_ids.
+    declared = set(known) | set(entries.new_facts)
+    found: dict[str, set[str]] = {}
+    for group in (entries.nodes, entries.choices):
+        for subject, entry in group.items():
+            if not isinstance(entry, dict):
+                continue
+            for key in ("requires", "establishes"):
+                refs = cast("dict[str, object]", entry).get(key)
+                if not isinstance(refs, list):
+                    continue
+                for ref in cast("list[object]", refs):
+                    if isinstance(ref, str) and ref not in declared:
+                        found.setdefault(ref, set()).add(subject)
+    return {fact: sorted(subjects) for fact, subjects in sorted(found.items())}
 
 
 @dataclass(frozen=True, slots=True)

@@ -147,6 +147,7 @@ from cyo_adventure.storyplan.chunking import (
     scene_content,
     split_scene,
     stitch,
+    undeclared_facts,
 )
 from cyo_adventure.storyplan.models import (
     PLAN_VERSION,
@@ -2614,13 +2615,22 @@ class _ChunkedRun:
         )
 
     async def _write_scene(
-        self, scene: Scene, feedback: Sequence[Routed] | None = None
+        self,
+        scene: Scene,
+        feedback: Sequence[Routed] | None = None,
+        *,
+        reasked: bool = False,
     ) -> None:
         """Write (or repair) one scene; a cut-off scene is split once.
+
+        An answer that names a fact nothing declares is sent back once, before
+        stitching, with the undeclared ids listed (``AL-873``). That second call
+        is not a repair and does not touch the repair budget.
 
         Args:
             scene: The scene.
             feedback: The scene's routed findings for a repair, or None.
+            reasked: True on the one re-ask, which is never itself re-asked.
         """
         job, view = self.job, self.job.view
         node_owner, _ = owners(view.book, self.scenes)
@@ -2667,9 +2677,54 @@ class _ChunkedRun:
             await self._split(scene, feedback)
             return
         lines, entries = self._accept_scene(scene, text)
+        if entries is not None and not reasked:
+            ledger = cast(
+                "Mapping[str, object]", self._stitched(exclude=scene.id)["facts"]
+            )
+            missing = undeclared_facts(entries, ledger)
+            if missing:
+                self.entries[scene.id] = entries
+                await self._write_scene(
+                    scene,
+                    [*(feedback or []), *self._undeclared_lines(scene, missing)],
+                    reasked=True,
+                )
+                return
         self.pending.extend(lines)
         if entries is not None:
             self.entries[scene.id] = entries
+
+    def _undeclared_lines(
+        self, scene: Scene, missing: Mapping[str, Sequence[str]]
+    ) -> list[Routed]:
+        """Return the feedback lines for facts a scene named but did not declare.
+
+        Args:
+            scene: The scene.
+            missing: Undeclared fact id to the entries naming it.
+
+        Returns:
+            list[Routed]: One error line per fact, to the scene.
+        """
+        # #CRITICAL: payment/financial: this re-ask is one extra paid call per
+        # scene write, never a loop; the caller passes reasked=True so a scene
+        # whose second answer still names an undeclared fact falls through to
+        # the load error and the ordinary repair budget.
+        # #VERIFY: test_storyplan_chunked.py::
+        # test_an_undeclared_fact_is_asked_about_once_before_stitching.
+        self.job.stage_log.append(
+            f"plan:{self.job.calls}:reask={scene.id}:undeclared={len(missing)}"
+        )
+        return [
+            Routed(
+                scene.id,
+                f"fact '{fact}' is not in the ledger or in your new_facts "
+                f"(named by {', '.join(subjects)}): use a ledger id, or declare "
+                "it in new_facts with its text",
+                subjects[0],
+            )
+            for fact, subjects in missing.items()
+        ]
 
     async def _split(self, scene: Scene, feedback: Sequence[Routed] | None) -> None:
         """Split a cut-off scene in two and write both halves (once).
