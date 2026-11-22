@@ -11707,21 +11707,27 @@
         "unit": "the-midnight-museum"
       },
       "class_source": "the book's reader items",
-      "defect_class": [
-        "unestablished_fact_on_route"
-      ],
-      "defects": [
-        {
-          "defect_class": "unestablished_fact_on_route",
-          "id": "R1121-MM-4",
-          "severity": "minor"
-        }
-      ],
-      "expected_verdict": "reject",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
       "half": "held_out",
       "id": "PL-c1",
       "kind": "plan",
-      "known_residuals": [],
+      "known_residuals": [
+        {
+          "choice": "c_base_study",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MM-4",
+          "nodes": [
+            "k_study",
+            "c_base_study",
+            "e_win_hero_curator"
+          ],
+          "note": "minor defect of a revision whose every defect is minor; recorded as a known residual of its plans, not a reason to reject them (owner ruling 2026-11-22, AL-882). A reviewer flag here is a true positive",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+        }
+      ],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -11731,7 +11737,7 @@
       },
       "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
       "scored_for": "D12",
-      "severity": "minor",
+      "severity": null,
       "severity_source": "highest severity among the book's defects",
       "source": {
         "anchor": "c1",
@@ -12122,21 +12128,27 @@
         "unit": "the-midnight-museum"
       },
       "class_source": "the book's reader items",
-      "defect_class": [
-        "unestablished_fact_on_route"
-      ],
-      "defects": [
-        {
-          "defect_class": "unestablished_fact_on_route",
-          "id": "R1121-MM-4",
-          "severity": "minor"
-        }
-      ],
-      "expected_verdict": "reject",
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
       "half": "held_out",
       "id": "PL-d3",
       "kind": "plan",
-      "known_residuals": [],
+      "known_residuals": [
+        {
+          "choice": "c_base_study",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MM-4",
+          "nodes": [
+            "k_study",
+            "c_base_study",
+            "e_win_hero_curator"
+          ],
+          "note": "minor defect of a revision whose every defect is minor; recorded as a known residual of its plans, not a reason to reject them (owner ruling 2026-11-22, AL-882). A reviewer flag here is a true positive",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+        }
+      ],
       "label_strength": "strong",
       "note": null,
       "plan": {
@@ -12146,7 +12158,7 @@
       },
       "producer": "blind extraction (clean-plans), opus agent, prompt EXTRACTION-PROMPT-v2.md",
       "scored_for": "D12",
-      "severity": "minor",
+      "severity": null,
       "severity_source": "highest severity among the book's defects",
       "source": {
         "anchor": "d3",
@@ -12897,24 +12909,30 @@
         "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
         "unit": "the-midnight-museum"
       },
-      "class_source": "the book's reader items",
-      "defect_class": [
-        "unestablished_fact_on_route"
-      ],
-      "defects": [
-        {
-          "defect_class": "unestablished_fact_on_route",
-          "id": "R1121-MM-4",
-          "severity": "minor"
-        }
-      ],
-      "expected_verdict": "reject",
+      "class_source": null,
+      "defect_class": [],
+      "defects": [],
+      "expected_verdict": "pass",
       "half": "held_out",
       "id": "PL-the-midnight-museum-postfix",
       "kind": "plan",
-      "known_residuals": [],
+      "known_residuals": [
+        {
+          "choice": "c_base_study",
+          "defect_class": "unestablished_fact_on_route",
+          "id": "R1121-MM-4",
+          "nodes": [
+            "k_study",
+            "c_base_study",
+            "e_win_hero_curator"
+          ],
+          "note": "minor defect of a revision whose every defect is minor; recorded as a known residual of its plans, not a reason to reject them (owner ruling 2026-11-22, AL-882). A reviewer flag here is a true positive",
+          "severity": "minor",
+          "source": "docs/planning/evidence/continuity-reader/residuals-2026-11-21.md"
+        }
+      ],
       "label_strength": "strong",
-      "note": "binds the WP-0.4 post-fix revision, which the 2026-11-21 residual check found to carry defects; labelled with them. The clean plans of this book are the e/f blind plans of the revision fixed on 2026-11-22",
+      "note": "binds the WP-0.4 post-fix revision, whose only residuals are minor; pass with those minors as known residuals (AL-882)",
       "plan": {
         "file": "out/the-midnight-museum.plan.json",
         "pointer": null,
@@ -12923,8 +12941,8 @@
       },
       "producer": "hand-written (WP-0.3), revised with the WP-0.4 fixes",
       "scored_for": "D12",
-      "severity": "minor",
-      "severity_source": "highest severity among the book's defects",
+      "severity": null,
+      "severity_source": null,
       "source": {
         "doc": "out/the-midnight-museum.plan.json"
       }
@@ -13465,8 +13483,8 @@
           "reject/strong": 3
         },
         "the-midnight-museum": {
-          "pass/strong": 2,
-          "reject/strong": 4
+          "pass/strong": 5,
+          "reject/strong": 1
         },
         "the-signal-in-the-static": {
           "pass/strong": 2,
@@ -13486,8 +13504,8 @@
       "merge_openings": 219,
       "payoff_judgments_clean": 0,
       "plans": {
-        "pass/strong": 10,
-        "reject/strong": 20,
+        "pass/strong": 13,
+        "reject/strong": 17,
         "unknown/unlabelled": 2
       },
       "plans_with_blocker": 8,

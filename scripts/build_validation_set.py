@@ -1622,35 +1622,64 @@ def _manifest_plans(manifest: str, plans_dir: str, prompt: str) -> list[JsonObj]
     return out
 
 
-def _plan_label(book_key: str, reader: list[JsonObj]) -> JsonObj:
-    """Return a plan's label fields from the defects its book revision carries.
+def _plan_label(book_key: str, reader: list[JsonObj]) -> tuple[JsonObj, list[JsonObj]]:
+    """Return a plan's label fields and the minor defects it carries as residuals.
 
-    Only reader defect items count. A clean revision's known residuals are
-    not defect items, so a plan of a clean revision stays ``pass``.
+    Reader defect items count. When every defect of the revision is minor
+    (owner ruling 2026-11-22, AL-882), the plan is ``pass`` and those minors are
+    returned as known residuals instead of defects; any should-fix or blocker
+    makes it ``reject``. A clean revision's recorded residuals are not defect
+    items, so a plan of a clean revision stays ``pass`` either way.
     """
     # #ASSUME: data-integrity: every defect of a book revision is a reader
     # defect item keyed to that exact revision; known residuals never are.
-    # #VERIFY: the unit test asserts every e/f plan is ``pass`` with
-    # non-empty known_residuals where the book has minors.
+    # #VERIFY: the unit tests assert every e/f plan and every minor-only plan
+    # is ``pass`` with the minors listed, and every other plan keeps its defects.
+    items = _defect_items(reader, book_key)
+    severities = [cast("str", i["severity"]) for i in items]
+    minor_only = bool(items) and all(sev == "minor" for sev in severities)
+    minors: list[JsonObj] = []
+    if minor_only:
+        minors = [
+            {
+                "id": i["id"],
+                "nodes": [i["node"], *cast("list[str]", i["other_nodes"])],
+                "choice": next(iter(cast("list[str]", i["choice_ids"])), None),
+                "defect_class": i["defect_class"],
+                "severity": "minor",
+                "source": cast("JsonObj", i["source"])["doc"],
+                "note": _MINOR_ONLY_NOTE,
+            }
+            for i in items
+        ]
+        items = []
+        severities = []
     defects: list[JsonObj] = [
         {
             "id": i["id"],
             "defect_class": i["defect_class"],
             "severity": i["severity"],
         }
-        for i in _defect_items(reader, book_key)
+        for i in items
     ]
-    severities = [cast("str", d["severity"]) for d in defects]
     worst = min(severities, key=SEVERITY_RANK.__getitem__) if severities else None
-    return {
+    label: JsonObj = {
         "expected_verdict": "reject" if defects else "pass",
         "defect_class": sorted({cast("str", d["defect_class"]) for d in defects}),
         "class_source": "the book's reader items",
         "severity": worst,
         "severity_source": "highest severity among the book's defects",
-        "blocker_entries": sum(1 for s in severities if s == "blocker"),
+        "blocker_entries": sum(1 for sev in severities if sev == "blocker"),
         "defects": defects,
     }
+    return label, minors
+
+
+_MINOR_ONLY_NOTE: Final = (
+    "minor defect of a revision whose every defect is minor; recorded as a known "
+    "residual of its plans, not a reason to reject them (owner ruling 2026-11-22, "
+    "AL-882). A reviewer flag here is a true positive"
+)
 
 
 def _plan_item(
@@ -1658,14 +1687,15 @@ def _plan_item(
 ) -> JsonObj:
     pin = cast("Pinned", spec["book_pin"])
     weak = pin.key == "B-lkl-new-1"
+    label, minors = _plan_label(pin.key, reader)
     return {
         "id": f"PL-{spec['plan_id']}",
         "kind": "plan",
         "book": _book_ref(pin),
         "plan": spec["plan"],
         "producer": spec["producer"],
-        **_plan_label(pin.key, reader),
-        "known_residuals": residuals.get(pin.key, []),
+        **label,
+        "known_residuals": [*residuals.get(pin.key, []), *minors],
         "source": {"doc": spec["manifest"], "anchor": spec["plan_id"]},
         "scored_for": "D12",
         "label_strength": "weak" if weak else "strong",
@@ -1722,6 +1752,17 @@ _POSTFIX_REJECT_NOTE: Final = (
 )
 
 
+def _postfix_note(*, rejected: bool, minors: bool) -> str | None:
+    if rejected:
+        return _POSTFIX_REJECT_NOTE
+    if minors:
+        return (
+            "binds the WP-0.4 post-fix revision, whose only residuals are minor; "
+            "pass with those minors as known residuals (AL-882)"
+        )
+    return None
+
+
 def postfix_plan_items(
     reader: list[JsonObj], residuals: dict[str, list[JsonObj]]
 ) -> list[JsonObj]:
@@ -1738,7 +1779,7 @@ def postfix_plan_items(
         if prov.get("book_sha256") != book_pin.sha256:
             msg = f"{plan_pin.key}: provenance.book_sha256 is not the post-fix book"
             raise SourceError(msg)
-        label = _plan_label(book_pin.key, reader)
+        label, minors = _plan_label(book_pin.key, reader)
         rejected = label["expected_verdict"] == "reject"
         if not rejected:
             label["class_source"] = None
@@ -1756,11 +1797,11 @@ def postfix_plan_items(
                 },
                 "producer": "hand-written (WP-0.3), revised with the WP-0.4 fixes",
                 **label,
-                "known_residuals": residuals.get(book_pin.key, []),
+                "known_residuals": [*residuals.get(book_pin.key, []), *minors],
                 "source": {"doc": plan_pin.path},
                 "scored_for": "D12",
                 "label_strength": "strong",
-                "note": _POSTFIX_REJECT_NOTE if rejected else None,
+                "note": _postfix_note(rejected=rejected, minors=bool(minors)),
             }
         )
     return items

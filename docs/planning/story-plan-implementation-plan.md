@@ -712,6 +712,10 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   of its own; and it holds nothing on dull or generic plans or plans that miss the request, so those classes have no
   measured recall and the reviewer's verdict on them is advisory until the panel (WP-4.1, WP-4.2) supplies labelled
   data.
+- **Minor-only plans (owner ruling 2026-11-22, `AL-882`).** A plan whose book revision carries only minor defects is
+  labelled `pass` with those minors as known residuals; a reviewer flag there is a true positive. The report gives
+  recall for defective plans overall and split by the worst severity a plan carries (blocker, should-fix), and the clean
+  results per book (the D12 amendment).
 - **Behaviour.** The reviewer reads the plan, the shape and the fenced request and returns `pass`, `reject` or
   `unsure` with reasons that name plan entries. A pass is allowed only if the SP checks already passed (the reviewer
   never overrides them). Two runs per plan; a disagreement is `unsure`.

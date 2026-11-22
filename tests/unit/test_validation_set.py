@@ -326,15 +326,27 @@ def test_fixed_revision_plans_pass_despite_minor_residuals(doc: JsonObj) -> None
             assert _residual_ids(item) == MINORS_2026_11_22[unit], item["id"]
 
 
-def test_post_fix_revision_plans_are_rejected(doc: JsonObj) -> None:
-    """c/d plans and the held-out hand-written plans bind defective revisions."""
+def test_post_fix_revision_plans_follow_their_worst_severity(doc: JsonObj) -> None:
+    """c/d and held-out hand-written plans reject on a should-fix, pass on minors only.
+
+    Owner ruling 2026-11-22 (AL-882): a revision whose every defect is minor
+    labels its plans ``pass`` with the minors as known residuals.
+    """
     by_id = _by_id(doc)
     plan_ids = [f"PL-{p}{n}" for p in ("c", "d") for n in range(1, 6)]
     plan_ids += [f"PL-{u}-postfix" for u in POSTFIX_KEYS]
+    minor_only = {"the-midnight-museum"}
     for pid in plan_ids:
         item = by_id[pid]
         unit = cast("str", _book(item)["unit"])
         assert _book(item)["key"] == POSTFIX_KEYS[unit], pid
+        if unit in minor_only:
+            assert item["expected_verdict"] == "pass", pid
+            assert item["defects"] == []
+            assert item["blocker_entries"] == 0
+            assert item["severity"] is None
+            assert _residual_ids(item) == {"R1121-MM-4"}, pid
+            continue
         assert item["expected_verdict"] == "reject", pid
         defects = cast("list[JsonObj]", item["defects"])
         assert defects, pid
@@ -346,13 +358,15 @@ def test_post_fix_revision_plans_are_rejected(doc: JsonObj) -> None:
 
 
 def test_held_out_d12_counts_are_reported_per_book(doc: JsonObj) -> None:
-    """Two blind clean passes per fixed book; the summary breaks plans out by book."""
+    """The summary breaks plans out by book; Museum's minor-only plans pass."""
     summary = cast("JsonObj", cast("JsonObj", doc["summary"])["held_out"])
     by_unit = cast("dict[str, dict[str, int]]", summary["d12_plans_by_unit"])
     for unit in FIXED_KEYS:
-        assert by_unit[unit]["pass/strong"] == 2, unit
+        expected = 5 if unit == "the-midnight-museum" else 2
+        assert by_unit[unit]["pass/strong"] == expected, unit
     plans = cast("dict[str, int]", summary["plans"])
-    assert plans["pass/strong"] == 10
+    assert plans["pass/strong"] == 13
+    assert plans["reject/strong"] == 17
     assert plans["reject/strong"] >= 15
 
 

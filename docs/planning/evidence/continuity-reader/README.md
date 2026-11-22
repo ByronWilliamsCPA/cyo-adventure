@@ -101,7 +101,7 @@ Defect classes: the answer key's seven (`unestablished_fact_on_route`, `state_co
 | The five held-out books fixed on 2026-11-22 (`out/<slug>.filled.json` at the fix commits; records [`fixes-2026-11-22-<slug>.md`](./fixes-2026-11-22-the-signal-in-the-static.md)) | 5 `clean_book` | `fixed_nodes` are the 2026-11-21 residuals' nodes |
 | Residual check of the fixed books, [`residuals-2026-11-22.md`](./residuals-2026-11-22.md) | no items: 9 minor `known_residuals` on the fixed books and their plans | All five clean (no blocker, no should-fix). SG-7, SG-8, MM-5, MI-12 to MI-17, verified like `FINDINGS` rows |
 | Blind plans x1 to x9 and x5b (WP-1.4), y1 to y5 (G1 re-run), z1 to z3 (WP-1.6) | 18 `plan` | Each manifest's `book_sha256` is checked against the plan's provenance and maps it to a pinned book; labelled with every defect item of that book. `x3` (`B-lkl-new-1`) is a weak `pass` |
-| Blind clean-plan passes c1 to c5 and d1 to d5 ([`clean-plans/`](./clean-plans/manifest.json), prompt v2) | 10 `plan` (`reject`) | Two independent passes of each WP-0.4 post-fix revision; `reject` because those revisions now carry the 2026-11-21 residuals |
+| Blind clean-plan passes c1 to c5 and d1 to d5 ([`clean-plans/`](./clean-plans/manifest.json), prompt v2) | 10 `plan` (8 `reject`, 2 `pass`) | Two independent passes of each WP-0.4 post-fix revision; `reject` where the revision carries a should-fix or blocker residual of 2026-11-21, `pass` with the minor as a known residual for Museum (c1, d3; `AL-882`) |
 | Blind clean-plan passes e1 to e5 and f1 to f5 ([`clean-plans-fixed/`](./clean-plans-fixed/manifest.json), prompt v2) | 10 `plan` (`pass`, strong) | Two independent passes of each fixed revision; `known_residuals` carry that book's minors |
 | Hand-written post-fix plans `out/<slug>.plan.json` | 7 `plan`: 2 `pass` (Lighthouse, Orchard), 5 `reject` (the held-out five) | Pinned by commit; provenance must name the post-fix book's sha256, so the five held-out ones bind the defective post-fix revisions |
 | WP-2.3 smoke runs, `../plan-generation-smoke-2026-11-21/runs/*.json` | 6 `plan` (`unknown`) | Generated plans (`pointer` `/plan`). **Unlabelled and not scored**: use them for flag-rate observation only. Split by their shape slug |
@@ -130,10 +130,14 @@ D6 recall nor turn a plan into `reject`. Each entry has `nodes`, `choice` (a cho
   Signal SG-7, SG-8; Museum MM-5; Mapmaker's MI-12 to MI-17; none for Cave of Echoes or Sky-Ship. They sit on the
   `CB-*` items of the fixed revisions and on the e/f plans.
 - **Precedence.** A blocker or should-fix is never a known residual: a revision carrying one is defective, its plans
-  are `reject`, and its findings are reader items. That is what moved the five WP-0.4 post-fix revisions out of the
-  clean side on 2026-11-21, even for Museum, whose only residual (MM-4) is minor: the residual report recommended
-  keeping Sky-Ship, Cave and Museum clean with known residuals, but their plans were re-extracted against the fixed
-  revisions instead, so every real 2026-11-21 residual is labelled as a defect of the revision it was found in.
+  are `reject`, and its findings are reader items. That is what moved four of the five WP-0.4 post-fix revisions out of
+  the clean side on 2026-11-21. Every real 2026-11-21 residual stays a reader defect item of the revision it was found
+  in, because the continuity reader should still find it.
+- **Minor-only revisions (owner ruling 2026-11-22, `AL-882`).** A revision whose every defect is minor labels its
+  plans `pass`, with those minors listed as the plans' `known_residuals` (each entry carries the reader item's `id`);
+  any should-fix or blocker makes the plan `reject`. Only Museum's post-fix revision is minor-only (MM-4), so its c1,
+  d3 and hand-written post-fix plans are `pass`. A reviewer flag at MM-4 on those plans is a true positive. WP-3.7
+  reports reviewer recall split by the worst severity a plan carries.
 
 ## The split
 
@@ -173,7 +177,7 @@ of them lowers criterion (1), and Thornwood, Clockwork and Clocktower stay indif
 | `the-thornwood-trial` | 13-16 | tuning | 25 findings; plan z1 |
 | `the-locked-carousel` | 8-11 | tuning | smoke plans 1, 3, 4 |
 | `the-sky-ship-stowaway` | 8-11 | held out | 8 findings + 3 residuals; fixed clean book; plans x7, post-fix, c5, d1 (reject), e5, f2 (pass) |
-| `the-midnight-museum` | 10-13 | held out | 19 findings + 1 residual; fixed clean book; plans x9, post-fix, c1, d3 (reject), e2, f5 (pass) |
+| `the-midnight-museum` | 10-13 | held out | 19 findings + 1 residual; fixed clean book; plan x9 (reject); post-fix, c1, d3 (pass, MM-4), e2, f5 (pass) |
 | `the-signal-in-the-static` | 13-16 | held out | 19 findings + 5 residuals; fixed clean book; plans x8, post-fix, c3, d4 (reject), e1, f3 (pass) |
 | `the-cave-of-echoes` | 8-11 | held out | 10 findings + 3 residuals; fixed clean book; plans post-fix, c2, d5 (reject), e4, f1 (pass); smoke 2, 5 |
 | `the-mapmakers-island` | 10-13 | held out | 56 findings + 8 residuals; fixed clean book; plans post-fix, c4, d2 (reject), e3, f4 (pass) |
@@ -217,9 +221,9 @@ Plan items:
 
 | | Tuning | Held out |
 | --- | ---: | ---: |
-| Defective (`reject`), real | 12 plans of 6 book revisions in 4 units | 20 plans of 10 book revisions in 7 units: x7, x8, x9, z2, z3 (pre-fix or catalog); c1 to c5, d1 to d5 and the five hand-written post-fix plans (post-fix revisions) |
+| Defective (`reject`), real | 12 plans of 6 book revisions in 4 units | 17 plans of 9 book revisions in 7 units: x7, x8, x9, z2, z3 (pre-fix or catalog); c2 to c5, d1, d2, d4, d5 and the four hand-written post-fix plans with a should-fix or blocker (post-fix revisions) |
 | of which carry a blocker entry | 5 | 8 (x7, x8, x9, z2, z3; c3, d4 and the Signal post-fix plan, SG-2) |
-| Clean (`pass`), strong | 2 (Lighthouse, Orchard post-fix) | 10: e1 to e5 and f1 to f5, two blind passes of each fixed revision |
+| Clean (`pass`), strong | 2 (Lighthouse, Orchard post-fix) | 13: e1 to e5 and f1 to f5, two blind passes of each fixed revision, plus Museum's three minor-only plans (post-fix, c1, d3; `AL-882`) |
 | Clean (`pass`), weak | 1 (x3) | 0 |
 | Unlabelled (`unknown`, smoke) | 4 | 2 |
 
@@ -230,17 +234,17 @@ Held-out D12 plans per book (`summary.held_out.d12_plans_by_unit`; strong labels
 | Book | `reject` | `pass` | Clean plans are | Known residuals on the clean plans |
 | --- | ---: | ---: | --- | --- |
 | `the-sky-ship-stowaway` | 4 (x7, post-fix, c5, d1) | 2 | e5, f2 | none |
-| `the-midnight-museum` | 4 (x9, post-fix, c1, d3) | 2 | e2, f5 | MM-5 |
+| `the-midnight-museum` | 1 (x9) | 5 (post-fix, c1, d3, e2, f5) | e2, f5 (post-fix, c1, d3 are minor-only) | MM-5 on e2, f5; MM-4 on the others |
 | `the-signal-in-the-static` | 4 (x8, post-fix, c3, d4) | 2 | e1, f3 | SG-7, SG-8 |
 | `the-cave-of-echoes` | 3 (post-fix, c2, d5) | 2 | e4, f1 | none |
 | `the-mapmakers-island` | 3 (post-fix, c4, d2) | 2 | e3, f4 | MI-12 to MI-17 |
 | `the-clockwork-menagerie` | 1 (z2) | 0 | | |
 | `the-clocktower-cipher` | 1 (z3) | 0 | | |
-| **Total** | **20** | **10** | | |
+| **Total** | **17** | **13** | | |
 
 ## Shortfall against D12 and D6, and the seeding proposal
 
-**D12, current state.** The held-out half holds **20 real defective plans and 10 clean plans**. The defective side
+**D12, current state.** The held-out half holds **17 real defective plans and 13 clean plans** (the `AL-882` ruling moved Museum's three minor-only plans to `pass`). The defective side
 meets the minimum of 15 with real plans. The clean side meets the minimum as amended on 2026-11-21 (`AL-853`): two
 independent blind extractions (e and f) of each of the five held-out books, so the effective clean sample is five books
 and WP-3.7 reports clean results per book (table above), never as ten independent plans. The amendment named the
@@ -319,8 +323,9 @@ on those classes is unmeasured on the held-out half.
   full WP-0.4 read had missed in all five held-out books, and the 2026-11-22 check found 9 more minors on text unchanged
   since then. A clean label is the latest verified state, not a proof of no defect.
 - **Severity spread of rejected plans.** Plans are labelled by every defect their book revision carries, so a plan can
-  be `reject` on minor residuals alone (c1, d3 and the Museum post-fix plan carry only MM-4, minor). WP-3.7 should report
-  defective recall split by the worst severity a plan carries, as well as overall.
+  be `reject` on a should-fix that a plan may not make visible. Plans of a minor-only revision are `pass` with
+  residuals (`AL-882`), so no plan is `reject` on minors alone. WP-3.7 should report defective recall split by the
+  worst severity a plan carries, as well as overall.
 - **Merge seams are not continuity.** Merge counts measure route-hedging openings, a different defect from an
   unestablished fact, and are reported beside D6, never in its recall.
 - **What the set does not cover.** As WP-3.7 notes, there is nothing here on dull, generic or off-request plans, so
