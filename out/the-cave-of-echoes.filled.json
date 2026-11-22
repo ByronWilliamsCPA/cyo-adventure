@@ -584,7 +584,7 @@
     },
     {
       "id": "ra_starfish2",
-      "body": "Maya backs carefully out of the tide-pool chamber. Her notebook is tucked safe under her arm. Its pages are now full of careful drawings of the rare orange starfish. She knows the rockpool club back home will not believe her story. Not until they see the sketch with their own eyes. Biscuit trots proudly beside her, tail held high. They climb back out toward daylight together, both of them grinning at their small, quiet find.",
+      "body": "Maya backs carefully out of the tide-pool chamber. Her notebook is tucked safe under her arm. Its pages are now full of careful drawings of the rare orange starfish. She knows her rockpool club back home will not believe her story. Not until they see the sketch with their own eyes. Biscuit trots proudly beside her, tail held high. They climb back out toward daylight together, both of them grinning at their small, quiet find.",
       "is_ending": true,
       "ending": {
         "id": "e_starfish",
@@ -735,7 +735,7 @@
     },
     {
       "id": "da_skylight",
-      "body": "Maya climbs out through a hidden hole in the clifftop meadow, high above the lighthouse. She blinks hard in the sudden bright sun. Biscuit shakes himself off in the long grass, tail wagging fast with relief. Maya turns back to look at the small, hidden opening behind her. She already imagines how the museum will react. It is a whole forgotten way into the caves. And it comes with a colony of bats that nobody in years seems to have noticed living below the meadow.",
+      "body": "Maya climbs out through a hidden hole in the clifftop meadow, high above the lighthouse. She blinks hard in the sudden bright sun. Biscuit shakes himself off in the long grass, tail wagging fast with relief. Maya turns back to look at the small, hidden opening behind her. She already imagines how a museum will react. It is a whole forgotten way into the caves. And it comes with a colony of bats that nobody in years seems to have noticed living below the meadow.",
       "is_ending": true,
       "ending": {
         "id": "e_bats",
@@ -832,7 +832,7 @@
       "choices": [
         {
           "id": "c_da_out",
-          "label": "Follow the compass out.",
+          "label": "Follow Biscuit out.",
           "target": "da_compass2"
         }
       ]
@@ -862,7 +862,7 @@
     },
     {
       "id": "da_coins2",
-      "body": "Maya lugs the heavy box up to daylight, just ahead of the rising tide. Her arms ache and her breath comes ragged with the effort. Biscuit bursts out beside her into the warm sun, tail wagging hard with relief. Maya sets the box down on dry sand and grins wide. She is already picturing the museum polishing every coin and printing her name on a little card: the girl who found the smugglers' hoard.",
+      "body": "Maya lugs the heavy box up to daylight, just ahead of the rising tide. Her arms ache and her breath comes ragged with the effort. Biscuit bursts out beside her into the warm sun, tail wagging hard with relief. Maya sets the box down on dry sand and grins wide. She is already picturing a museum polishing every coin and printing her name on a little card: the girl who found the smugglers' hoard.",
       "is_ending": true,
       "ending": {
         "id": "e_coins",

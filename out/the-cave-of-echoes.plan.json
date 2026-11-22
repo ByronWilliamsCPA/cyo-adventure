@@ -147,7 +147,7 @@
       "text": "It is evening when Maya comes out of the caves."
     },
     "home_elsewhere": {
-      "text": "Maya's home is somewhere other than the cove (\"everyone back home\", \"the rockpool club back home\").",
+      "text": "Maya's home is somewhere other than the cove (\"everyone back home\", \"her rockpool club back home\").",
       "contradicts": [
         "home_near_cove"
       ]
@@ -276,7 +276,7 @@
       "text": "Maya sketched the starfish in her notebook, left it where it clung, and took a photo of the pool."
     },
     "rockpool_club": {
-      "text": "Maya knows a rockpool club back home who will want proof."
+      "text": "Maya belongs to a rockpool club back home (\"her rockpool club\"), which will want proof."
     },
     "pale_thing_in_basin": {
       "text": "Something smooth and pale is half-buried in the sand at the bottom of the green basin."
@@ -321,7 +321,7 @@
       "text": "The climb comes out through a hidden hole in the clifftop meadow above the lighthouse: a forgotten way into the caves, over a bat colony nobody has noticed in years."
     },
     "museum": {
-      "text": "There is a museum Maya expects to tell about her find."
+      "text": "Maya expects to show her find to a museum; it is introduced indefinitely (\"a museum\"), not as one the reader already knows."
     },
     "plank_door": {
       "text": "Broken barrel staves litter the floor and a leaning grey plank door is wedged into a side-cave."
@@ -347,11 +347,11 @@
     "carry_only_one": {
       "text": "With the water rising, Maya can carry only one box out cleanly."
     },
-    "compass_points_way_out": {
+    "biscuit_knows_way_out": {
       "text": "The compass needle swings true, steady as the day it was made; Biscuit knows the way out."
     },
     "compass_out": {
-      "text": "The compass led Maya and Biscuit out to the cave mouth just as the sea rushed in."
+      "text": "Biscuit led Maya out to the cave mouth just as the sea rushed in, with the compass in her hand."
     },
     "compass_finds_north": {
       "text": "The compass needle still finds true north."
@@ -890,7 +890,7 @@
     },
     "ra_starfish2": {
       "function": "ending",
-      "event": "Maya leaves with the sketches the rockpool club back home will need to see.",
+      "event": "Maya leaves with the sketches her rockpool club back home will need to see.",
       "requires": [
         "starfish_sketched",
         "orange_starfish",
@@ -1033,7 +1033,7 @@
     },
     "da_skylight": {
       "function": "ending",
-      "event": "Maya climbs out into the clifftop meadow through a forgotten way into the caves, over a bat colony, and imagines the museum's reaction.",
+      "event": "Maya climbs out into the clifftop meadow through a forgotten way into the caves, over a bat colony, and imagines how a museum will react.",
       "requires": [
         "mossy_funnel",
         "bat_roost",
@@ -1130,14 +1130,14 @@
         "one_hour_deadline"
       ],
       "establishes": [
-        "compass_points_way_out"
+        "biscuit_knows_way_out"
       ]
     },
     "da_compass2": {
       "function": "ending",
       "event": "Biscuit leads them out as the sea rushes in; the compass needle still finds true north.",
       "requires": [
-        "compass_points_way_out",
+        "biscuit_knows_way_out",
         "smugglers_cache",
         "maya_and_biscuit",
         "one_hour_deadline"
@@ -1161,7 +1161,7 @@
     },
     "da_coins2": {
       "function": "ending",
-      "event": "Maya lugs the box out ahead of the tide, imagining the museum and her name as the finder of the smugglers' hoard.",
+      "event": "Maya lugs the box out ahead of the tide, imagining a museum and her name as the finder of the smugglers' hoard.",
       "requires": [
         "box_of_coins",
         "smugglers_cache",
@@ -1416,7 +1416,7 @@
       "cost": "none (single continue)"
     },
     "c_compass": {
-      "intent": "take the light compass that can guide them",
+      "intent": "take the light brass compass",
       "cost": "leaves the treasure behind"
     },
     "c_coins": {
@@ -1424,7 +1424,7 @@
       "cost": "a slow, heavy carry with the tide rising"
     },
     "c_da_out": {
-      "intent": "follow the compass out",
+      "intent": "follow Biscuit out",
       "cost": "none (single continue)"
     },
     "c_da_carry": {
@@ -1512,7 +1512,7 @@
     "da_coins2": {
       "valence": "positive",
       "kind": "success",
-      "gift": "a box of old smugglers' coins for the museum"
+      "gift": "a box of old smugglers' coins for a museum"
     }
   },
   "provenance": {
@@ -1521,7 +1521,7 @@
     "approver": null,
     "authoring_minutes": 5,
     "book_file": "out/the-cave-of-echoes.filled.json",
-    "book_sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+    "book_sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
     "notes": [
       "Migrated from the 0.0 dialect. Superseded 0.0 binding: book sha256 a1367d591787f71738c655b75de8a7cad1bb52d87b193d08881ec292ea9c9d09; shape hash sha256:bd94786c032215768280d9358d38a52094db7a5a5e48accb3f7b8b669b111d54 (sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order); shape id was null. Binding is now provenance.book_sha256.",
       "threads_note: The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
@@ -1534,7 +1534,8 @@
       "continuity_notes: UNPAID SETUP: la_tunnel's rustle 'like wind through paper' is never explained on any route (left_glow_rustle).",
       "continuity_notes: Props introduced in passing by possessive, recorded as established where first named: notebook (la_bell3, ra_starfish), map (da_cache_back), a camera or phone for the photo (ra_starfish, not recorded as a fact), a jar (ra_islet).",
       "continuity_notes: WP-0.4 (2026-11-21): the plain contradictions above (lapping, compass, keeper/ranger, carved initials, rope/lantern, map, photo, jar, passage direction) were fixed in the book; the soft cross-route home_elsewhere vs home_near_cove item and the unexplained rustle were left as recorded, as they are taste items on no single route. See docs/planning/evidence/story-plan-retro/findings-the-cave-of-echoes.md.",
-      "sp9_condensed 2026-11-21: cast.maya.voice; pre-condensation text at commit 315a79d"
+      "sp9_condensed 2026-11-21: cast.maya.voice; pre-condensation text at commit 315a79d",
+      "residual fixes 2026-11-22: CE-1, CE-2, CE-4 (book: da_skylight and da_coins2 'the museum' -> 'a museum'; ra_starfish2 'the rockpool club' -> 'her rockpool club'; c_da_out label 'Follow the compass out.' -> 'Follow Biscuit out.'). Plan: fact compass_points_way_out renamed biscuit_knows_way_out; compass_out, museum, rockpool_club, home_elsewhere texts; c_da_out and c_compass intents; da_coins2 gift. CE-3 left (not a defect). See docs/planning/evidence/continuity-reader/fixes-2026-11-22-the-cave-of-echoes.md."
     ]
   }
 }
