@@ -38,7 +38,7 @@ import heapq
 import math
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, cast
 
 import networkx as nx
 
@@ -85,6 +85,17 @@ if TYPE_CHECKING:
 # depending on the generation layer.
 _FILL_MARKER = "<<FILL"
 _FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
+
+# A theme-contract slot token, e.g. ``{END_HERO_TITLE}``. A local copy of
+# ``storybook.theme_contract.SLOT_TOKEN_RE`` rather than an import: that module
+# imports ``validator.slots``, so importing it from the policy layer risks an
+# import cycle, and the FILL regex above already sets the precedent of keeping
+# the validator off its neighbours. The two patterns are pinned equal by
+# tests/unit/test_gate.py::test_pl29_token_pattern_matches_the_binding_pattern,
+# so a change to the binder's grammar cannot silently narrow this floor. A
+# sentinel (``{~HERO:Explorer~}``, ADR-023) has a ``~`` after the brace and
+# cannot match.
+_SLOT_TOKEN_RE = re.compile(r"\{([A-Z][A-Z0-9_]*)\}")
 
 # Endings that count as a *satisfying* completion for the PL-20 arc floor. A
 # fail-fast negative ending (setback/death/capture) may be reached quickly; only
@@ -177,6 +188,121 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
                     ),
                 )
             )
+        # An ending title is reader-visible and fillable (the chunked fill and the
+        # binder both write it), and was the third surface this rule did not read.
+        if node.ending is not None and _FILL_MARKER in node.ending.title:
+            report.add(
+                ValidationFinding(
+                    rule_id="PL-27",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    node_id=node.id,
+                    message=(
+                        f"PL-27 policy: ending '{node.ending.id}' of node "
+                        f"'{node.id}' in story '{story.id}' was validated as a fill "
+                        f"result but its title still holds a '{_FILL_MARKER}' "
+                        f"directive, so the title was never written"
+                    ),
+                )
+            )
+    if _FILL_MARKER in story.title:
+        report.add(
+            ValidationFinding(
+                rule_id="PL-27",
+                severity=Severity.ERROR,
+                story_id=story.id,
+                node_id=None,
+                message=(
+                    f"PL-27 policy: story '{story.id}' was validated as a fill "
+                    f"result but its title still holds a '{_FILL_MARKER}' "
+                    f"directive, so the title was never written"
+                ),
+            )
+        )
+    return report
+
+
+def _unbound_token_finding(
+    story: Storybook, node_id: str | None, surface: str, text: str
+) -> ValidationFinding | None:
+    """Build the PL-29 finding for one reader-visible string, or ``None`` if clean.
+
+    Args:
+        story: The story under validation (for its id).
+        node_id: The owning node, or ``None`` for the story title.
+        surface: Human-readable name of the string's role, e.g. ``"ending title"``.
+        text: The string to scan.
+
+    Returns:
+        A blocking finding naming every distinct unbound token, in sorted order, or
+        ``None`` when ``text`` carries no slot token.
+    """
+    tokens = sorted(set(cast("list[str]", _SLOT_TOKEN_RE.findall(text))))
+    if not tokens:
+        return None
+    named = ", ".join("{" + token + "}" for token in tokens)
+    return ValidationFinding(
+        rule_id="PL-29",
+        severity=Severity.ERROR,
+        story_id=story.id,
+        node_id=node_id,
+        message=(
+            f"PL-29 policy: the {surface} of "
+            f"{'node ' + repr(node_id) + ' in ' if node_id else ''}"
+            f"story '{story.id}' was validated as a fill result but still holds "
+            f"the unbound slot token(s) {named}; bind the skeleton's theme "
+            f"contract before filling, or write the text out"
+        ),
+    )
+
+
+def check_unbound_slot_tokens(story: Storybook) -> ValidationReport:
+    """Run PL-29: no reader-visible string of a *fill result* may hold ``{SLOT}``.
+
+    A catalog skeleton carries ``{SLOT}`` tokens by design: they are the declared
+    slots of its theme contract, and ``generation/binding.py`` substitutes them (and
+    asserts none remain) before a fill. A finished book carries none. The token
+    shape a binder would have replaced is a defect in a book, so this is the
+    same context-gated distinction PL-27 draws for ``<<FILL``: silent under the
+    ``"skeleton"`` posture, blocking under ``"fill_result"``.
+
+    It exists because PL-27 reads the directive marker only and nothing else read
+    the token. A hand-filled book (the `cyo-author` path) writes node prose
+    directly and never goes through ``render_bound_skeleton``, so its ending
+    titles, which are not prose and so are easy to skip, kept the skeleton's
+    ``{END_HERO_TITLE}`` verbatim and cleared every rule in the gate. The surfaces
+    scanned are the four the binder substitutes: story title, node body, ending
+    title, choice label.
+
+    #CRITICAL: data integrity: this is the deterministic floor for an unbound
+    book reaching a child; the binder's own residual-token assertion only runs on
+    the generation path, not on a hand-filled document.
+    #VERIFY: tests/unit/test_gate.py::test_fill_result_blocks_an_unbound_ending_title
+    and ::test_skeleton_context_tolerates_slot_tokens, plus
+    tests/unit/test_filled_story_corpus.py::test_filled_story_has_no_unbound_slot_tokens,
+    which runs this over every committed ``out/*.filled.json``.
+
+    Args:
+        story: The validated Storybook (Layer 1 has already passed).
+
+    Returns:
+        ValidationReport: One ERROR finding per offending string; empty when the
+        title, every body, every ending title and every label is token-free.
+    """
+    report = ValidationReport()
+    candidates: list[tuple[str | None, str, str]] = [(None, "title", story.title)]
+    for node in story.nodes:
+        candidates.append((node.id, "body", node.body))
+        if node.ending is not None:
+            candidates.append((node.id, "ending title", node.ending.title))
+        candidates.extend(
+            (node.id, f"choice '{choice.id}' label", choice.label)
+            for choice in node.choices
+        )
+    for node_id, surface, text in candidates:
+        finding = _unbound_token_finding(story, node_id, surface, text)
+        if finding is not None:
+            report.add(finding)
     return report
 
 

@@ -880,3 +880,144 @@ def test_pn1_does_not_run_at_catalog_time() -> None:
     result = run_gate(data)
 
     assert [f.rule_id for f in result.report.findings if f.rule_id == "PN-1"] == []
+
+
+# ---------------------------------------------------------------------------
+# PL-27 (ending title / story title) and PL-29: unbound slot tokens
+# ---------------------------------------------------------------------------
+
+
+def _ending_node(story: dict[str, object]) -> dict[str, object]:
+    """Return the first ending node of a loaded story, narrowed for the type checker."""
+    nodes = story["nodes"]
+    assert isinstance(nodes, list)
+    node = next(n for n in nodes if isinstance(n, dict) and n.get("ending"))
+    assert isinstance(node, dict)
+    return node
+
+
+def _set_ending_title(story: dict[str, object], title: str) -> str:
+    """Overwrite the first ending's title and return that node's id."""
+    node = _ending_node(story)
+    ending = node["ending"]
+    assert isinstance(ending, dict)
+    ending["title"] = title
+    node_id = node["id"]
+    assert isinstance(node_id, str)
+    return node_id
+
+
+@pytest.mark.unit
+def test_fill_result_blocks_an_unbound_ending_title() -> None:
+    """The reported defect: ``{END_HERO_TITLE}`` as a finished book's ending title.
+
+    Every other rule abstains on a title, so the book cleared the gate with the
+    skeleton's slot token rendered as the ending's heading.
+    """
+    story = _load(_VALID / "01_hello_world.json")
+    node_id = _set_ending_title(story, "{END_HERO_TITLE}")
+
+    result = run_gate(story, context="fill_result")
+
+    assert result.blocked
+    hits = [f for f in result.report.errors if f.rule_id == "PL-29"]
+    assert [f.node_id for f in hits] == [node_id]
+    assert "{END_HERO_TITLE}" in hits[0].message
+    assert "ending title" in hits[0].message
+
+
+@pytest.mark.unit
+def test_fill_result_blocks_a_token_embedded_in_a_longer_title() -> None:
+    """A token inside prose is still a token (``The {ITEM_COLOR} {LOST_ITEM}``)."""
+    story = _load(_VALID / "01_hello_world.json")
+    _set_ending_title(story, "The {ITEM_COLOR} {LOST_ITEM}")
+
+    result = run_gate(story, context="fill_result")
+
+    (finding,) = [f for f in result.report.errors if f.rule_id == "PL-29"]
+    assert "{ITEM_COLOR}, {LOST_ITEM}" in finding.message
+
+
+@pytest.mark.unit
+def test_fill_result_blocks_an_unbound_token_in_a_body_a_label_and_the_title() -> None:
+    """PL-29 reads all four surfaces the binder substitutes, not only titles."""
+    story = _load(_VALID / "01_hello_world.json")
+    story["title"] = "The {HEROES} Return"
+    nodes = story["nodes"]
+    assert isinstance(nodes, list)
+    start = next(n for n in nodes if isinstance(n, dict) and n.get("choices"))
+    start["body"] = "A very long walk toward the {LANDMARK_FACE} began."
+    choices = start["choices"]
+    assert isinstance(choices, list)
+    first = choices[0]
+    assert isinstance(first, dict)
+    first["label"] = "Open the {VAULT}"
+
+    result = run_gate(story, context="fill_result")
+
+    surfaces = {
+        f.message.split(" of ")[0].removeprefix("PL-29 policy: the ")
+        for f in result.report.errors
+        if f.rule_id == "PL-29"
+    }
+    assert result.blocked
+    assert surfaces == {"title", "body", f"choice '{first['id']}' label"}
+
+
+@pytest.mark.unit
+def test_skeleton_context_tolerates_slot_tokens() -> None:
+    """A catalog skeleton carries ``{SLOT}`` tokens by design; PL-29 stays silent.
+
+    Same distinction as PL-27: the token is the skeleton's declared slot, the
+    binder replaces it, and flagging it at catalog time would reject every
+    parameterised skeleton in the catalog.
+    """
+    story = _load(_VALID / "01_hello_world.json")
+    _set_ending_title(story, "{END_HERO_TITLE}")
+
+    result = run_gate(story)
+
+    assert not any(f.rule_id == "PL-29" for f in result.report.findings)
+
+
+@pytest.mark.unit
+def test_pl29_ignores_a_sentinel_and_ordinary_braces() -> None:
+    """``{~HERO:Explorer~}`` (ADR-023) and lowercase or digit-led braces are not slots."""
+    story = _load(_VALID / "01_hello_world.json")
+    _set_ending_title(story, "{~HERO:Explorer~} and {lowercase} and {9X} and {}")
+
+    result = run_gate(story, context="fill_result")
+
+    assert not any(f.rule_id == "PL-29" for f in result.report.findings)
+
+
+@pytest.mark.unit
+def test_pl29_token_pattern_matches_the_binding_pattern() -> None:
+    """Pin the local copy to the binder's grammar so the two cannot drift apart."""
+    from cyo_adventure.storybook.theme_contract import SLOT_TOKEN_RE
+    from cyo_adventure.validator import policy
+
+    assert policy._SLOT_TOKEN_RE.pattern == SLOT_TOKEN_RE.pattern
+
+
+@pytest.mark.unit
+def test_fill_result_blocks_a_directive_in_an_ending_title_and_a_story_title() -> None:
+    """PL-27 now reads the ending title and the story title as well."""
+    story = _load(_VALID / "01_hello_world.json")
+    story["title"] = "<<FILL role=title words=4>>"
+    node_id = _set_ending_title(story, "<<FILL role=ending_title words=4>>")
+
+    result = run_gate(story, context="fill_result")
+
+    pl27 = [f for f in result.report.errors if f.rule_id == "PL-27"]
+    assert result.blocked
+    assert any(f.node_id == node_id and "title still holds" in f.message for f in pl27)
+    assert any(f.node_id is None and "title still holds" in f.message for f in pl27)
+
+
+@pytest.mark.unit
+def test_a_clean_filled_story_raises_neither_pl27_nor_pl29() -> None:
+    """Guard against over-firing: a normal written book is untouched."""
+    result = run_gate(_load(_VALID / "01_hello_world.json"), context="fill_result")
+
+    assert not any(f.rule_id in {"PL-27", "PL-29"} for f in result.report.findings)
