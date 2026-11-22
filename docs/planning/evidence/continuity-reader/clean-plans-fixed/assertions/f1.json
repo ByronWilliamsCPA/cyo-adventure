@@ -1,0 +1,515 @@
+{
+  "n_open": [
+    "maya_explorer",
+    "biscuit_companion",
+    "lighthouse_above_cove",
+    "aunt_keeps_lighthouse",
+    "aunt_knows_plan",
+    "tide_going_out",
+    "three_mouths",
+    "left_hums",
+    "right_drips",
+    "middle_whispers"
+  ],
+  "n_start": [
+    "maya_explorer",
+    "biscuit_companion",
+    "three_mouths",
+    "tide_deadline",
+    "maya_has_torch",
+    "maya_has_notebook",
+    "left_hums",
+    "right_drips",
+    "middle_whispers"
+  ],
+  "la_tunnel": [
+    "maya_explorer",
+    "biscuit_companion",
+    "left_hums",
+    "left_glow_rustle"
+  ],
+  "la_fork": [
+    "maya_explorer",
+    "biscuit_companion",
+    "tide_deadline",
+    "maya_has_torch",
+    "left_fork_glitter",
+    "left_fork_murmur"
+  ],
+  "la_glitter": [
+    "maya_explorer",
+    "biscuit_companion",
+    "left_fork_glitter",
+    "maya_has_torch",
+    "quartz_wall",
+    "slope_to_crack"
+  ],
+  "la_glitter2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "maya_has_torch",
+    "blue_crack_room"
+  ],
+  "la_grotto_app": [
+    "maya_explorer",
+    "biscuit_companion",
+    "blue_crack_room",
+    "water_pooling_crack"
+  ],
+  "la_retreat_pool": [
+    "maya_explorer",
+    "biscuit_companion",
+    "blue_crack_room",
+    "three_mouths",
+    "tide_deadline",
+    "left_pool_retreat",
+    "promise_next_low_tide",
+    "plans_return"
+  ],
+  "la_squeeze": [
+    "maya_explorer",
+    "biscuit_companion",
+    "blue_crack_room",
+    "maya_has_torch",
+    "squeezed_through_crack",
+    "shimmering_room_ahead"
+  ],
+  "la_grotto": [
+    "maya_explorer",
+    "biscuit_companion",
+    "shimmering_room_ahead",
+    "crystal_grotto",
+    "loose_crystal",
+    "humming_archway"
+  ],
+  "la_crystal_take": [
+    "maya_explorer",
+    "biscuit_companion",
+    "loose_crystal",
+    "lighthouse_above_cove",
+    "maya_has_crystal",
+    "passage_to_lighthouse"
+  ],
+  "la_crystal_out": [
+    "maya_explorer",
+    "biscuit_companion",
+    "maya_has_crystal",
+    "passage_to_lighthouse",
+    "lighthouse_above_cove",
+    "door_behind_lighthouse",
+    "out_in_evening",
+    "home_folk"
+  ],
+  "la_crystal_deeper": [
+    "maya_explorer",
+    "biscuit_companion",
+    "humming_archway",
+    "crystal_grotto",
+    "shell_walls"
+  ],
+  "la_song_app": [
+    "maya_explorer",
+    "biscuit_companion",
+    "shell_walls",
+    "maya_has_torch",
+    "ringing_chamber"
+  ],
+  "la_song": [
+    "maya_explorer",
+    "biscuit_companion",
+    "ringing_chamber",
+    "lighthouse_above_cove",
+    "chamber_sings",
+    "keepers_secret"
+  ],
+  "la_hum": [
+    "maya_explorer",
+    "biscuit_companion",
+    "left_fork_murmur",
+    "murmur_is_ringing"
+  ],
+  "la_hum2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "murmur_is_ringing",
+    "maya_has_torch",
+    "chime_below"
+  ],
+  "la_bell_app": [
+    "maya_explorer",
+    "biscuit_companion",
+    "chime_below",
+    "tide_deadline",
+    "three_mouths",
+    "rope_ladder"
+  ],
+  "la_hum_back": [
+    "maya_explorer",
+    "biscuit_companion",
+    "rope_ladder",
+    "chime_below",
+    "three_mouths",
+    "left_hum_retreat",
+    "plans_return"
+  ],
+  "la_bell": [
+    "maya_explorer",
+    "biscuit_companion",
+    "rope_ladder",
+    "ships_bell"
+  ],
+  "la_bell2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "ships_bell",
+    "bell_ship_name",
+    "lantern_rope_ledge"
+  ],
+  "la_bell3": [
+    "maya_explorer",
+    "biscuit_companion",
+    "maya_has_notebook",
+    "bell_ship_name",
+    "lantern_rope_ledge",
+    "name_in_notebook",
+    "lantern_candle",
+    "maya_has_lantern_rope"
+  ],
+  "la_bell4": [
+    "maya_explorer",
+    "biscuit_companion",
+    "name_in_notebook",
+    "maya_has_lantern_rope",
+    "rope_ladder",
+    "ships_bell",
+    "three_mouths",
+    "maya_has_notebook",
+    "out_in_evening",
+    "town_will_hear",
+    "home_near_sea"
+  ],
+  "ra_drip": [
+    "maya_explorer",
+    "biscuit_companion",
+    "right_drips",
+    "three_mouths",
+    "maya_has_torch",
+    "dripping_trickle"
+  ],
+  "ra_fork": [
+    "maya_explorer",
+    "biscuit_companion",
+    "dripping_trickle",
+    "maya_has_torch",
+    "right_fork_lapping",
+    "right_fork_briny"
+  ],
+  "ra_lake_way": [
+    "maya_explorer",
+    "biscuit_companion",
+    "right_fork_lapping",
+    "maya_has_torch",
+    "pebble_passage"
+  ],
+  "ra_lake2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "pebble_passage",
+    "maya_has_torch",
+    "black_lake"
+  ],
+  "ra_lake_app": [
+    "maya_explorer",
+    "biscuit_companion",
+    "black_lake",
+    "slick_shelf"
+  ],
+  "ra_lake_back": [
+    "maya_explorer",
+    "biscuit_companion",
+    "slick_shelf",
+    "black_lake",
+    "dripping_trickle",
+    "three_mouths",
+    "lake_retreat"
+  ],
+  "ra_descend": [
+    "maya_explorer",
+    "biscuit_companion",
+    "slick_shelf",
+    "black_lake",
+    "maya_has_torch",
+    "gravel_shore",
+    "dark_shape_shore"
+  ],
+  "ra_lakeshore": [
+    "maya_explorer",
+    "biscuit_companion",
+    "dark_shape_shore",
+    "gravel_shore",
+    "rowboat",
+    "glowing_shallows"
+  ],
+  "ra_boat": [
+    "maya_explorer",
+    "biscuit_companion",
+    "rowboat",
+    "black_lake",
+    "boat_seaworthy"
+  ],
+  "ra_row": [
+    "maya_explorer",
+    "biscuit_companion",
+    "boat_seaworthy",
+    "black_lake",
+    "lake_crossed_chimney",
+    "first_in_lifetime"
+  ],
+  "ra_wade": [
+    "maya_explorer",
+    "biscuit_companion",
+    "glowing_shallows",
+    "glowing_shells"
+  ],
+  "ra_islet": [
+    "maya_explorer",
+    "biscuit_companion",
+    "glowing_shells",
+    "glowing_islet",
+    "maya_has_shells",
+    "islet_kept_secret"
+  ],
+  "ra_pool_way": [
+    "maya_explorer",
+    "biscuit_companion",
+    "right_fork_briny",
+    "maya_has_torch",
+    "briny_crawl"
+  ],
+  "ra_pool2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "briny_crawl",
+    "clear_channel"
+  ],
+  "ra_pool_app": [
+    "maya_explorer",
+    "biscuit_companion",
+    "clear_channel",
+    "weed_curtain",
+    "channel_filling"
+  ],
+  "ra_pool_back": [
+    "maya_explorer",
+    "biscuit_companion",
+    "channel_filling",
+    "three_mouths",
+    "tide_deadline",
+    "pool_retreat",
+    "plans_return"
+  ],
+  "ra_pool_enter": [
+    "maya_explorer",
+    "biscuit_companion",
+    "weed_curtain",
+    "hidden_tide_pool"
+  ],
+  "ra_pool_chamber": [
+    "maya_explorer",
+    "biscuit_companion",
+    "hidden_tide_pool",
+    "orange_starfish",
+    "never_seen_starfish",
+    "crab_tracks_basin"
+  ],
+  "ra_starfish": [
+    "maya_explorer",
+    "biscuit_companion",
+    "orange_starfish",
+    "maya_has_notebook",
+    "starfish_sketched",
+    "starfish_left"
+  ],
+  "ra_starfish2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "starfish_sketched",
+    "orange_starfish",
+    "hidden_tide_pool",
+    "maya_has_notebook",
+    "rockpool_club",
+    "home_folk"
+  ],
+  "ra_pool_deep": [
+    "maya_explorer",
+    "biscuit_companion",
+    "crab_tracks_basin",
+    "pale_thing_basin"
+  ],
+  "ra_pool_deep2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "pale_thing_basin",
+    "hidden_tide_pool",
+    "maya_has_spiral_shell",
+    "finest_find"
+  ],
+  "da_dark": [
+    "maya_explorer",
+    "biscuit_companion",
+    "middle_whispers",
+    "maya_has_torch",
+    "whisper_is_draft"
+  ],
+  "da_fork": [
+    "maya_explorer",
+    "biscuit_companion",
+    "maya_has_torch",
+    "dark_fork_squeak",
+    "dark_fork_creak"
+  ],
+  "da_bat_way": [
+    "maya_explorer",
+    "biscuit_companion",
+    "dark_fork_squeak",
+    "maya_has_torch",
+    "hanging_shapes"
+  ],
+  "da_bat2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "hanging_shapes",
+    "bat_roost",
+    "grey_light_roof"
+  ],
+  "da_bat_app": [
+    "maya_explorer",
+    "biscuit_companion",
+    "grey_light_roof",
+    "bat_roost",
+    "shaft_way_out",
+    "bats_never_touched"
+  ],
+  "da_bat_back": [
+    "maya_explorer",
+    "biscuit_companion",
+    "bat_roost",
+    "aunt_keeps_lighthouse",
+    "three_mouths",
+    "bats_left_sleeping",
+    "bats_kind_choice",
+    "ask_aunt_tomorrow"
+  ],
+  "da_bat_enter": [
+    "maya_explorer",
+    "biscuit_companion",
+    "shaft_way_out",
+    "bat_roost",
+    "bats_undisturbed",
+    "rock_staircase"
+  ],
+  "da_roost": [
+    "maya_explorer",
+    "biscuit_companion",
+    "rock_staircase",
+    "carved_arrow"
+  ],
+  "da_roost2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "rock_staircase",
+    "mossy_funnel"
+  ],
+  "da_skylight": [
+    "maya_explorer",
+    "biscuit_companion",
+    "lighthouse_above_cove",
+    "bat_roost",
+    "meadow_exit",
+    "forgotten_way_in",
+    "museum_hopes"
+  ],
+  "da_cache_way": [
+    "maya_explorer",
+    "biscuit_companion",
+    "dark_fork_creak",
+    "maya_has_torch",
+    "staves_and_door"
+  ],
+  "da_cache2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "staves_and_door",
+    "maya_has_torch",
+    "hidden_hollow"
+  ],
+  "da_cache_app": [
+    "maya_explorer",
+    "biscuit_companion",
+    "hidden_hollow",
+    "tide_deadline",
+    "smuggler_cache",
+    "hollow_flooding"
+  ],
+  "da_cache_back": [
+    "maya_explorer",
+    "biscuit_companion",
+    "smuggler_cache",
+    "hollow_flooding",
+    "three_mouths",
+    "tide_deadline",
+    "cache_retreat",
+    "plans_return"
+  ],
+  "da_cache_enter": [
+    "maya_explorer",
+    "biscuit_companion",
+    "hidden_hollow",
+    "crates_rotted",
+    "two_dry_boxes"
+  ],
+  "da_cache_room": [
+    "maya_explorer",
+    "biscuit_companion",
+    "two_dry_boxes",
+    "tide_deadline",
+    "brass_compass_box",
+    "rattling_box",
+    "carry_one_box"
+  ],
+  "da_compass": [
+    "maya_explorer",
+    "biscuit_companion",
+    "maya_has_compass",
+    "brass_compass_box",
+    "tide_deadline",
+    "compass_true"
+  ],
+  "da_compass2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "maya_has_compass",
+    "three_mouths",
+    "lighthouse_above_cove",
+    "compass_true",
+    "smuggler_cache",
+    "town_will_hear"
+  ],
+  "da_coins": [
+    "maya_explorer",
+    "biscuit_companion",
+    "maya_has_coin_box",
+    "rattling_box",
+    "hollow_flooding",
+    "coins_silver_faces",
+    "coins_uncounted"
+  ],
+  "da_coins2": [
+    "maya_explorer",
+    "biscuit_companion",
+    "maya_has_coin_box",
+    "tide_deadline",
+    "museum_hopes",
+    "smuggler_cache"
+  ]
+}

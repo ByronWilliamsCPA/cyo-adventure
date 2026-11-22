@@ -1,0 +1,682 @@
+{
+  "n_open": [
+    "bree_dreams_of_sky",
+    "airship_cirrus",
+    "cirrus_cast_off",
+    "captain_quill",
+    "bree_stowaway",
+    "hid_in_rope_coil"
+  ],
+  "n_start": [
+    "hid_in_rope_coil",
+    "four_ways_deck",
+    "sailor_approaching"
+  ],
+  "a_eng1": [
+    "stoker_singing",
+    "catwalk_or_floor"
+  ],
+  "a_eng_deep": [
+    "dials_steam_lift_hold",
+    "scuffling_in_bunkers"
+  ],
+  "a_eng_a": [
+    "dials_steam_lift_hold",
+    "steam_lift_meaning",
+    "hold_kept_warm"
+  ],
+  "a_eng_a2": [
+    "small_mew_ahead"
+  ],
+  "a_eng_b": [
+    "scuffling_in_bunkers",
+    "paw_prints_soot",
+    "small_mew_ahead"
+  ],
+  "a_eng_b2": [
+    "paw_prints_soot",
+    "small_mew_ahead"
+  ],
+  "a_eng_conv": [
+    "small_mew_ahead",
+    "nook_rope_canvas",
+    "eyes_behind_crate"
+  ],
+  "a_eng_risk": [
+    "stoker_singing",
+    "stoker_noticed"
+  ],
+  "a_eng_recover": [
+    "stoker_noticed",
+    "stoker_dismissed"
+  ],
+  "e_set_eng": [
+    "stoker_singing",
+    "ash_bucket_upside_down",
+    "purser",
+    "bree_no_ticket",
+    "sad_note_through_wood",
+    "bree_put_ashore"
+  ],
+  "b_hold1": [
+    "forty_sacks_feed"
+  ],
+  "b_hold_deep": [
+    "silver_crest_crates",
+    "barrel_tunnel_fur"
+  ],
+  "b_hold_a": [
+    "silver_crest_crates",
+    "crest_sail_fish",
+    "crates_haven_feed",
+    "forty_sacks_feed"
+  ],
+  "b_hold_a2": [
+    "small_mew_ahead"
+  ],
+  "b_hold_b": [
+    "rag_nest_sardine_tin"
+  ],
+  "b_hold_b2": [
+    "small_mew_ahead"
+  ],
+  "b_hold_conv": [
+    "small_mew_ahead",
+    "nook_rope_canvas",
+    "eyes_behind_crate"
+  ],
+  "b_hold_risk": [
+    "unlashed_crates_lean"
+  ],
+  "b_hold_recover": [
+    "unlashed_crates_lean"
+  ],
+  "e_set_hold": [
+    "unlashed_crates_lean",
+    "cat_rescued_bree",
+    "grey_cat_aboard",
+    "cat_evades_crew",
+    "purser",
+    "bree_put_ashore",
+    "bree_doesnt_know_cat_name"
+  ],
+  "c_nest1": [
+    "ladder_splits",
+    "lookout_whistling"
+  ],
+  "c_nest_deep": [
+    "lookout_whistling",
+    "spyglass_and_rope_run"
+  ],
+  "c_nest_a": [
+    "spyglass_and_rope_run",
+    "gasbags_hold_ship",
+    "tired_seam_stern"
+  ],
+  "c_nest_a2": [
+    "small_mew_ahead"
+  ],
+  "c_nest_b": [
+    "spyglass_and_rope_run",
+    "lookout_whistling"
+  ],
+  "c_nest_b2": [
+    "small_mew_ahead"
+  ],
+  "c_nest_conv": [
+    "small_mew_ahead",
+    "nook_rope_canvas",
+    "eyes_behind_crate"
+  ],
+  "c_nest_risk": [
+    "ladder_splits"
+  ],
+  "c_nest_recover": [
+    "ladder_splits"
+  ],
+  "e_set_nest": [
+    "ladder_splits",
+    "lookout_whistling",
+    "ship_flying_heavy",
+    "bree_put_ashore"
+  ],
+  "d_salon1": [
+    "saloon_passengers"
+  ],
+  "d_salon_deep": [
+    "model_ships_case",
+    "stewards_door"
+  ],
+  "d_salon_a": [
+    "model_ships_case",
+    "lowest_deck_painted_over"
+  ],
+  "d_salon_a2": [
+    "small_mew_ahead"
+  ],
+  "d_salon_b": [
+    "stewards_door",
+    "bree_ate_crust"
+  ],
+  "d_salon_b2": [
+    "bree_ate_crust",
+    "small_mew_ahead"
+  ],
+  "d_salon_conv": [
+    "small_mew_ahead",
+    "nook_rope_canvas",
+    "eyes_behind_crate"
+  ],
+  "d_salon_risk": [
+    "waiter_boot_near"
+  ],
+  "d_salon_recover": [
+    "waiter_boot_near"
+  ],
+  "e_set_salon": [
+    "saloon_passengers",
+    "purser",
+    "odder_thing_aboard",
+    "bree_put_ashore"
+  ],
+  "n_friend": [
+    "eyes_behind_crate",
+    "nook_rope_canvas",
+    "grey_cat_aboard",
+    "pip_thin_scraps",
+    "pip_befriends_bree",
+    "cat_named_pip",
+    "three_ways_nook"
+  ],
+  "f_galley1": [
+    "cat_named_pip",
+    "cook_fish_mash",
+    "larder_open"
+  ],
+  "f_galley_a": [
+    "cat_named_pip",
+    "larder_open",
+    "pip_fed_sardines",
+    "pip_purrs",
+    "storm_hits"
+  ],
+  "f_galley_b": [
+    "cat_named_pip",
+    "pip_sneezed"
+  ],
+  "f_galley_mid": [
+    "cat_named_pip",
+    "storm_hits",
+    "pip_in_coat"
+  ],
+  "e_set_galley": [
+    "cat_named_pip",
+    "pip_sneezed",
+    "pip_sardine_thief",
+    "pip_galley_cat",
+    "cook_fish_mash",
+    "purser",
+    "bree_put_ashore"
+  ],
+  "f_cabin1": [
+    "captain_quill",
+    "cat_named_pip",
+    "captains_cabin_charts"
+  ],
+  "f_cabin_a": [
+    "captain_quill",
+    "he_not_eating_storm",
+    "detour_costs_day",
+    "crew_thinks_tea",
+    "he_hates_loud_noise",
+    "storm_hits"
+  ],
+  "f_cabin_b": [
+    "cat_named_pip",
+    "chart_storm_course",
+    "whale_doodle_home_east"
+  ],
+  "f_cabin_b2": [
+    "cat_named_pip",
+    "first_officer",
+    "seasick_calf",
+    "detour_costs_day",
+    "storm_hits"
+  ],
+  "f_cabin_mid": [
+    "cat_named_pip",
+    "storm_hits",
+    "pip_in_coat"
+  ],
+  "e_set_cabin": [
+    "cat_named_pip",
+    "first_officer",
+    "nimbus_sketch",
+    "nimbus_a_cloud",
+    "purser",
+    "bree_put_ashore"
+  ],
+  "f_rig1": [
+    "cat_named_pip",
+    "inner_rigging_paths"
+  ],
+  "f_rig_a": [
+    "cat_named_pip",
+    "gasbags_hold_ship",
+    "aft_seam_weak",
+    "storm_hits"
+  ],
+  "f_rig_b": [
+    "cat_named_pip",
+    "inner_rigging_paths",
+    "storm_hits"
+  ],
+  "f_rig_b2": [
+    "inner_rigging_paths",
+    "crossed_rope_bridge",
+    "rigger_saw_crossing"
+  ],
+  "f_rig_mid": [
+    "cat_named_pip",
+    "storm_hits",
+    "pip_in_coat"
+  ],
+  "e_set_rig": [
+    "cat_named_pip",
+    "inner_rigging_paths",
+    "ran_bridge_stuck",
+    "aft_seam_weak",
+    "bree_put_ashore"
+  ],
+  "n_storm": [
+    "cat_named_pip",
+    "pip_in_coat",
+    "airship_cirrus",
+    "storm_hits",
+    "bosun_foghorn",
+    "groan_from_deep_hold"
+  ],
+  "s_deck1": [
+    "loose_control_line"
+  ],
+  "s_deck_a": [
+    "loose_control_line",
+    "bree_belayed_line",
+    "groan_from_deep_hold"
+  ],
+  "s_deck_b": [],
+  "s_deck_mid": [
+    "groan_from_deep_hold",
+    "sealed_door",
+    "door_bolt_loose"
+  ],
+  "e_set_storm1": [
+    "cat_named_pip",
+    "sad_note_through_wood",
+    "groan_rises_with_thunder",
+    "bree_put_ashore"
+  ],
+  "s_crew1": [
+    "bosun_foghorn"
+  ],
+  "s_crew_a": [
+    "pip_in_coat",
+    "bree_hauled_rope"
+  ],
+  "s_crew_b": [
+    "bree_carried_sand"
+  ],
+  "s_crew_mid": [
+    "bosun_foghorn",
+    "bosun_doesnt_know_bree",
+    "stowaways_go_to_purser",
+    "bree_stowaway"
+  ],
+  "s_crew_truth": [
+    "bosun_doesnt_know_bree",
+    "bree_told_bosun",
+    "bree_stowaway",
+    "bosun_keeps_secret",
+    "groan_from_deep_hold",
+    "sealed_hold_nobody_goes",
+    "sealed_door",
+    "door_bolt_loose"
+  ],
+  "s_crew_dodge": [
+    "bosun_doesnt_know_bree",
+    "pip_in_coat",
+    "bree_hid_name_from_bosun",
+    "groan_from_deep_hold",
+    "sealed_door",
+    "door_bolt_loose"
+  ],
+  "e_set_storm2": [
+    "bree_carried_sand",
+    "pip_in_coat",
+    "bosun_doesnt_know_bree",
+    "groan_from_deep_hold",
+    "sealed_hold_nobody_goes",
+    "bosun_wonders_hold",
+    "bree_put_ashore"
+  ],
+  "s_hold1": [
+    "groan_from_deep_hold",
+    "pip_in_coat",
+    "something_alive_afraid",
+    "sealed_door"
+  ],
+  "s_hold_a": [
+    "cat_named_pip",
+    "pale_shape_answers"
+  ],
+  "s_hold_b": [
+    "captain_quill",
+    "care_panel"
+  ],
+  "s_hold_mid": [
+    "sealed_door",
+    "cat_named_pip",
+    "door_bolt_loose"
+  ],
+  "n_secret": [
+    "cat_named_pip",
+    "captain_quill",
+    "nimbus_sky_whale_calf",
+    "nimbus_rescued_haven",
+    "nimbus_captains_secret",
+    "nimbus_thrash_rocks_ship",
+    "nimbus_hoooom",
+    "pip_steadies_nimbus",
+    "crew_unaware"
+  ],
+  "p_save1": [
+    "nimbus_sky_whale_calf",
+    "strap_pins_fin",
+    "nimbus_thrash_rocks_ship"
+  ],
+  "p_save_a": [
+    "nimbus_sky_whale_calf",
+    "strap_pins_fin",
+    "bree_nimbus_song"
+  ],
+  "p_save_b": [
+    "nimbus_sky_whale_calf",
+    "strap_pins_fin",
+    "fin_freed"
+  ],
+  "p_pip1": [
+    "nimbus_sky_whale_calf",
+    "pip_fed_sardines",
+    "pip_purrs",
+    "pip_purr_calms_nimbus"
+  ],
+  "p_save_mid": [
+    "nimbus_sky_whale_calf",
+    "captain_quill",
+    "nimbus_captains_secret",
+    "small_gentle_calms",
+    "pip_in_coat",
+    "bree_tells_captain_whale"
+  ],
+  "p_reveal1": [
+    "cat_named_pip",
+    "pip_in_coat",
+    "main_stair_jammed",
+    "flooded_passage"
+  ],
+  "p_reveal_a": [
+    "pip_in_coat",
+    "nimbus_sky_whale_calf",
+    "bree_practised_speech"
+  ],
+  "p_reveal_a2": [
+    "bree_not_passenger"
+  ],
+  "p_reveal_mid": [
+    "captain_quill",
+    "bree_practised_speech",
+    "bree_tells_captain_whale",
+    "nimbus_thrash_rocks_ship"
+  ],
+  "e_set_reveal": [
+    "cat_named_pip",
+    "flooded_passage",
+    "nimbus_sky_whale_calf",
+    "crew_leveled_hard_way",
+    "bree_put_ashore"
+  ],
+  "p_people1": [
+    "bosun_foghorn",
+    "captain_quill",
+    "nimbus_sky_whale_calf",
+    "pip_in_coat",
+    "bree_stowaway"
+  ],
+  "p_people_a": [
+    "bree_told_bosun",
+    "nimbus_sky_whale_calf",
+    "nimbus_captains_secret",
+    "bosun_believes_bree"
+  ],
+  "p_people_cold": [
+    "nimbus_sky_whale_calf",
+    "bosun_doesnt_know_bree",
+    "bosun_disbelieves_bree"
+  ],
+  "p_people_b": [
+    "nimbus_sky_whale_calf",
+    "sealed_door",
+    "pip_in_coat",
+    "captain_learns_bree_saw",
+    "door_bolt_loose"
+  ],
+  "p_people_mid": [
+    "cat_named_pip"
+  ],
+  "n_bridge": [
+    "captain_quill",
+    "nimbus_sky_whale_calf",
+    "bosun_foghorn",
+    "ship_losing_height",
+    "nimbus_thrash_rocks_ship",
+    "speaking_tube",
+    "envelope_tearing_aft",
+    "crew_unaware",
+    "cargo_door_banging",
+    "nimbus_captains_secret"
+  ],
+  "b_steer1": [
+    "speaking_tube",
+    "pip_in_coat",
+    "captain_quill",
+    "ten_minutes_needed",
+    "cat_named_pip"
+  ],
+  "b_steer_ok": [
+    "speaking_tube",
+    "nimbus_hoooom",
+    "humming_steadies_ship"
+  ],
+  "b_steer_ok2": [
+    "humming_steadies_ship",
+    "cirrus_clears_storm"
+  ],
+  "e_set_final": [
+    "speaking_tube",
+    "nimbus_sky_whale_calf",
+    "shout_scared_nimbus",
+    "he_hates_loud_noise",
+    "crew_leveled_hard_way",
+    "bree_put_ashore"
+  ],
+  "e_win_save_ship": [
+    "ten_minutes_needed",
+    "speaking_tube",
+    "nimbus_sky_whale_calf",
+    "cat_named_pip",
+    "cirrus_clears_storm",
+    "nimbus_reaches_haven",
+    "bree_stays_aboard",
+    "pip_purrs"
+  ],
+  "b_steer_purr": [
+    "cat_named_pip",
+    "pip_fed_sardines",
+    "pip_purrs",
+    "speaking_tube",
+    "nimbus_hoooom",
+    "pip_purr_through_tube"
+  ],
+  "e_win_purr": [
+    "pip_purr_through_tube",
+    "captain_quill",
+    "bosun_foghorn",
+    "cirrus_clears_storm",
+    "pip_ships_cat",
+    "bree_stays_aboard"
+  ],
+  "b_patch1": [
+    "envelope_tearing_aft",
+    "tear_needs_small_climber"
+  ],
+  "b_patch_ok": [
+    "crossed_rope_bridge",
+    "rigger_saw_crossing",
+    "envelope_patched"
+  ],
+  "b_patch_alt": [
+    "tear_needs_small_climber",
+    "ships_boy_at_tear",
+    "envelope_patched"
+  ],
+  "e_win_patch": [
+    "envelope_patched",
+    "crossed_rope_bridge",
+    "nimbus_sky_whale_calf",
+    "cat_named_pip",
+    "cirrus_clears_storm",
+    "bree_rigger_mate",
+    "bree_stays_aboard",
+    "rigger_saw_crossing"
+  ],
+  "e_win_steer": [
+    "envelope_patched",
+    "captain_quill",
+    "cat_named_pip",
+    "nimbus_sky_whale_calf",
+    "bree_stays_aboard"
+  ],
+  "e_set_aloft": [
+    "envelope_tearing_aft",
+    "cat_named_pip",
+    "bree_never_crossed_live_rope",
+    "ship_limps_emergency",
+    "inner_rigging_paths",
+    "bree_put_ashore"
+  ],
+  "b_free1": [
+    "nimbus_sky_whale_calf",
+    "captain_quill",
+    "nimbus_wants_out",
+    "cargo_door_torn_open",
+    "nimbus_wears_harness",
+    "inner_bay_quiet"
+  ],
+  "b_free_ok": [
+    "fin_freed",
+    "nimbus_wears_harness",
+    "cargo_door_torn_open",
+    "nimbus_flies_free"
+  ],
+  "b_free_ok2": [
+    "nimbus_flies_free",
+    "bosun_foghorn",
+    "why_fly_east",
+    "nimbus_leads_ship",
+    "crew_unaware"
+  ],
+  "e_win_free": [
+    "nimbus_leads_ship",
+    "fin_freed",
+    "cat_named_pip",
+    "nimbus_reaches_haven",
+    "bree_stays_aboard"
+  ],
+  "b_free_alt": [
+    "inner_bay_quiet",
+    "nimbus_sky_whale_calf",
+    "nimbus_in_inner_bay"
+  ],
+  "e_win_friend": [
+    "nimbus_in_inner_bay",
+    "nimbus_rescued_haven",
+    "nimbus_reaches_haven"
+  ],
+  "e_neu_kite": [
+    "cargo_door_torn_open",
+    "nimbus_wears_harness",
+    "strap_pins_fin",
+    "nimbus_towed_kite",
+    "nimbus_haven_delayed"
+  ],
+  "b_tell1": [
+    "captain_quill",
+    "nimbus_captains_secret",
+    "bosun_foghorn",
+    "hunters_pay_for_whales",
+    "crew_unaware"
+  ],
+  "b_tell_crew": [
+    "bree_told_bosun",
+    "nimbus_sky_whale_calf",
+    "bosun_vouches",
+    "nimbus_thrash_rocks_ship"
+  ],
+  "e_win_crew": [
+    "bosun_vouches",
+    "nimbus_sky_whale_calf",
+    "crew_hums_nimbus",
+    "bree_shipmate",
+    "bree_stays_aboard"
+  ],
+  "b_tell_doubt": [
+    "nimbus_sky_whale_calf",
+    "pip_in_coat",
+    "crew_laughs_bree",
+    "bosun_doesnt_know_bree"
+  ],
+  "b_tell_captain": [
+    "captain_quill",
+    "nimbus_captains_secret",
+    "captain_tells_crew"
+  ],
+  "e_win_captain": [
+    "captain_tells_crew",
+    "nimbus_sky_whale_calf",
+    "bosun_foghorn",
+    "bree_in_ships_log",
+    "bree_stays_aboard"
+  ],
+  "e_neu_home": [
+    "nimbus_sky_whale_calf",
+    "cat_named_pip",
+    "bree_misses_end",
+    "come_back_taller",
+    "bree_put_ashore"
+  ],
+  "b_tell_reveal": [
+    "bosun_foghorn",
+    "sealed_door",
+    "captain_quill",
+    "crew_sees_nimbus",
+    "crew_hums_nimbus"
+  ],
+  "e_win_discovery": [
+    "crew_sees_nimbus",
+    "cook_fish_mash",
+    "nimbus_sky_whale_calf",
+    "crew_hums_nimbus",
+    "mash_explained",
+    "bree_stays_aboard"
+  ]
+}

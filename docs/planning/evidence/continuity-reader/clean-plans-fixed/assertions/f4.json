@@ -1,0 +1,826 @@
+{
+  "n_open": [
+    "wren_landed",
+    "wren_kit",
+    "chart_test",
+    "ship_returns_dusk",
+    "mate_set_rule"
+  ],
+  "n_start": [
+    "five_ways"
+  ],
+  "mg_enter": [
+    "mangrove_ways",
+    "log_bridge",
+    "hidden_creek"
+  ],
+  "mg_bridge": [
+    "log_bridge",
+    "driftwood_carving"
+  ],
+  "mg_carve": [
+    "driftwood_carving",
+    "driftwood_marks"
+  ],
+  "mg_readmarks": [
+    "driftwood_marks",
+    "chart_house_taught",
+    "alder_named",
+    "alder_driftwood_msg",
+    "alder_camp",
+    "alder_chart_at_camp"
+  ],
+  "mg_farbank": [
+    "log_bridge"
+  ],
+  "e_mg_mud_trap": [
+    "log_bridge",
+    "chart_unfinished"
+  ],
+  "mg_highground": [
+    "hidden_cove",
+    "reef_offshore",
+    "spring_above"
+  ],
+  "mg_oyster": [
+    "oyster_turtle"
+  ],
+  "mg_turtle_note": [
+    "oyster_turtle",
+    "ship_can_be_signalled"
+  ],
+  "e_mg_turtle_seen": [
+    "oyster_turtle",
+    "chart_test",
+    "mate_set_rule",
+    "oyster_turtle_righted",
+    "chart_unfinished"
+  ],
+  "mg_rockpath": [
+    "seep_inland",
+    "spring_above"
+  ],
+  "mg_seep": [
+    "wren_kit",
+    "seep_inland",
+    "spring_above"
+  ],
+  "mg_overhang": [
+    "overhang_alder",
+    "alder_named",
+    "alder_camp"
+  ],
+  "e_mg_shelter": [
+    "overhang_alder",
+    "chart_unfinished"
+  ],
+  "mg_creek": [
+    "hidden_creek"
+  ],
+  "mg_otter": [
+    "spring_above"
+  ],
+  "mg_trees": [
+    "brightness_uphill"
+  ],
+  "mg_gametrail": [
+    "brightness_uphill"
+  ],
+  "e_mg_lost": [
+    "chart_unfinished"
+  ],
+  "cf_enter": [
+    "pale_gleam"
+  ],
+  "cf_switch": [],
+  "cf_ledge": [],
+  "cf_shelf": [],
+  "cf_bench": [
+    "ridge_camp_seen"
+  ],
+  "cf_campapproach": [
+    "ridge_camp_seen",
+    "camp_cairns"
+  ],
+  "camp_ascent1": [
+    "camp_cairns",
+    "ridge_camp_seen"
+  ],
+  "camp_ascent2": [
+    "camp_cairns"
+  ],
+  "e_ascent_daunted": [
+    "ridge_camp_seen"
+  ],
+  "camp_ascent3a": [],
+  "camp_ascent3b": [],
+  "camp_ascent4": [
+    "camp_cairns",
+    "wren_kit"
+  ],
+  "camp_ascent5": [
+    "camp_cairns",
+    "alder_named",
+    "alder_camp"
+  ],
+  "cf_traverse": [
+    "spring_above",
+    "island_spring"
+  ],
+  "cf_upper": [
+    "pale_gleam"
+  ],
+  "cf_hollow": [
+    "pale_gleam",
+    "tin_box"
+  ],
+  "cf_box": [
+    "tin_box",
+    "locket_girl"
+  ],
+  "e_cf_locket": [
+    "locket_girl",
+    "chart_test",
+    "mate_set_rule",
+    "locket_held",
+    "chart_unfinished"
+  ],
+  "cf_notes": [
+    "tin_box",
+    "alder_named",
+    "alder_mapmaker",
+    "alder_field_notes",
+    "alder_camp",
+    "alder_chart_at_camp",
+    "caverns_flood"
+  ],
+  "cv_enter": [
+    "sinkhole_rope",
+    "cave_passages"
+  ],
+  "cv_water": [
+    "cave_passages",
+    "cave_tide_line"
+  ],
+  "cv_arch": [],
+  "e_cv_flood": [
+    "cave_tide_line"
+  ],
+  "cv_upflow": [
+    "island_spring",
+    "spring_above"
+  ],
+  "cv_glitter": [
+    "cave_passages",
+    "first_people"
+  ],
+  "cv_ochre": [
+    "ochre_map",
+    "first_people"
+  ],
+  "e_cv_paintings": [
+    "ochre_map",
+    "chart_house_keepers",
+    "chart_unfinished"
+  ],
+  "cv_deepglow": [
+    "hidden_cove",
+    "reef_offshore"
+  ],
+  "cv_warm": [
+    "cave_passages",
+    "bat_colony",
+    "cave_pup"
+  ],
+  "cv_pup": [
+    "cave_pup",
+    "ship_can_be_signalled"
+  ],
+  "e_cv_pup_fail": [
+    "cave_pup"
+  ],
+  "cv_backout": [
+    "bat_colony"
+  ],
+  "cv_tohigh": [
+    "ridge_camp_seen"
+  ],
+  "tw_enter": [
+    "tower_built"
+  ],
+  "tw_ground": [
+    "tower_logbook"
+  ],
+  "e_tw_log": [
+    "tower_logbook",
+    "alder_named",
+    "alder_logbook",
+    "alder_mapmaker",
+    "alder_camp",
+    "alder_chart_at_camp",
+    "alder_storm",
+    "alder_lost",
+    "chart_unfinished"
+  ],
+  "tw_salvage": [
+    "alidade"
+  ],
+  "tw_toridge": [
+    "tower_find_held",
+    "ridge_camp_seen"
+  ],
+  "tw_stair": [],
+  "e_tw_stair_fail": [],
+  "tw_top": [
+    "hidden_cove",
+    "reef_offshore",
+    "ridge_camp_seen"
+  ],
+  "tw_ridgeway": [
+    "ridge_camp_seen"
+  ],
+  "tw_cellar": [],
+  "tw_tube": [
+    "alder_draft",
+    "alder_named",
+    "alder_mapmaker",
+    "alder_camp",
+    "alder_chart_at_camp"
+  ],
+  "e_tw_draft": [
+    "alder_draft",
+    "chart_unfinished"
+  ],
+  "tw_supplies": [
+    "rope_oil_held",
+    "ridge_camp_seen"
+  ],
+  "tf_enter": [
+    "flats_tide_rule",
+    "sandbar_wreck",
+    "chart_house_taught"
+  ],
+  "tf_sandbar": [
+    "sandbar_wreck",
+    "flats_tide_rule"
+  ],
+  "e_tf_stranded": [],
+  "tf_sketchrun": [],
+  "tf_gap": [
+    "spring_above"
+  ],
+  "tf_channel": [
+    "sandbar_wreck"
+  ],
+  "tf_cliffgap": [
+    "hidden_cove"
+  ],
+  "tf_strand": [],
+  "tf_bottle": [
+    "alder_bottle_msg",
+    "alder_named",
+    "alder_mapmaker",
+    "alder_camp",
+    "alder_chart_at_camp"
+  ],
+  "e_tf_bottle": [
+    "alder_bottle_msg",
+    "mate_set_rule",
+    "ship_returns_dusk",
+    "chart_unfinished",
+    "apprenticeship_not_won"
+  ],
+  "L_cove": [
+    "spring_above",
+    "hidden_cove",
+    "reef_offshore",
+    "cove_compass_rose"
+  ],
+  "e_cove_rest": [
+    "chart_unfinished"
+  ],
+  "cove_rise": [],
+  "cove_starrock": [
+    "star_map",
+    "first_people"
+  ],
+  "e_star_map": [
+    "star_map",
+    "chart_house_keepers",
+    "chart_unfinished"
+  ],
+  "cove_ridge": [
+    "ridge_camp_seen"
+  ],
+  "L_fresh": [
+    "wren_kit",
+    "island_spring",
+    "spring_above",
+    "ridge_camp_seen"
+  ],
+  "e_fresh_linger": [
+    "chart_unfinished"
+  ],
+  "fresh_study": [
+    "island_spring",
+    "ridge_camp_seen"
+  ],
+  "fresh_climb": [
+    "ridge_camp_seen"
+  ],
+  "fresh_meadow": [
+    "ridge_camp_seen"
+  ],
+  "fresh_cairn": [
+    "alder_boundary",
+    "alder_named",
+    "ridge_camp_seen"
+  ],
+  "e_fresh_cairn": [
+    "alder_boundary",
+    "chart_unfinished"
+  ],
+  "L_camp": [
+    "alder_camp",
+    "alder_chart_at_camp",
+    "alder_chart_half",
+    "alder_table_tools",
+    "tin_trunk"
+  ],
+  "camp_chart": [
+    "alder_chart_half",
+    "alder_table_tools",
+    "alder_chart_detail",
+    "alder_wish_finish"
+  ],
+  "e_camp_copy": [
+    "alder_chart_half",
+    "mate_set_rule",
+    "chart_unfinished",
+    "apprenticeship_not_won"
+  ],
+  "camp_trunk": [
+    "tin_trunk",
+    "alder_table_tools",
+    "alder_journal",
+    "alder_lost"
+  ],
+  "camp_journal": [
+    "alder_journal",
+    "alder_journal_story",
+    "alder_wish_finish",
+    "alder_wish_name"
+  ],
+  "e_camp_journal": [
+    "alder_journal_story",
+    "alder_wish_name",
+    "chart_unfinished"
+  ],
+  "camp_ready": [
+    "alder_table_tools",
+    "alder_chart_half",
+    "camp_tools_held",
+    "half_chart_held"
+  ],
+  "camp_summitpath": [
+    "half_chart_held",
+    "camp_tools_held",
+    "summit_cairns"
+  ],
+  "e_camp_scree": [
+    "summit_cairns",
+    "chart_unfinished"
+  ],
+  "ridge_notch": [
+    "summit_cairns"
+  ],
+  "wind_gap": [],
+  "L_summit": [
+    "mirror_held",
+    "summit_whole_view"
+  ],
+  "e_summit_gaze": [
+    "chart_unfinished"
+  ],
+  "summit_survey": [
+    "half_chart_held",
+    "alder_chart_half"
+  ],
+  "e_ch_rush": [
+    "mate_set_rule"
+  ],
+  "ch_sightings": [
+    "camp_tools_held"
+  ],
+  "ch_reef": [
+    "alder_named",
+    "alder_chart_half",
+    "safe_landing_chart"
+  ],
+  "e_ch_reef": [
+    "safe_landing_chart",
+    "mate_set_rule",
+    "apprenticeship_won",
+    "chart_unfinished"
+  ],
+  "ch_gather": [
+    "half_chart_held"
+  ],
+  "ch_table": [],
+  "ch_ink": [
+    "camp_tools_held",
+    "half_chart_held"
+  ],
+  "ch_pencil": [],
+  "e_ch_dusk": [
+    "ship_returns_dusk",
+    "mate_set_rule",
+    "chart_unfinished"
+  ],
+  "ch_double": [
+    "alder_named",
+    "two_charts"
+  ],
+  "ch_sign": [
+    "half_chart_held",
+    "banner_blank"
+  ],
+  "e_ch_alder_name": [
+    "alder_named",
+    "alder_wish_finish",
+    "mate_set_rule",
+    "island_named_alder",
+    "chart_complete",
+    "apprenticeship_won",
+    "mate_knows_alder"
+  ],
+  "e_ch_both_name": [
+    "alder_named",
+    "mate_set_rule",
+    "island_named_both",
+    "chart_complete"
+  ],
+  "e_ch_survey": [
+    "mate_set_rule",
+    "island_name_left",
+    "chart_signed",
+    "chart_complete",
+    "apprenticeship_won"
+  ],
+  "ch_sign_double": [
+    "two_charts"
+  ],
+  "e_ch_double_win": [
+    "two_charts",
+    "mate_set_rule",
+    "chart_complete",
+    "apprenticeship_won"
+  ],
+  "e_ch_spare": [
+    "two_charts",
+    "mate_set_rule",
+    "apprenticeship_won"
+  ],
+  "summit_signal": [
+    "mirror_held",
+    "camp_tools_held",
+    "hidden_cove",
+    "ship_back_early",
+    "reef_turtle",
+    "ship_can_be_signalled"
+  ],
+  "signal_aim": [
+    "mirror_held"
+  ],
+  "signal_flash": [
+    "mirror_held",
+    "distress_rhythm"
+  ],
+  "ship_turns": [
+    "ship_back_early",
+    "mirror_held",
+    "alder_lost",
+    "hidden_cove",
+    "ship_answers"
+  ],
+  "race_down": [
+    "mirror_held",
+    "summit_cairns",
+    "ridge_camp_seen",
+    "hidden_cove",
+    "ship_answers"
+  ],
+  "meet_boat": [
+    "ship_answers",
+    "reef_turtle",
+    "mate_set_rule",
+    "sailors_land",
+    "cove_pup"
+  ],
+  "e_rescue_pup": [
+    "cove_pup",
+    "sailors_land",
+    "mate_set_rule",
+    "cove_pup_rescued",
+    "apprenticeship_won"
+  ],
+  "e_rescue_turtle": [
+    "reef_turtle",
+    "sailors_land",
+    "mate_set_rule",
+    "reef_turtle_rescued",
+    "chart_unfinished",
+    "apprenticeship_won"
+  ],
+  "mg_lagoon": [],
+  "mg_canoe": [],
+  "e_mg_canoe": [],
+  "mg_paddle": [],
+  "mg_lagfar": [
+    "hidden_creek"
+  ],
+  "mg_ruin": [
+    "fishing_camp",
+    "first_people"
+  ],
+  "e_mg_village": [
+    "fishing_camp",
+    "mate_set_rule",
+    "chart_unfinished"
+  ],
+  "mg_lagtunnel": [],
+  "e_mg_tunnellost": [
+    "chart_unfinished"
+  ],
+  "mg_dam": [
+    "hidden_creek",
+    "alder_stake",
+    "alder_named",
+    "alder_mapmaker"
+  ],
+  "e_mg_stake": [
+    "alder_stake",
+    "alder_mapmaker",
+    "chart_unfinished"
+  ],
+  "cf_falls": [],
+  "cf_fallclimb": [],
+  "e_cf_slip": [
+    "chart_unfinished"
+  ],
+  "cf_fallcross": [],
+  "cf_fallpool": [
+    "alder_gauge",
+    "alder_named"
+  ],
+  "e_cf_gauge": [
+    "alder_gauge",
+    "chart_unfinished"
+  ],
+  "cv_skylight": [],
+  "cv_chimney": [],
+  "e_cv_chimney": [],
+  "cv_gallery": [
+    "cave_passages",
+    "searcher_lantern"
+  ],
+  "e_cv_lantern": [
+    "searcher_lantern",
+    "chart_unfinished"
+  ],
+  "tw_quarters": [
+    "tower_keeper_room"
+  ],
+  "tw_wallcharts": [
+    "tower_keeper_room",
+    "alder_many_islands",
+    "alder_named",
+    "alder_mapmaker"
+  ],
+  "e_tw_charts": [
+    "alder_many_islands",
+    "chart_unfinished"
+  ],
+  "tw_seachest": [
+    "tower_keeper_room",
+    "alder_family",
+    "alder_named",
+    "alder_mapmaker"
+  ],
+  "e_tw_drawing": [
+    "alder_family",
+    "alder_lost",
+    "chart_unfinished"
+  ],
+  "tf_mussel": [],
+  "tf_seals": [
+    "tangled_pup"
+  ],
+  "e_tf_seals": [
+    "tangled_pup",
+    "tangled_pup_freed"
+  ],
+  "tf_gully": [
+    "gully_tide_lines"
+  ],
+  "e_tf_gully": [
+    "flats_tide_rule",
+    "gully_tide_lines"
+  ],
+  "ch_farshore": [
+    "camp_tools_held",
+    "far_shore"
+  ],
+  "e_ch_farshore": [
+    "far_shore",
+    "mate_set_rule",
+    "far_shore_charted",
+    "chart_unfinished",
+    "apprenticeship_won"
+  ],
+  "ch_seal_final": [
+    "chart_signed"
+  ],
+  "e_ch_living": [
+    "mate_set_rule",
+    "chart_complete",
+    "apprenticeship_won",
+    "next_island_honour"
+  ],
+  "e_ch_clean": [
+    "mate_set_rule",
+    "chart_complete",
+    "apprenticeship_won"
+  ],
+  "mg_heron": [
+    "reed_raft"
+  ],
+  "mg_blind": [
+    "seep_inland",
+    "alder_blind",
+    "alder_named",
+    "alder_mapmaker"
+  ],
+  "e_mg_tidetable": [
+    "alder_blind",
+    "chart_unfinished"
+  ],
+  "mg_mudbank": [],
+  "e_mg_birdstorm": [
+    "reed_raft",
+    "chart_unfinished"
+  ],
+  "mg_farchannel": [],
+  "mg_rookery": [
+    "fallen_chick"
+  ],
+  "e_mg_chick": [
+    "fallen_chick",
+    "chart_unfinished"
+  ],
+  "cf_grove": [
+    "grove_shrine"
+  ],
+  "cf_canopy": [],
+  "e_cf_ladder": [],
+  "cf_treetop": [
+    "alder_treetop",
+    "alder_named"
+  ],
+  "e_cf_canopy": [
+    "chart_unfinished"
+  ],
+  "cf_shrine": [
+    "grove_shrine",
+    "first_people",
+    "ridge_camp_seen"
+  ],
+  "e_cf_shrine": [
+    "grove_shrine",
+    "chart_unfinished"
+  ],
+  "cv_lake": [],
+  "cv_raft": [],
+  "e_cv_raft": [
+    "wren_kit"
+  ],
+  "cv_farcave": [],
+  "e_cv_fish": [
+    "chart_unfinished"
+  ],
+  "cv_lakebeach": [
+    "stone_footprints"
+  ],
+  "e_cv_prints": [
+    "stone_footprints",
+    "chart_unfinished"
+  ],
+  "tw_beacon": [
+    "beacon_dial"
+  ],
+  "tw_brazier": [
+    "beacon_dial"
+  ],
+  "e_tw_nofuel": [],
+  "tw_fuelstore": [
+    "alder_fuel_note",
+    "alder_named",
+    "alder_storm",
+    "alder_lost"
+  ],
+  "e_tw_note": [
+    "alder_fuel_note",
+    "alder_storm",
+    "alder_mapmaker",
+    "chart_unfinished"
+  ],
+  "tw_viewdial": [
+    "alder_dial",
+    "alder_named"
+  ],
+  "e_tw_dial": [
+    "alder_dial",
+    "chart_unfinished"
+  ],
+  "tf_wreck": [
+    "sandbar_wreck"
+  ],
+  "tf_hold": [
+    "flats_tide_rule"
+  ],
+  "e_tf_hold": [
+    "flats_tide_rule"
+  ],
+  "tf_cargo": [
+    "marigold"
+  ],
+  "e_tf_bell": [
+    "marigold"
+  ],
+  "tf_deck": [],
+  "e_tf_figurehead": [],
+  "cove_pools": [],
+  "cove_seacave": [
+    "alder_kind_note",
+    "alder_named"
+  ],
+  "e_cove_tin": [
+    "alder_kind_note",
+    "alder_pencil_held",
+    "chart_unfinished"
+  ],
+  "cove_rockpool": [],
+  "e_cove_reefmap": [
+    "chart_unfinished"
+  ],
+  "cv_rift": [],
+  "cv_squeeze": [],
+  "e_cv_squeeze": [],
+  "cv_glowworm": [
+    "spring_above"
+  ],
+  "e_cv_glow": [
+    "chart_unfinished"
+  ],
+  "cf_dell": [],
+  "e_cf_dell_lost": [
+    "chart_unfinished"
+  ],
+  "cf_dellspring": [
+    "island_spring",
+    "spring_above"
+  ],
+  "cf_dellcarve": [
+    "alder_bench",
+    "alder_named"
+  ],
+  "e_cf_carve": [
+    "alder_bench",
+    "chart_unfinished"
+  ],
+  "tw_slab": [
+    "alder_strongbox"
+  ],
+  "e_tw_slab": [
+    "alder_strongbox"
+  ],
+  "tw_cache": [
+    "alder_strongbox",
+    "alder_letter",
+    "alder_named"
+  ],
+  "e_tw_cache": [
+    "alder_letter",
+    "mate_set_rule",
+    "alder_letter_text",
+    "alder_wish_finish",
+    "letter_tools_held",
+    "chart_unfinished"
+  ],
+  "tf_dune": [],
+  "e_tf_dune": [],
+  "tf_marker": [],
+  "e_tf_marker": [
+    "chart_unfinished"
+  ]
+}
