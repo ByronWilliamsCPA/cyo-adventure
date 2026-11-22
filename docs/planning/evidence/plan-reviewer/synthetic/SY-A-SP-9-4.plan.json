@@ -1,0 +1,3531 @@
+{
+  "plan_version": "0.0",
+  "book": {
+    "slug": "the-vanishing-orchard",
+    "storybook_id": "sk_vanishing_orchard",
+    "storybook_version": 1,
+    "title": "The Vanishing Orchard"
+  },
+  "request": {
+    "text": null,
+    "band": "13-16",
+    "length": "long",
+    "style": "prose",
+    "tone": "eerie, elegiac mystery about memory and sacrifice; violence mild, scariness moderate, peril moderate",
+    "note": "catalog book, hand-authored; no request exists"
+  },
+  "pitch": {
+    "hero": "Rowan Ashby, a teenager born in Alderwick but raised elsewhere, back in her orchard hometown",
+    "want": "to find out why the town is forgetting its people and bring them back",
+    "obstacle": "the Quiet, a forgetting fed by the oldest tree under a founders' bargain, and the frost that seals it for forty years",
+    "stake": "the town's lost years and people, and the memories (or the self) Rowan would have to pay",
+    "ending_kind": "a black-spring bargain: town restored by remembering, a soul saved, an even trade, or a setback of nerve, force or greed"
+  },
+  "cast": {
+    "rowan": {
+      "name": "Rowan Ashby",
+      "role": "protagonist",
+      "want": "to understand the Quiet and give Alderwick back what it lost, at a price she can bear",
+      "voice": "close third past; reflective, stubborn, prone to images of cold and water; tested on patience versus panic",
+      "knows": [
+        "born_in_alderwick",
+        "grew_up_elsewhere",
+        "only_rowan_remembers"
+      ]
+    },
+    "teo": {
+      "name": "Teo",
+      "role": "Rowan's cousin; ally",
+      "want": "to keep his family and not let Rowan face the spring alone",
+      "voice": "grinning, plain-spoken, stubbornly loving",
+      "knows": [
+        "teo_stubborn_love"
+      ]
+    },
+    "odile": {
+      "name": "Odile Fenn",
+      "role": "the last living orchard-keeper, blind, on Mabb Hill; mentor",
+      "want": "a keeper to hold the Quiet and the town kept safe",
+      "voice": "grave, blunt, aphoristic ('brave and stubborn wear the same face')",
+      "knows": [
+        "quiet_named",
+        "quiet_from_oldest_tree",
+        "founders_grief_bargain",
+        "grandmother_was_keeper",
+        "black_spring_below_cellar",
+        "frost_deadline"
+      ]
+    },
+    "clerk": {
+      "name": "the deed-hall clerk",
+      "role": "frightened young clerk; minor ally",
+      "want": "to remember his neighbours and the daughter in his wallet photo",
+      "voice": "halting, losing his place mid-sentence",
+      "knows": []
+    },
+    "mr_hallet": {
+      "name": "Mr Hallet",
+      "role": "old townsman whose wife Enid is lost (named only on the b1c route)",
+      "want": "unstated; his grief surfaces and is wiped away",
+      "voice": "mild, puzzled",
+      "knows": []
+    },
+    "grandmother": {
+      "name": "Rowan's grandmother",
+      "role": "the last keeper, gone into the spring forty years ago (before Rowan was born); among the drowned",
+      "want": "to be seen; left Rowan the instruction to go down before frost",
+      "voice": "a careful looping hand; a smile in the water",
+      "knows": [
+        "frost_deadline"
+      ]
+    },
+    "neighbour_girl": {
+      "name": "the neighbour girl (unnamed)",
+      "role": "a small child Rowan played with before her family left; lost to the Quiet that winter",
+      "want": "to be remembered",
+      "voice": "gap-toothed grin, loud laugh, crows over conkers",
+      "knows": []
+    },
+    "oldest_tree": {
+      "name": "the oldest tree and its root (the Quiet)",
+      "role": "the antagonist and bargain partner",
+      "want": "to be fed, and underneath, to have its grief witnessed and shared",
+      "voice": "no speech; offers, shows, keeps, holds to exact terms",
+      "knows": []
+    }
+  },
+  "truth": {
+    "facts": [
+      "quiet_from_oldest_tree",
+      "founders_grief_bargain",
+      "at_spring",
+      "grandmother_was_keeper",
+      "keeper_line_broke_40y",
+      "grew_up_elsewhere",
+      "rowan_immune",
+      "frost_deadline"
+    ],
+    "statement": "The Quiet is the hunger of the orchard's oldest tree, whose taproot pushed through the cider house's split founding wall into a black spring. Starving founders begged it to take their grief; it took memory, and harvests stayed fruitful (one trade). The lease renews it every fortieth year with one willing name a year, a keeper only the orchard remembers. Forty years ago Rowan's grandmother went into the spring and is held there; Rowan knows her only from photos. Since then it takes what it pleases. Raised elsewhere, Rowan is beyond its hold. The first frost seals the bargain for forty years."
+  },
+  "facts": {
+    "rowan_arrives_by_bus": {
+      "text": "Rowan Ashby got off the morning bus at the edge of Alderwick for {HERO}."
+    },
+    "born_in_alderwick": {
+      "text": "Rowan was born in Alderwick, an orchard town."
+    },
+    "memorial_names_unplaced": {
+      "text": "Nobody nearby can place a single name carved on the war memorial."
+    },
+    "cousin_teo": {
+      "text": "Rowan's cousin Teo lives in Alderwick and greets her."
+    },
+    "bakery_vanished": {
+      "text": "A house Rowan is certain was a bakery is not one now, and the neighbours do not know what she means.",
+      "implicit_plant": "paid off when the bakery returns (n_b5, fin_trade_2)"
+    },
+    "only_rowan_remembers": {
+      "text": "Only Rowan seems to carry the missing years and vanished shopfronts; empty chairs sit at tables no one sets."
+    },
+    "four_threads": {
+      "text": "Four leads tug at Rowan: the deed hall records, the last orchard-keeper on Mabb Hill, the changing family photographs, and the sealed cellar under the old cider house."
+    },
+    "register_blank": {
+      "text": "Whole pages of the births-and-deaths register in the deed hall are blank, the paper faintly warm."
+    },
+    "clerk_forgetting": {
+      "text": "The young deed-hall clerk keeps losing his place in the middle of sentences."
+    },
+    "clerk_frightened": {
+      "text": "The clerk cannot recall the family at number nine and is frightened that he cannot remember his neighbours."
+    },
+    "clerk_daughter_photo": {
+      "text": "The clerk keeps a photo of a girl he is almost sure is his daughter but cannot hold her in mind."
+    },
+    "rowan_copies_entries": {
+      "text": "Rowan copies the blank entries into her own notebook, hoping ink from outside the town will hold."
+    },
+    "ghost_name_fades": {
+      "text": "A birth entry's name is a grey smear that fades further as Rowan and the clerk watch."
+    },
+    "clerk_shaking": {
+      "text": "Asked to speak a lost name aloud, the clerk shakes with fear."
+    },
+    "hall_door_barred": {
+      "text": "The clerk drove Rowan out of the deed hall and barred the door behind her."
+    },
+    "lease_ledger_holds": {
+      "text": "The two-century lease ledger still holds its words: whatever eats names spares the leases."
+    },
+    "bargain_every_40_years": {
+      "text": "The orchard lease clause is renewed once every fortieth year, after a hard season; the first frost of a renewal year sets the bargain for another forty years."
+    },
+    "clause_follows_grief": {
+      "text": "The fortieth-year clause always follows a hard season the town could not carry (failed harvest, fever, flood)."
+    },
+    "margin_tree_enough": {
+      "text": "Beside the newest clause is a margin drawing of a tree with roots deeper than its branches and the word \"enough\"."
+    },
+    "bargain_for_harvest": {
+      "text": "The bargain trades a keeping of the town's memory for a fruitful harvest (\"keep a little in exchange for a fruitful season\")."
+    },
+    "clause_names_keeper": {
+      "text": "Each renewal names a keeper who stands surety for the town; the latest, forty years ago, names one in a living hand."
+    },
+    "founding_lease_blank": {
+      "text": "The founding lease Rowan tore out and ran with turned blank in her hand."
+    },
+    "grandmother_was_keeper": {
+      "text": "Rowan's grandmother was a keeper of the orchard's bargain."
+    },
+    "keeper_line_broke_40y": {
+      "text": "Rowan's grandmother was the last keeper to pay, forty years ago; no keeper has paid since."
+    },
+    "forfeited_years_room": {
+      "text": "A back room of the deed hall holds hundreds of warm sealed envelopes: the forfeited years."
+    },
+    "cellar_door_photo": {
+      "text": "One envelope holds a photo of the cider house cellar door standing open on darkness, warm at its centre."
+    },
+    "mill_fire_children": {
+      "text": "A class photo has eleven children scratched out: \"the price of the year the mill burned\"."
+    },
+    "photos_in_coat": {
+      "text": "Rowan carries the cellar photo and the class photo inside her coat."
+    },
+    "drinks_from_root_note": {
+      "text": "The back of the cellar photo reads: \"It drinks from the root, come before the next frost.\""
+    },
+    "frost_deadline": {
+      "text": "The coming first frost is a deadline: when it sets, the bargain hardens and the chance closes.",
+      "implicit_plant": "set on every first-act branch; paid off at n_b4 (frost silvering) and e_one_hesitate (the frost comes first)"
+    },
+    "grew_up_elsewhere": {
+      "text": "Rowan's family left Alderwick when she was very small; she grew up somewhere else."
+    },
+    "afternoon_investigation": {
+      "text": "Rowan's investigation of the four leads takes place in the afternoon."
+    },
+    "answer_beneath_cider_house": {
+      "text": "Every clue points down beneath the cider house."
+    },
+    "odile_fenn": {
+      "text": "Odile Fenn, the blind last orchard-keeper, prunes trees on Mabb Hill and has been waiting for Rowan."
+    },
+    "rowan_immune": {
+      "text": "The forgetting cannot take Rowan (\"the one it cannot swallow\")."
+    },
+    "cord_at_belt": {
+      "text": "A long knotted cord hangs looped at Odile's belt."
+    },
+    "quiet_named": {
+      "text": "The forgetting is called the Quiet (Rowan's own word for it; Odile uses the same name)."
+    },
+    "quiet_from_oldest_tree": {
+      "text": "The Quiet rises from the hungry oldest tree in the orchard; when the town forgets to feed it names, it spreads on its own."
+    },
+    "founders_grief_bargain": {
+      "text": "In a starving winter the founders knelt at a black spring beneath the orchard and begged the tree to take their grief; to take grief it took memory."
+    },
+    "name_every_year": {
+      "text": "Since the founding winter the tree has been given one willing name a year: a keeper, remembered by the orchard and forgotten by everyone else."
+    },
+    "odile_brave_or_stubborn": {
+      "text": "Odile asked whether Rowan is brave or only stubborn; the two look alike until the price comes due."
+    },
+    "sent_down_hill": {
+      "text": "Odile judged Rowan a fool and sent her down the hill with a warning about roots, frost and a door in the dark."
+    },
+    "keepers_cord": {
+      "text": "The keeper's cord holds one knot for every keeper back to the founders."
+    },
+    "forgotten_keeper_knots": {
+      "text": "Odile cannot attach faces to a long run of knots: even keepers are swallowed by what they guard."
+    },
+    "slick_knots": {
+      "text": "Later knots are worn slick by fading keepers who still handled the cord without knowing why."
+    },
+    "cord_severed": {
+      "text": "Rowan cut the keeper's cord and its knots blew away down the hill."
+    },
+    "grandmother_knot": {
+      "text": "The newest tied knot, still warm, is Rowan's grandmother's."
+    },
+    "empty_knot": {
+      "text": "Past the grandmother's knot waits one fresh empty knot, ready for a name that never came."
+    },
+    "rowan_has_seed": {
+      "text": "Rowan holds a withered seed, hard and dark as a peppercorn: Odile gives it (keeper), it slips from the cellar-photo envelope (records) or from behind her grandmother's photo (photographs), or lies by the carved words at the spring (cellar)."
+    },
+    "black_spring_below_cellar": {
+      "text": "Beneath the cider house, past the cellar, is the black spring where the founding root first learned to drink."
+    },
+    "seed_bargain_token": {
+      "text": "A greening seed is the founders' token: it greens only in a hand the Quiet cannot touch and lets its bearer bargain at the spring."
+    },
+    "teo_will_come": {
+      "text": "Odile promised to send Teo to the cider house before the frost."
+    },
+    "odile_cannot_descend": {
+      "text": "Odile's legs will not carry her down the steep hill at any speed; she would slow Rowan."
+    },
+    "teo_stubborn_love": {
+      "text": "Teo remembers better than most; his stubborn love resists the Quiet."
+    },
+    "root_keeps_what_it_takes": {
+      "text": "The root does not give back what it takes, and never for free."
+    },
+    "odile_frost_warning": {
+      "text": "Odile warned Rowan that the first frost sets the bargain."
+    },
+    "root_cracked_founding_wall": {
+      "text": "The oldest root cracked the founding wall in the cellar and pushed through to the spring."
+    },
+    "photos_change": {
+      "text": "In Teo's attic the family photographs change: faces vanish and the gaps heal over."
+    },
+    "christening_godmother": {
+      "text": "In a christening portrait a godmother vanished between two blinks."
+    },
+    "filmed_fading": {
+      "text": "Filmed on Rowan's phone, a woman's face fades slowly enough to see."
+    },
+    "film_erased": {
+      "text": "The recording lost the faded faces too: the Quiet reaches into the phone."
+    },
+    "gate_woman": {
+      "text": "For one heartbeat a woman appears at the orchard gate in a print, then is gone."
+    },
+    "prints_burned": {
+      "text": "Rowan burned the fading prints, destroying the last proof of the forgotten."
+    },
+    "orchard_album": {
+      "text": "A heavy album that never changes holds only orchard photographs, the oldest tree growing taller and darker through two centuries."
+    },
+    "blossom_and_hair": {
+      "text": "A pressed apple blossom and a lock of pale child's hair are kept between the album's pages."
+    },
+    "quiet_guards_own_image": {
+      "text": "The Quiet preserves pictures of the tree while devouring every human face."
+    },
+    "understanding_erased": {
+      "text": "By morning the Quiet had erased Rowan's understanding of what she found in the attic."
+    },
+    "tree_fattens_town_fades": {
+      "text": "Ordered by year, the photos show the tree swelling as the town thins."
+    },
+    "grandmother_photo_seed": {
+      "text": "A photo shows Rowan's grandmother, young, at the cider house cellar door holding a withered seed."
+    },
+    "grandmother_message": {
+      "text": "On the back of the photograph, signed with her grandmother's name: \"Go down to the root before frost, it keeps the years there.\""
+    },
+    "keepers_kept_by_tree": {
+      "text": "Keepers are the ones the tree keeps: remembered by the root and forgotten by everyone above."
+    },
+    "cellar_barklocked": {
+      "text": "The cellar door is barred by orchard wood grown over with warm living bark."
+    },
+    "cellar_door_gap": {
+      "text": "Rowan has opened a gap in the barklocked cellar door."
+    },
+    "door_bleeds_sap": {
+      "text": "The living door bleeds cider-smelling sap and flinches from the chisel."
+    },
+    "frost_on_stair": {
+      "text": "Frost coats the cellar stair although above it is mild autumn."
+    },
+    "three_smells": {
+      "text": "Air from below smells of apples, old water, and deep earth older than the town."
+    },
+    "pulsing_light_below": {
+      "text": "A pale light pulses slowly at the bottom of the stair."
+    },
+    "door_resealed": {
+      "text": "Rowan hammered the bark bar back and walked away; the town kept losing its years."
+    },
+    "pebble_endless": {
+      "text": "A dropped pebble falls impossibly far below the cider house."
+    },
+    "kitchen_smells": {
+      "text": "Cold air from below carries the smells of a hundred vanished kitchens."
+    },
+    "flame_pulled_down": {
+      "text": "The lowered lamp flame leans downward, drawn by the hungry dark."
+    },
+    "vinegar_shelves": {
+      "text": "Shelves of soured cider line the impossibly long stair."
+    },
+    "purpose_drained": {
+      "text": "Going deeper drained Rowan's purpose; she climbed out unable to say why she came."
+    },
+    "at_spring": {
+      "text": "Rowan is at the black spring under the cider house, where the oldest tree's taproot comes through the split founding wall and drinks, and the lost town turns in the water."
+    },
+    "reflection_holds": {
+      "text": "Rowan's reflection stays whole on the spring while every other face dissolves."
+    },
+    "drowned_beg": {
+      "text": "The drowned faces turn toward Rowan's light and beg to be remembered."
+    },
+    "grandmother_drowned": {
+      "text": "Rowan's grandmother is among the drowned in the spring."
+    },
+    "carving_remember": {
+      "text": "Words cut above the spring read: \"The root keeps, the frost sets it, remember for us all.\""
+    },
+    "keep_each_season": {
+      "text": "The root keeps a little of the town year by year."
+    },
+    "keeping_grew_greedy": {
+      "text": "Over two hundred years the keeping grew greedy, swallowing whole years, faces and lives."
+    },
+    "spring_offers": {
+      "text": "The spring does not pull at Rowan; it offers, and shows her the founders kneeling at it."
+    },
+    "founders_gave_willingly": {
+      "text": "The founders handed their grief down willingly, and their memory of the dead went with it."
+    },
+    "keeper_walks_in": {
+      "text": "A keeper once walked into the spring willingly to carry a grief the town could not survive."
+    },
+    "deeper_truth_lost": {
+      "text": "Rowan held on too long; the spring closed and showed only pleading faces."
+    },
+    "root_feeds_on_rooted": {
+      "text": "The root feeds only on memory grown in Alderwick's soil; it cannot keep what it never touched."
+    },
+    "never_planted_here": {
+      "text": "Rowan was carried away before she could take root in Alderwick; nearly all her childhood belongs to soil the orchard never owned."
+    },
+    "outsideness_is_key": {
+      "text": "Because the root cannot take memory from Rowan, she might take memory back out of it."
+    },
+    "wall_fails": {
+      "text": "Clay and stone packed into the split dissolve into the spring; the root drinks them."
+    },
+    "hunger_must_be_answered": {
+      "text": "A hunger cannot be walled off; it must be fed or satisfied with something it will keep."
+    },
+    "seed_greening": {
+      "text": "The withered seed is greening."
+    },
+    "seed_steadies_faces": {
+      "text": "Where Rowan's seed-holding hand touches the water, the drowned faces steady."
+    },
+    "wall_split_wider": {
+      "text": "The root split Rowan's wall wider in the night and a whole childhood of the town drained away."
+    },
+    "gift_not_theft": {
+      "text": "The root might be answered with a gift instead of a theft."
+    },
+    "shouted_names": {
+      "text": "Rowan shouted the memorial names in the square at dusk; a few townsfolk flinched."
+    },
+    "mr_hallet": {
+      "text": "Old Mr Hallet's wife Enid ran the pie stall; his grief surfaced and was wiped away."
+    },
+    "town_cannot_mourn": {
+      "text": "The town cannot hold grief for people it cannot recall."
+    },
+    "shouting_failed": {
+      "text": "Rowan shouted until her voice failed; the square emptied and even Teo went home."
+    },
+    "many_remembering": {
+      "text": "Many people remembering on purpose at once might anchor what the root steals."
+    },
+    "lane_returns": {
+      "text": "For one small memory the root lends back a vanished lane, then a shimmering quarter, which sink again."
+    },
+    "sunday_kitchen_given": {
+      "text": "Rowan gave the root her memory of Sunday mornings in the kitchen at home."
+    },
+    "memory_for_memory": {
+      "text": "The trade is memory for memory: the town's years for Rowan's own beloved memories."
+    },
+    "kept_everything": {
+      "text": "Rowan snatched her hand back and kept every memory while the town went on losing itself."
+    },
+    "root_keeps_forever": {
+      "text": "Whatever Rowan gives, the root holds forever; she would lose even the knowledge of having owned it."
+    },
+    "price_must_be_dear": {
+      "text": "Only something Rowan loves enough to truly lose buys much back."
+    },
+    "only_rowan_can_pay": {
+      "text": "Only Rowan can pay; anyone born and rooted in the town would be swallowed."
+    },
+    "more_given_more_back": {
+      "text": "The more of herself Rowan gives, the more of Alderwick returns."
+    },
+    "keeper_vacancy": {
+      "text": "The town has needed a keeper for forty years; the empty place seems left for Rowan, the last keeper's blood."
+    },
+    "grandmother_gone_forty_years": {
+      "text": "Rowan's grandmother went down into the spring forty years ago and has been held there since."
+    },
+    "keeper_forgotten_by_all": {
+      "text": "A keeper is remembered only by the root and forgotten by everyone alive, even Teo."
+    },
+    "refused_keeper": {
+      "text": "Rowan refused the keeper's place; the Quiet spread through winter until even the old keeper on Mabb Hill began to thin out of the town's memory."
+    },
+    "keeper_slow_unmaking": {
+      "text": "A keeper is slowly erased from the living world while preserved below."
+    },
+    "knot_tied_early": {
+      "text": "Rowan tied herself to the keeper's knot in fear; the town steadied and she began to fade."
+    },
+    "keeper_is_anchor": {
+      "text": "A keeper anchors the town: one life kept so the many are spared."
+    },
+    "rowan_not_ready": {
+      "text": "Rowan draws back from the empty knot, not ready to disappear."
+    },
+    "odile_and_teo_arrive": {
+      "text": "Odile, leaning on Teo's arm, and Teo have come down the stair to the spring."
+    },
+    "shared_price": {
+      "text": "A price paid by one is a wound; shared among many it is only a scar."
+    },
+    "teo_gathers_town": {
+      "text": "Rowan sent Teo up through Alderwick to call the memorial names and gather the town."
+    },
+    "town_gathered": {
+      "text": "A crowd of townsfolk, the deed-hall clerk and an old man with rheumy eyes among them, has gathered on the cellar stair and at the spring."
+    },
+    "remember_together_plan": {
+      "text": "The plan: everyone remembers aloud at once, so no single heart is drained."
+    },
+    "town_made_peace": {
+      "text": "Rowan told the town the orchard was only lonely, and the town made peace with its losses."
+    },
+    "chain_snapped": {
+      "text": "Rowan began too soon and the weight broke the few who had come."
+    },
+    "odile_teaches_shared_keeping": {
+      "text": "Odile teaches the old words that turn a devouring into a keeping held by many."
+    },
+    "one_soul_plan": {
+      "text": "Rowan resolves to save one soul completely rather than fail at many."
+    },
+    "neighbour_girl": {
+      "text": "The neighbour girl (gap-toothed, loud laugh, won at conkers) was lost the winter Rowan was taken away; they had played together as small children."
+    },
+    "early_childhood_in_alderwick": {
+      "text": "Rowan spent her earliest years in Alderwick before her family took her away."
+    },
+    "learned_her_face": {
+      "text": "Rowan only asked to see the girl's face; she carried the knowing home and the girl stayed lost."
+    },
+    "one_for_one_price": {
+      "text": "The root's price: one memory freely given for one soul lifted back."
+    },
+    "bargain_refused": {
+      "text": "Rowan tried to take the girl without paying; the root held them both."
+    },
+    "understand_not_win": {
+      "text": "Rowan seeks to understand the Quiet rather than defeat it."
+    },
+    "founders_were_parents": {
+      "text": "The founders were desperate parents who could not bury one more child."
+    },
+    "even_trade_year": {
+      "text": "Rowan traded a year of her own for the year she was born in Alderwick."
+    },
+    "root_memory_is_grief": {
+      "text": "The root's memory is the town's refused grief, two hundred years of it."
+    },
+    "truth_too_heavy": {
+      "text": "Rowan forced the whole truth on the town; it reeled and chose forgetting."
+    },
+    "root_wants_witness": {
+      "text": "Underneath its hunger, the root wants its grief witnessed and shared."
+    },
+    "first_frost_silvering": {
+      "text": "The first frost is silvering the orchard grass above."
+    },
+    "seed_green_whole": {
+      "text": "The seed is green and whole now: the keeper's token woken."
+    },
+    "memory_flood": {
+      "text": "Rowan spoke the bargain backward and a flood of the town's memories poured down the stair from the town above."
+    },
+    "flood_unsteered": {
+      "text": "The flood broke past Rowan alone; the town was left half-remembering."
+    },
+    "spring_reverses": {
+      "text": "With Odile, Teo and the town's remembering behind them, the spring reversed: the root began to hold memory for the town instead of devouring it."
+    },
+    "shared_vow": {
+      "text": "The crowd vowed aloud together to remember the lost."
+    },
+    "vow_lost": {
+      "text": "The crowd lost its nerve and left; the vow went unfinished."
+    },
+    "root_accepts_shared_keeping": {
+      "text": "The root accepted the shared keeping, drinking the vow without emptying anyone."
+    },
+    "town_restored": {
+      "text": "The founding wall knit shut and the vanished years returned: streets, faces, the bakery, a gap-toothed girl."
+    },
+    "grandmother_not_returned": {
+      "text": "Rowan's grandmother, held deepest, did not come back with the rest."
+    },
+    "grandmother_returned": {
+      "text": "Rowan lifted her grandmother out of the spring and the town remembered her."
+    },
+    "grandmother_rests": {
+      "text": "Rowan let her grandmother rest, honoured in the orchard's memory."
+    },
+    "town_whole": {
+      "text": "Alderwick woke whole, remembering on purpose; the orchard no longer eats its keepers."
+    },
+    "first_summer_given": {
+      "text": "Rowan gave the root her first summer in Alderwick."
+    },
+    "girl_restored": {
+      "text": "The neighbour girl rose from the spring alive and remembered."
+    },
+    "frost_sealed": {
+      "text": "Rowan hesitated; the frost sealed the spring for another forty years and the girl stayed lost."
+    },
+    "certainty_traded": {
+      "text": "Rowan traded her memory of the day she stepped off the bus and knew the town was disappearing."
+    },
+    "year_restored": {
+      "text": "The root gave back one year: the bakery on the square, lit golden."
+    },
+    "greed_unrewarded": {
+      "text": "Rowan asked for more than she paid; the root kept her memory and gave nothing."
+    },
+    "yearly_keeper": {
+      "text": "Rowan promised to return every frost and trade one memory for one year."
+    },
+    "photo_kept": {
+      "text": "Rowan held back the one photograph she brought from home (the orchard gate, the year she was born) and so bought nothing back."
+    },
+    "arrived_in_morning": {
+      "text": "Rowan arrived in Alderwick in the morning."
+    },
+    "grandmother_seen_in_photos": {
+      "text": "Rowan has seen photographs of her grandmother (she never met her), so she recognises her younger face."
+    },
+    "grandmother_among_lost": {
+      "text": "Rowan's grandmother is one of those the town has lost to the orchard."
+    },
+    "orchard_photos_steady": {
+      "text": "The orchard photographs never fade, while photographs of people do."
+    },
+    "family_memories_traded": {
+      "text": "Rowan traded every memory of her family for a lasting restored lane."
+    },
+    "bark_split_gap": {
+      "text": "The bark on the cellar door's living bar has split along one edge, leaving a gap a little wider than two hands."
+    },
+    "teo_sent_for_odile": {
+      "text": "Rowan sent Teo up Mabb Hill to fetch the old keeper."
+    },
+    "crowd_at_stair": {
+      "text": "Townsfolk fill the cellar stair, drawn down by a pull none of them can name."
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "Rowan arrives by the morning bus in the town she was born in and left as a small child; no one can place the memorial names, and a bakery has vanished from everyone's memory but hers.",
+      "requires": [],
+      "establishes": [
+        "rowan_arrives_by_bus",
+        "born_in_alderwick",
+        "memorial_names_unplaced",
+        "cousin_teo",
+        "bakery_vanished",
+        "arrived_in_morning",
+        "grew_up_elsewhere"
+      ]
+    },
+    "n_start": {
+      "function": "decision",
+      "event": "Only Rowan sees what is missing; she calls it the Quiet; four leads pull at her.",
+      "requires": [
+        "born_in_alderwick"
+      ],
+      "establishes": [
+        "only_rowan_remembers",
+        "four_threads",
+        "quiet_named"
+      ]
+    },
+    "rec_entry": {
+      "function": "decision",
+      "event": "The register has blank, warm pages and the clerk keeps losing his place.",
+      "requires": [
+        "four_threads"
+      ],
+      "establishes": [
+        "register_blank",
+        "clerk_forgetting"
+      ]
+    },
+    "rec_a_p1": {
+      "function": "continue",
+      "event": "The clerk cannot recall the family at number nine and is frightened.",
+      "requires": [
+        "clerk_forgetting"
+      ],
+      "establishes": [
+        "clerk_frightened"
+      ]
+    },
+    "rec_a_p2": {
+      "function": "continue",
+      "event": "The clerk shows a photo of a daughter he cannot hold in mind.",
+      "requires": [
+        "clerk_frightened"
+      ],
+      "establishes": [
+        "clerk_daughter_photo"
+      ]
+    },
+    "rec_a_p3": {
+      "function": "continue",
+      "event": "Rowan copies the blank entries into her notebook; the clerk begs her to keep writing.",
+      "requires": [
+        "register_blank"
+      ],
+      "establishes": [
+        "rowan_copies_entries"
+      ]
+    },
+    "rec_a_p4": {
+      "function": "continue",
+      "event": "Under a magnifier a ghost of a name fades as they watch.",
+      "requires": [
+        "register_blank"
+      ],
+      "establishes": [
+        "ghost_name_fades"
+      ]
+    },
+    "rec_adec": {
+      "function": "decision",
+      "event": "Asked to speak a lost name, the clerk shakes; steady him or press him.",
+      "requires": [
+        "clerk_frightened"
+      ],
+      "establishes": [
+        "clerk_shaking"
+      ]
+    },
+    "e_rec_a": {
+      "function": "ending",
+      "event": "Rowan presses; the clerk throws her out and bars the hall.",
+      "requires": [
+        "clerk_shaking",
+        "register_blank"
+      ],
+      "establishes": [
+        "hall_door_barred"
+      ]
+    },
+    "rec_b_p1": {
+      "function": "continue",
+      "event": "The old lease ledger still holds its words.",
+      "requires": [
+        "register_blank",
+        "clerk_forgetting"
+      ],
+      "establishes": [
+        "lease_ledger_holds"
+      ]
+    },
+    "rec_b_p2": {
+      "function": "continue",
+      "event": "A clause returns every fortieth year, always after a hard season.",
+      "requires": [
+        "lease_ledger_holds"
+      ],
+      "establishes": [
+        "bargain_every_40_years",
+        "clause_follows_grief"
+      ]
+    },
+    "rec_b_p3": {
+      "function": "continue",
+      "event": "A margin drawing of a deep-rooted tree bears the word \"enough\".",
+      "requires": [
+        "bargain_every_40_years"
+      ],
+      "establishes": [
+        "margin_tree_enough"
+      ]
+    },
+    "rec_b_p4": {
+      "function": "continue",
+      "event": "Every fortieth year the lease renews the promise that the orchard may keep a little for each fruitful season; the latest renewal names a keeper.",
+      "requires": [
+        "bargain_every_40_years"
+      ],
+      "establishes": [
+        "bargain_for_harvest",
+        "clause_names_keeper"
+      ]
+    },
+    "rec_bdec": {
+      "function": "decision",
+      "event": "Rowan nears the keeper's name: read on, or tear the page and run.",
+      "requires": [
+        "clause_names_keeper"
+      ],
+      "establishes": []
+    },
+    "e_rec_b": {
+      "function": "ending",
+      "event": "Rowan tears out the founding lease and runs; the page goes blank.",
+      "requires": [
+        "lease_ledger_holds"
+      ],
+      "establishes": [
+        "founding_lease_blank"
+      ]
+    },
+    "rec_conv": {
+      "function": "continue",
+      "event": "The latest renewal of the orchard lease, forty years ago, names Rowan's grandmother as the town's keeper; the clerk shows her the room of forfeited years.",
+      "requires": [
+        "clerk_forgetting"
+      ],
+      "establishes": [
+        "grandmother_was_keeper",
+        "keeper_line_broke_40y",
+        "forfeited_years_room",
+        "grandmother_among_lost"
+      ]
+    },
+    "rec_t_p1": {
+      "function": "continue",
+      "event": "An envelope holds a photo of the cellar door open on darkness.",
+      "requires": [
+        "forfeited_years_room",
+        "four_threads"
+      ],
+      "establishes": [
+        "cellar_door_photo"
+      ]
+    },
+    "rec_t_p2": {
+      "function": "continue",
+      "event": "A class photo has eleven children scratched out, the price of the mill fire.",
+      "requires": [
+        "forfeited_years_room"
+      ],
+      "establishes": [
+        "mill_fire_children"
+      ]
+    },
+    "rec_t_p3": {
+      "function": "continue",
+      "event": "Rowan hides the photos in her coat, trusting the warmth of someone who grew up elsewhere.",
+      "requires": [
+        "cellar_door_photo",
+        "mill_fire_children"
+      ],
+      "establishes": [
+        "photos_in_coat",
+        "grew_up_elsewhere"
+      ]
+    },
+    "rec_t_p4": {
+      "function": "continue",
+      "event": "The cellar photo's back reads \"It drinks from the root, come before the next frost\"; it is afternoon.",
+      "requires": [
+        "cellar_door_photo"
+      ],
+      "establishes": [
+        "drinks_from_root_note",
+        "frost_deadline",
+        "afternoon_investigation"
+      ]
+    },
+    "rec_clue": {
+      "function": "continue",
+      "event": "Everything points beneath the cider house; a withered seed slips from the cellar envelope into Rowan's palm.",
+      "requires": [
+        "register_blank",
+        "forfeited_years_room",
+        "cellar_door_photo",
+        "drinks_from_root_note"
+      ],
+      "establishes": [
+        "answer_beneath_cider_house",
+        "rowan_has_seed"
+      ]
+    },
+    "kee_entry": {
+      "function": "decision",
+      "event": "Blind Odile Fenn on Mabb Hill calls Rowan the one it cannot swallow; a knotted cord hangs at her belt.",
+      "requires": [
+        "four_threads"
+      ],
+      "establishes": [
+        "odile_fenn",
+        "rowan_immune",
+        "cord_at_belt"
+      ]
+    },
+    "kee_a_p1": {
+      "function": "continue",
+      "event": "Odile uses Rowan's own name for it, the Quiet: a forgetting from the hungry oldest tree.",
+      "requires": [
+        "odile_fenn",
+        "memorial_names_unplaced"
+      ],
+      "establishes": [
+        "quiet_named",
+        "quiet_from_oldest_tree"
+      ]
+    },
+    "kee_a_p2": {
+      "function": "continue",
+      "event": "The founders begged the tree at a black spring to take their grief; it took memory too.",
+      "requires": [
+        "quiet_from_oldest_tree"
+      ],
+      "establishes": [
+        "founders_grief_bargain"
+      ]
+    },
+    "kee_a_p3": {
+      "function": "continue",
+      "event": "The tree was given one willing name, a keeper, a year until the line broke forty years ago with Rowan's grandmother.",
+      "requires": [
+        "founders_grief_bargain"
+      ],
+      "establishes": [
+        "name_every_year",
+        "grandmother_was_keeper",
+        "keeper_line_broke_40y",
+        "grandmother_gone_forty_years",
+        "grandmother_among_lost"
+      ]
+    },
+    "kee_a_p4": {
+      "function": "continue",
+      "event": "Odile asks whether Rowan is brave or only stubborn.",
+      "requires": [
+        "odile_fenn"
+      ],
+      "establishes": [
+        "odile_brave_or_stubborn"
+      ]
+    },
+    "kee_adec": {
+      "function": "decision",
+      "event": "Odile wants a plan: ask the cost, or swear to starve the tree.",
+      "requires": [
+        "quiet_named",
+        "odile_brave_or_stubborn"
+      ],
+      "establishes": []
+    },
+    "e_kee_a": {
+      "function": "ending",
+      "event": "Rowan swears to starve it; Odile sends her down with a warning she cannot use.",
+      "requires": [
+        "quiet_from_oldest_tree",
+        "odile_fenn"
+      ],
+      "establishes": [
+        "sent_down_hill",
+        "odile_frost_warning"
+      ]
+    },
+    "kee_b_p1": {
+      "function": "continue",
+      "event": "Odile unhooks the keeper's cord from her belt: one knot for every keeper back to the founders.",
+      "requires": [
+        "odile_fenn",
+        "cord_at_belt"
+      ],
+      "establishes": [
+        "keepers_cord"
+      ]
+    },
+    "kee_b_p2": {
+      "function": "continue",
+      "event": "Odile names keepers knot by knot until she reaches ones she cannot remember, the way the town has lost the memorial names.",
+      "requires": [
+        "keepers_cord",
+        "memorial_names_unplaced"
+      ],
+      "establishes": [
+        "forgotten_keeper_knots"
+      ]
+    },
+    "kee_b_p3": {
+      "function": "continue",
+      "event": "A long run of forgotten keepers holds the town up unknowing.",
+      "requires": [
+        "forgotten_keeper_knots"
+      ],
+      "establishes": []
+    },
+    "kee_b_p4": {
+      "function": "continue",
+      "event": "Later knots are worn slick by keepers who forgot why they handled them.",
+      "requires": [
+        "keepers_cord"
+      ],
+      "establishes": [
+        "slick_knots"
+      ]
+    },
+    "kee_bdec": {
+      "function": "decision",
+      "event": "Learn the whole keeping along the cord, or cut it.",
+      "requires": [
+        "keepers_cord"
+      ],
+      "establishes": []
+    },
+    "e_kee_b": {
+      "function": "ending",
+      "event": "Rowan cuts the cord; the knots blow away down the hill.",
+      "requires": [
+        "keepers_cord"
+      ],
+      "establishes": [
+        "cord_severed"
+      ]
+    },
+    "kee_conv": {
+      "function": "continue",
+      "event": "At the cord's end: the grandmother's warm knot, an empty knot, and a withered seed pressed into Rowan's palm.",
+      "requires": [
+        "cord_at_belt"
+      ],
+      "establishes": [
+        "grandmother_knot",
+        "grandmother_was_keeper",
+        "keeper_line_broke_40y",
+        "empty_knot",
+        "rowan_has_seed",
+        "keepers_cord",
+        "grandmother_among_lost",
+        "frost_deadline"
+      ]
+    },
+    "kee_t_p1": {
+      "function": "continue",
+      "event": "Rowan is immune because she was carried off before she could take root; the black spring lies beneath the cider house.",
+      "requires": [
+        "odile_fenn"
+      ],
+      "establishes": [
+        "grew_up_elsewhere",
+        "never_planted_here",
+        "black_spring_below_cellar",
+        "quiet_named",
+        "rowan_immune"
+      ]
+    },
+    "kee_t_p2": {
+      "function": "continue",
+      "event": "The seed will green in her hand and mark her as one who may bargain.",
+      "requires": [
+        "rowan_has_seed",
+        "quiet_named"
+      ],
+      "establishes": [
+        "seed_bargain_token"
+      ]
+    },
+    "kee_t_p3": {
+      "function": "continue",
+      "event": "Odile cannot get down the hill at any speed, so she will send Teo; he remembers better than most.",
+      "requires": [
+        "cousin_teo"
+      ],
+      "establishes": [
+        "odile_cannot_descend",
+        "teo_will_come",
+        "teo_stubborn_love"
+      ]
+    },
+    "kee_t_p4": {
+      "function": "continue",
+      "event": "The root keeps what it takes; the first frost is days away and will harden the bargain.",
+      "requires": [
+        "rowan_has_seed"
+      ],
+      "establishes": [
+        "root_keeps_what_it_takes",
+        "frost_deadline",
+        "odile_frost_warning"
+      ]
+    },
+    "kee_clue": {
+      "function": "continue",
+      "event": "The oldest root cracked the founding wall in the cellar; Rowan heads down with seed, warning and Teo's promise.",
+      "requires": [
+        "rowan_has_seed",
+        "teo_will_come",
+        "black_spring_below_cellar"
+      ],
+      "establishes": [
+        "root_cracked_founding_wall",
+        "answer_beneath_cider_house"
+      ]
+    },
+    "pho_entry": {
+      "function": "decision",
+      "event": "In Teo's attic the family photographs change; a christening godmother vanishes.",
+      "requires": [
+        "cousin_teo",
+        "four_threads"
+      ],
+      "establishes": [
+        "photos_change",
+        "christening_godmother"
+      ]
+    },
+    "pho_a_p1": {
+      "function": "continue",
+      "event": "Rowan pins the prints flat to catch a change in the act.",
+      "requires": [
+        "photos_change"
+      ],
+      "establishes": []
+    },
+    "pho_a_p2": {
+      "function": "continue",
+      "event": "Filmed on her phone, a face fades slowly.",
+      "requires": [
+        "photos_change"
+      ],
+      "establishes": [
+        "filmed_fading"
+      ]
+    },
+    "pho_a_p3": {
+      "function": "continue",
+      "event": "The recording lost the faces too; the Quiet reaches into the phone.",
+      "requires": [
+        "filmed_fading",
+        "quiet_named"
+      ],
+      "establishes": [
+        "film_erased"
+      ]
+    },
+    "pho_a_p4": {
+      "function": "continue",
+      "event": "A woman at the orchard gate appears for one heartbeat and is gone.",
+      "requires": [
+        "photos_change"
+      ],
+      "establishes": [
+        "gate_woman"
+      ]
+    },
+    "pho_adec": {
+      "function": "decision",
+      "event": "Photograph the photographs and study who vanishes, or burn the fading prints.",
+      "requires": [
+        "photos_change"
+      ],
+      "establishes": []
+    },
+    "e_pho_a": {
+      "function": "ending",
+      "event": "Rowan burns the prints and finishes the Quiet's work.",
+      "requires": [
+        "photos_change",
+        "quiet_named"
+      ],
+      "establishes": [
+        "prints_burned"
+      ]
+    },
+    "pho_b_p1": {
+      "function": "continue",
+      "event": "A heavy album whose photographs never change is untouched by the Quiet.",
+      "requires": [
+        "photos_change",
+        "quiet_named"
+      ],
+      "establishes": [
+        "orchard_album",
+        "orchard_photos_steady"
+      ]
+    },
+    "pho_b_p2": {
+      "function": "continue",
+      "event": "The album holds only the orchard; the oldest tree grows taller and darker.",
+      "requires": [
+        "orchard_album"
+      ],
+      "establishes": [
+        "tree_fattens_town_fades"
+      ]
+    },
+    "pho_b_p3": {
+      "function": "continue",
+      "event": "A pressed blossom and a lock of a child's hair are kept in the album.",
+      "requires": [
+        "orchard_album"
+      ],
+      "establishes": [
+        "blossom_and_hair"
+      ]
+    },
+    "pho_b_p4": {
+      "function": "continue",
+      "event": "The Quiet guards the tree's image while devouring faces.",
+      "requires": [
+        "orchard_album",
+        "quiet_named"
+      ],
+      "establishes": [
+        "quiet_guards_own_image"
+      ]
+    },
+    "pho_bdec": {
+      "function": "decision",
+      "event": "Compare the orchard photos year by year, or close the album.",
+      "requires": [
+        "orchard_album"
+      ],
+      "establishes": []
+    },
+    "e_pho_b": {
+      "function": "ending",
+      "event": "Rowan closes the album; by morning the Quiet has erased her understanding.",
+      "requires": [
+        "orchard_album",
+        "blossom_and_hair",
+        "quiet_named",
+        "cousin_teo"
+      ],
+      "establishes": [
+        "understanding_erased"
+      ]
+    },
+    "pho_conv": {
+      "function": "continue",
+      "event": "Ordered by year, the steady orchard photos show the tree swelling as the town thins; one shows her grandmother, young, with a withered seed.",
+      "requires": [
+        "photos_change"
+      ],
+      "establishes": [
+        "tree_fattens_town_fades",
+        "grandmother_photo_seed",
+        "orchard_photos_steady",
+        "grandmother_seen_in_photos",
+        "grandmother_among_lost"
+      ]
+    },
+    "pho_t_p1": {
+      "function": "continue",
+      "event": "On the back of her grandmother's photograph, signed in her name: go down to the root before frost.",
+      "requires": [
+        "grandmother_photo_seed"
+      ],
+      "establishes": [
+        "grandmother_message",
+        "frost_deadline"
+      ]
+    },
+    "pho_t_p2": {
+      "function": "continue",
+      "event": "The vanished godmother was a keeper: keepers are kept by the tree and forgotten.",
+      "requires": [
+        "christening_godmother",
+        "orchard_photos_steady"
+      ],
+      "establishes": [
+        "keepers_kept_by_tree"
+      ]
+    },
+    "pho_t_p3": {
+      "function": "continue",
+      "event": "The root protects the image of the tree that feeds it.",
+      "requires": [
+        "quiet_named",
+        "orchard_photos_steady"
+      ],
+      "establishes": [
+        "quiet_guards_own_image"
+      ]
+    },
+    "pho_t_p4": {
+      "function": "continue",
+      "event": "Everything points beneath the cider house where a keeper once went down before frost.",
+      "requires": [
+        "grandmother_photo_seed",
+        "grandmother_message",
+        "orchard_photos_steady"
+      ],
+      "establishes": [
+        "answer_beneath_cider_house",
+        "grandmother_was_keeper"
+      ]
+    },
+    "pho_clue": {
+      "function": "continue",
+      "event": "Rowan carries the photographs out; a withered seed drops from behind her grandmother's picture.",
+      "requires": [
+        "tree_fattens_town_fades",
+        "grandmother_message",
+        "grandmother_photo_seed",
+        "frost_deadline"
+      ],
+      "establishes": [
+        "afternoon_investigation",
+        "rowan_has_seed"
+      ]
+    },
+    "cel_entry": {
+      "function": "decision",
+      "event": "The cellar door is barred by wood grown over with living bark.",
+      "requires": [
+        "four_threads"
+      ],
+      "establishes": [
+        "cellar_barklocked"
+      ]
+    },
+    "cel_a_p1": {
+      "function": "continue",
+      "event": "Rowan chisels a gap in the living bar; cold air rises; it is a mild autumn afternoon.",
+      "requires": [
+        "cellar_barklocked"
+      ],
+      "establishes": [
+        "cellar_door_gap",
+        "afternoon_investigation"
+      ]
+    },
+    "cel_a_p2": {
+      "function": "continue",
+      "event": "The door bleeds cider sap and flinches.",
+      "requires": [
+        "cellar_barklocked"
+      ],
+      "establishes": [
+        "door_bleeds_sap"
+      ]
+    },
+    "cel_a_p3": {
+      "function": "continue",
+      "event": "Frost coats the stair in September; the cold is something rising from below, not weather.",
+      "requires": [
+        "cellar_door_gap"
+      ],
+      "establishes": [
+        "frost_on_stair"
+      ]
+    },
+    "cel_a_p4": {
+      "function": "continue",
+      "event": "The air smells of apples, old water and deep earth; she thinks of black water far below.",
+      "requires": [
+        "cellar_door_gap"
+      ],
+      "establishes": [
+        "three_smells"
+      ]
+    },
+    "cel_adec": {
+      "function": "decision",
+      "event": "The door opens on a pulsing light below: descend or reseal.",
+      "requires": [
+        "cellar_barklocked"
+      ],
+      "establishes": [
+        "pulsing_light_below"
+      ]
+    },
+    "e_cel_a": {
+      "function": "ending",
+      "event": "Rowan reseals the door and walks away into the afternoon; the records and photographs keep fading.",
+      "requires": [
+        "cellar_barklocked",
+        "pulsing_light_below",
+        "four_threads"
+      ],
+      "establishes": [
+        "door_resealed"
+      ]
+    },
+    "cel_b_p1": {
+      "function": "continue",
+      "event": "Through a split in the living bar Rowan drops a pebble that falls impossibly far.",
+      "requires": [
+        "cellar_barklocked"
+      ],
+      "establishes": [
+        "pebble_endless",
+        "bark_split_gap"
+      ]
+    },
+    "cel_b_p2": {
+      "function": "continue",
+      "event": "Cold air carries the smells of a hundred vanished kitchens.",
+      "requires": [
+        "pebble_endless",
+        "quiet_named"
+      ],
+      "establishes": [
+        "kitchen_smells"
+      ]
+    },
+    "cel_b_p3": {
+      "function": "continue",
+      "event": "The lowered lamp flame leans down toward a hungry dark.",
+      "requires": [
+        "bark_split_gap"
+      ],
+      "establishes": [
+        "flame_pulled_down"
+      ]
+    },
+    "cel_b_p4": {
+      "function": "continue",
+      "event": "Rowan levers the split bar free and descends past shelves of soured cider toward a pulsing light.",
+      "requires": [
+        "cellar_barklocked"
+      ],
+      "establishes": [
+        "vinegar_shelves",
+        "pulsing_light_below"
+      ]
+    },
+    "cel_bdec": {
+      "function": "decision",
+      "event": "Halfway down the frozen stair: mark the steps, or retreat.",
+      "requires": [
+        "pulsing_light_below"
+      ],
+      "establishes": [
+        "frost_on_stair"
+      ]
+    },
+    "e_cel_b": {
+      "function": "ending",
+      "event": "Rowan's purpose drains away and she climbs out empty into the afternoon.",
+      "requires": [
+        "four_threads"
+      ],
+      "establishes": [
+        "purpose_drained",
+        "afternoon_investigation"
+      ]
+    },
+    "cel_conv": {
+      "function": "continue",
+      "event": "At the bottom the taproot through the split founding wall drinks from a black spring where the lost town turns.",
+      "requires": [
+        "pulsing_light_below"
+      ],
+      "establishes": [
+        "at_spring",
+        "root_cracked_founding_wall",
+        "black_spring_below_cellar"
+      ]
+    },
+    "cel_t_p1": {
+      "function": "continue",
+      "event": "Rowan's reflection holds while all others dissolve; she understands the Quiet cannot take her.",
+      "requires": [
+        "at_spring",
+        "quiet_named"
+      ],
+      "establishes": [
+        "reflection_holds",
+        "rowan_immune"
+      ]
+    },
+    "cel_t_p2": {
+      "function": "continue",
+      "event": "The drowned faces beg to be remembered.",
+      "requires": [
+        "at_spring"
+      ],
+      "establishes": [
+        "drowned_beg"
+      ]
+    },
+    "cel_t_p3": {
+      "function": "continue",
+      "event": "Rowan sees her grandmother among the drowned, younger than in any photograph she has seen of her.",
+      "requires": [
+        "at_spring"
+      ],
+      "establishes": [
+        "grandmother_drowned",
+        "grandmother_seen_in_photos",
+        "grandmother_among_lost"
+      ]
+    },
+    "cel_t_p4": {
+      "function": "continue",
+      "event": "Words above the spring: the root keeps, the frost sets it, remember for us all.",
+      "requires": [
+        "at_spring"
+      ],
+      "establishes": [
+        "carving_remember",
+        "frost_deadline",
+        "bargain_every_40_years"
+      ]
+    },
+    "cel_clue": {
+      "function": "continue",
+      "event": "Everything ends at the spring; Rowan finds a withered seed beside the carved words.",
+      "requires": [
+        "at_spring",
+        "carving_remember",
+        "drowned_beg"
+      ],
+      "establishes": [
+        "answer_beneath_cider_house",
+        "rowan_has_seed"
+      ]
+    },
+    "n_b1": {
+      "function": "decision",
+      "event": "At the spring with a withered seed in her palm, Rowan sees the Quiet as a founders' bargain for unfailing harvests that grew greedy.",
+      "requires": [
+        "answer_beneath_cider_house",
+        "rowan_has_seed",
+        "quiet_named"
+      ],
+      "establishes": [
+        "at_spring",
+        "root_cracked_founding_wall",
+        "rowan_has_seed",
+        "quiet_named",
+        "bargain_for_harvest",
+        "keep_each_season",
+        "keeping_grew_greedy"
+      ]
+    },
+    "b1a_p1": {
+      "function": "continue",
+      "event": "The spring does not pull at Rowan; it shows her the founders.",
+      "requires": [
+        "at_spring"
+      ],
+      "establishes": [
+        "spring_offers"
+      ]
+    },
+    "b1a_p2": {
+      "function": "continue",
+      "event": "The founders gave their grief willingly and their memory went with it.",
+      "requires": [
+        "spring_offers"
+      ],
+      "establishes": [
+        "founders_gave_willingly",
+        "founders_grief_bargain"
+      ]
+    },
+    "b1a_p3": {
+      "function": "continue",
+      "event": "A keeper walks willingly into the water; this is what a keeping costs.",
+      "requires": [
+        "spring_offers"
+      ],
+      "establishes": [
+        "keeper_walks_in"
+      ]
+    },
+    "b1a_dec": {
+      "function": "decision",
+      "event": "The spring offers a deeper truth: hold on, or pull back.",
+      "requires": [
+        "spring_offers"
+      ],
+      "establishes": []
+    },
+    "e_b1a": {
+      "function": "ending",
+      "event": "Rowan holds too long; the spring shows only pleading faces and closes.",
+      "requires": [
+        "spring_offers"
+      ],
+      "establishes": [
+        "deeper_truth_lost",
+        "drowned_beg"
+      ]
+    },
+    "b1at_p1": {
+      "function": "continue",
+      "event": "The root feeds only on memory rooted here; Rowan was carried away as a small child and grew up far off.",
+      "requires": [
+        "quiet_named"
+      ],
+      "establishes": [
+        "root_feeds_on_rooted",
+        "grew_up_elsewhere",
+        "never_planted_here",
+        "rowan_immune"
+      ]
+    },
+    "b1at_p2": {
+      "function": "continue",
+      "event": "Rowan's strangeness is a key; her reflection stays whole.",
+      "requires": [
+        "root_feeds_on_rooted"
+      ],
+      "establishes": [
+        "reflection_holds"
+      ]
+    },
+    "b1at_p3": {
+      "function": "continue",
+      "event": "Being immune, she might lift memory back out of the spring.",
+      "requires": [
+        "root_feeds_on_rooted"
+      ],
+      "establishes": [
+        "outsideness_is_key",
+        "never_planted_here"
+      ]
+    },
+    "b1b_p1": {
+      "function": "continue",
+      "event": "Rowan packs stone and clay into the split; the root drinks around her.",
+      "requires": [
+        "at_spring",
+        "root_cracked_founding_wall"
+      ],
+      "establishes": [
+        "wall_fails"
+      ]
+    },
+    "b1b_p2": {
+      "function": "continue",
+      "event": "The clay dissolves; the root drinks the wall itself.",
+      "requires": [
+        "wall_fails"
+      ],
+      "establishes": []
+    },
+    "b1b_p3": {
+      "function": "continue",
+      "event": "A hunger cannot be walled off, only answered.",
+      "requires": [
+        "wall_fails"
+      ],
+      "establishes": [
+        "hunger_must_be_answered"
+      ]
+    },
+    "b1b_dec": {
+      "function": "decision",
+      "event": "Her seed-holding hand steadies the drowned faces; the seed is greening.",
+      "requires": [
+        "rowan_has_seed",
+        "at_spring"
+      ],
+      "establishes": [
+        "seed_greening",
+        "seed_steadies_faces"
+      ]
+    },
+    "e_b1b": {
+      "function": "ending",
+      "event": "Rowan keeps building; the root splits the wall wider in the night.",
+      "requires": [
+        "seed_steadies_faces",
+        "wall_fails"
+      ],
+      "establishes": [
+        "wall_split_wider"
+      ]
+    },
+    "b1bt_p1": {
+      "function": "continue",
+      "event": "Her untaken memory, her outsideness, holds the faces steady.",
+      "requires": [
+        "seed_steadies_faces",
+        "grew_up_elsewhere"
+      ],
+      "establishes": [
+        "rowan_immune"
+      ]
+    },
+    "b1bt_p2": {
+      "function": "continue",
+      "event": "The root could be answered with a gift rather than a theft.",
+      "requires": [
+        "hunger_must_be_answered",
+        "rowan_has_seed",
+        "bargain_for_harvest"
+      ],
+      "establishes": [
+        "gift_not_theft"
+      ]
+    },
+    "b1bt_p3": {
+      "function": "continue",
+      "event": "Stopping the Quiet means giving the root something it can keep forever.",
+      "requires": [
+        "gift_not_theft"
+      ],
+      "establishes": []
+    },
+    "b1c_p1": {
+      "function": "continue",
+      "event": "Rowan runs up the frozen stair and shouts the memorial names in the square at dusk.",
+      "requires": [
+        "at_spring",
+        "memorial_names_unplaced"
+      ],
+      "establishes": [
+        "shouted_names",
+        "frost_on_stair"
+      ]
+    },
+    "b1c_p2": {
+      "function": "continue",
+      "event": "Mr Hallet's grief for Enid surfaces and is wiped away.",
+      "requires": [
+        "shouted_names"
+      ],
+      "establishes": [
+        "mr_hallet"
+      ]
+    },
+    "b1c_p3": {
+      "function": "continue",
+      "event": "The town cannot mourn what it cannot remember.",
+      "requires": [
+        "shouted_names"
+      ],
+      "establishes": [
+        "town_cannot_mourn"
+      ]
+    },
+    "b1c_dec": {
+      "function": "decision",
+      "event": "Teo holds the names longer than anyone: build on him or keep shouting alone.",
+      "requires": [
+        "cousin_teo",
+        "shouted_names"
+      ],
+      "establishes": [
+        "teo_stubborn_love"
+      ]
+    },
+    "e_b1c": {
+      "function": "ending",
+      "event": "Rowan keeps shouting; the square empties and Teo goes home.",
+      "requires": [
+        "teo_stubborn_love",
+        "shouted_names"
+      ],
+      "establishes": [
+        "shouting_failed"
+      ]
+    },
+    "b1ct_p1": {
+      "function": "continue",
+      "event": "Teo explains the Quiet is weakest where love is stubborn.",
+      "requires": [
+        "quiet_named"
+      ],
+      "establishes": [
+        "teo_stubborn_love"
+      ]
+    },
+    "b1ct_p2": {
+      "function": "continue",
+      "event": "One held memory proves the Quiet can be resisted.",
+      "requires": [
+        "teo_stubborn_love"
+      ],
+      "establishes": []
+    },
+    "b1ct_p3": {
+      "function": "continue",
+      "event": "Many hearts remembering at once might anchor the lost; Rowan sends Teo for the old keeper and returns to the spring.",
+      "requires": [
+        "teo_stubborn_love",
+        "at_spring"
+      ],
+      "establishes": [
+        "many_remembering",
+        "teo_sent_for_odile"
+      ]
+    },
+    "n_b2": {
+      "function": "decision",
+      "event": "Rowan is immune because she grew up elsewhere; her greening seed is the founders' token; she must learn the price.",
+      "requires": [
+        "rowan_has_seed",
+        "quiet_named",
+        "at_spring"
+      ],
+      "establishes": [
+        "grew_up_elsewhere",
+        "rowan_immune",
+        "outsideness_is_key",
+        "seed_greening",
+        "seed_bargain_token"
+      ]
+    },
+    "b2t_p1": {
+      "function": "continue",
+      "event": "Rowan offers the root her memory of Sunday mornings in the kitchen at home.",
+      "requires": [
+        "seed_greening",
+        "at_spring"
+      ],
+      "establishes": [
+        "sunday_kitchen_given"
+      ]
+    },
+    "b2t_p2": {
+      "function": "continue",
+      "event": "A vanished lane returns, but only lent.",
+      "requires": [
+        "sunday_kitchen_given"
+      ],
+      "establishes": [
+        "lane_returns"
+      ]
+    },
+    "b2t_p3": {
+      "function": "continue",
+      "event": "A whole quarter shimmers up for a breath, then sinks.",
+      "requires": [
+        "lane_returns"
+      ],
+      "establishes": [
+        "lane_returns"
+      ]
+    },
+    "b2t_d1": {
+      "function": "decision",
+      "event": "The trade is memory for memory: measure the cost or snatch her hand back.",
+      "requires": [
+        "lane_returns",
+        "seed_greening"
+      ],
+      "establishes": [
+        "memory_for_memory"
+      ]
+    },
+    "e_b2ta": {
+      "function": "ending",
+      "event": "Rowan keeps every memory and climbs out into the cold orchard air; the town keeps fading.",
+      "requires": [
+        "memory_for_memory"
+      ],
+      "establishes": [
+        "kept_everything",
+        "frost_on_stair"
+      ]
+    },
+    "b2t_m": {
+      "function": "decision",
+      "event": "Whatever she gives, the root holds forever.",
+      "requires": [
+        "memory_for_memory"
+      ],
+      "establishes": [
+        "root_keeps_forever"
+      ]
+    },
+    "e_b2tb": {
+      "function": "ending",
+      "event": "Rowan gives every memory of her family; a lane returns for good and she walks it a stranger.",
+      "requires": [
+        "root_keeps_forever",
+        "lane_returns"
+      ],
+      "establishes": [
+        "family_memories_traded"
+      ]
+    },
+    "b2tt_p1": {
+      "function": "continue",
+      "event": "Only something dear buys much back.",
+      "requires": [
+        "root_keeps_forever",
+        "seed_greening"
+      ],
+      "establishes": [
+        "price_must_be_dear"
+      ]
+    },
+    "b2tt_p2": {
+      "function": "continue",
+      "event": "Only Rowan, outside the tree's reach, can pay.",
+      "requires": [
+        "price_must_be_dear",
+        "rowan_immune"
+      ],
+      "establishes": [
+        "only_rowan_can_pay"
+      ]
+    },
+    "b2tt_p3": {
+      "function": "continue",
+      "event": "The more she gives, the more of Alderwick returns.",
+      "requires": [
+        "only_rowan_can_pay"
+      ],
+      "establishes": [
+        "more_given_more_back"
+      ]
+    },
+    "b2k_p1": {
+      "function": "continue",
+      "event": "The spring shows Rowan her grandmother walking into it forty years ago, the last keeper; one place in the line stands empty.",
+      "requires": [
+        "quiet_named"
+      ],
+      "establishes": [
+        "keeper_vacancy",
+        "grandmother_was_keeper",
+        "keeper_line_broke_40y",
+        "grandmother_gone_forty_years",
+        "empty_knot",
+        "grandmother_among_lost"
+      ]
+    },
+    "b2k_p2": {
+      "function": "continue",
+      "event": "The empty place warms to her; one life for many would be easy.",
+      "requires": [
+        "keeper_vacancy"
+      ],
+      "establishes": []
+    },
+    "b2k_p3": {
+      "function": "continue",
+      "event": "Rowan could become the keeper the root holds instead of the town.",
+      "requires": [
+        "keeper_vacancy",
+        "bargain_for_harvest"
+      ],
+      "establishes": []
+    },
+    "b2k_d1": {
+      "function": "decision",
+      "event": "A keeper is remembered only by the root and forgotten by all, even Teo.",
+      "requires": [
+        "keeper_vacancy",
+        "cousin_teo",
+        "empty_knot"
+      ],
+      "establishes": [
+        "keeper_forgotten_by_all"
+      ]
+    },
+    "e_b2ka": {
+      "function": "ending",
+      "event": "Rowan refuses the keeper's place; the Quiet spreads through winter until even the old keeper on Mabb Hill begins to fade from memory.",
+      "requires": [
+        "keeper_vacancy",
+        "quiet_named"
+      ],
+      "establishes": [
+        "refused_keeper"
+      ]
+    },
+    "b2k_m": {
+      "function": "decision",
+      "event": "A keeper is slowly unmade while preserved below.",
+      "requires": [
+        "keeper_forgotten_by_all"
+      ],
+      "establishes": [
+        "keeper_slow_unmaking"
+      ]
+    },
+    "e_b2kb": {
+      "function": "ending",
+      "event": "Rowan ties herself to the knot in fear; the town steadies and Teo cannot place her face.",
+      "requires": [
+        "keeper_slow_unmaking",
+        "empty_knot",
+        "quiet_named"
+      ],
+      "establishes": [
+        "knot_tied_early"
+      ]
+    },
+    "b2kt_p1": {
+      "function": "continue",
+      "event": "A keeper is an anchor, one for many, as her grandmother chose.",
+      "requires": [
+        "keeper_slow_unmaking",
+        "grandmother_was_keeper"
+      ],
+      "establishes": [
+        "keeper_is_anchor"
+      ]
+    },
+    "b2kt_p2": {
+      "function": "continue",
+      "event": "Rowan is not ready to vanish and draws back from the knot.",
+      "requires": [
+        "keeper_forgotten_by_all",
+        "cousin_teo",
+        "empty_knot"
+      ],
+      "establishes": [
+        "rowan_not_ready"
+      ]
+    },
+    "b2kt_p3": {
+      "function": "continue",
+      "event": "The keeper carries the town's sorrow alone; her grandmother walked into that fate.",
+      "requires": [
+        "keeper_is_anchor",
+        "grandmother_was_keeper"
+      ],
+      "establishes": [
+        "grandmother_gone_forty_years"
+      ]
+    },
+    "n_b3": {
+      "function": "decision",
+      "event": "Rowan knows the price; Odile on Teo's arm and Teo arrive; a shared price is a scar; frost gathers above.",
+      "requires": [
+        "at_spring",
+        "frost_deadline"
+      ],
+      "establishes": [
+        "odile_and_teo_arrive",
+        "shared_price",
+        "odile_fenn",
+        "cousin_teo"
+      ]
+    },
+    "b3u_p1": {
+      "function": "continue",
+      "event": "Rowan sends Teo to gather the town, trusting a stubborn love spread wide.",
+      "requires": [
+        "odile_and_teo_arrive",
+        "memorial_names_unplaced"
+      ],
+      "establishes": [
+        "teo_gathers_town",
+        "frost_on_stair"
+      ]
+    },
+    "b3u_p2": {
+      "function": "continue",
+      "event": "A crowd, the deed-hall clerk and an old man among them, gathers on the stair.",
+      "requires": [
+        "teo_gathers_town"
+      ],
+      "establishes": [
+        "town_gathered"
+      ]
+    },
+    "b3u_p3": {
+      "function": "continue",
+      "event": "The plan: everyone remembers aloud at once.",
+      "requires": [
+        "town_gathered"
+      ],
+      "establishes": [
+        "remember_together_plan"
+      ]
+    },
+    "b3u_d1": {
+      "function": "decision",
+      "event": "Teach the root a shared keeping, or tell the town the orchard was only lonely.",
+      "requires": [
+        "town_gathered",
+        "remember_together_plan"
+      ],
+      "establishes": []
+    },
+    "e_b3un": {
+      "function": "ending",
+      "event": "Rowan tells the town the orchard was lonely; it makes peace with its losses.",
+      "requires": [
+        "town_gathered"
+      ],
+      "establishes": [
+        "town_made_peace"
+      ]
+    },
+    "b3u_m": {
+      "function": "decision",
+      "event": "Begin only when enough have come, or begin now.",
+      "requires": [
+        "town_gathered",
+        "frost_deadline"
+      ],
+      "establishes": []
+    },
+    "e_b3us": {
+      "function": "ending",
+      "event": "Rowan begins too soon and the weight breaks the few.",
+      "requires": [
+        "town_gathered",
+        "frost_deadline"
+      ],
+      "establishes": [
+        "chain_snapped"
+      ]
+    },
+    "b3ut_p1": {
+      "function": "continue",
+      "event": "Odile teaches a keeping spread across a hundred hearts.",
+      "requires": [
+        "odile_and_teo_arrive",
+        "town_gathered"
+      ],
+      "establishes": [
+        "odile_teaches_shared_keeping"
+      ]
+    },
+    "b3ut_p2": {
+      "function": "continue",
+      "event": "The crowd takes up the old words in a chant.",
+      "requires": [
+        "odile_teaches_shared_keeping",
+        "town_gathered"
+      ],
+      "establishes": []
+    },
+    "b3ut_p3": {
+      "function": "continue",
+      "event": "The living will hold the memory like links in a chain.",
+      "requires": [
+        "odile_teaches_shared_keeping",
+        "odile_and_teo_arrive"
+      ],
+      "establishes": []
+    },
+    "b3v_p1": {
+      "function": "continue",
+      "event": "Rowan resolves to save one soul completely.",
+      "requires": [
+        "at_spring"
+      ],
+      "establishes": [
+        "one_soul_plan"
+      ]
+    },
+    "b3v_p2": {
+      "function": "continue",
+      "event": "The neighbour girl surfaces in Rowan's memory: lost the winter Rowan was taken away.",
+      "requires": [
+        "one_soul_plan",
+        "quiet_named"
+      ],
+      "establishes": [
+        "neighbour_girl",
+        "early_childhood_in_alderwick",
+        "grew_up_elsewhere"
+      ]
+    },
+    "b3v_p3": {
+      "function": "continue",
+      "event": "Rowan fixes the girl's grin and presses her greening seed to the water.",
+      "requires": [
+        "neighbour_girl",
+        "seed_greening"
+      ],
+      "establishes": []
+    },
+    "b3v_d1": {
+      "function": "decision",
+      "event": "Pay a loved memory for the girl, or ask only to see her face.",
+      "requires": [
+        "neighbour_girl"
+      ],
+      "establishes": []
+    },
+    "e_b3vn": {
+      "function": "ending",
+      "event": "Rowan only learns the girl's face; the girl stays lost.",
+      "requires": [
+        "neighbour_girl"
+      ],
+      "establishes": [
+        "learned_her_face"
+      ]
+    },
+    "b3v_m": {
+      "function": "decision",
+      "event": "The price: one memory freely given for one soul. Pay or try to cheat.",
+      "requires": [
+        "neighbour_girl"
+      ],
+      "establishes": [
+        "one_for_one_price"
+      ]
+    },
+    "e_b3vs": {
+      "function": "ending",
+      "event": "Rowan tries to take the girl without paying; the root holds them both.",
+      "requires": [
+        "one_for_one_price",
+        "neighbour_girl",
+        "frost_deadline"
+      ],
+      "establishes": [
+        "bargain_refused"
+      ]
+    },
+    "b3vt_p1": {
+      "function": "continue",
+      "event": "Rowan readies a precious memory to trade.",
+      "requires": [
+        "one_for_one_price",
+        "neighbour_girl",
+        "seed_greening"
+      ],
+      "establishes": []
+    },
+    "b3vt_p2": {
+      "function": "continue",
+      "event": "One rescue complete is worth more than many half-attempts.",
+      "requires": [
+        "neighbour_girl"
+      ],
+      "establishes": []
+    },
+    "b3vt_p3": {
+      "function": "continue",
+      "event": "Rowan prepares her small trade before the frost.",
+      "requires": [
+        "seed_greening",
+        "frost_deadline"
+      ],
+      "establishes": []
+    },
+    "b3w_p1": {
+      "function": "continue",
+      "event": "Rowan seeks understanding, not victory.",
+      "requires": [
+        "quiet_named",
+        "bargain_for_harvest"
+      ],
+      "establishes": [
+        "understand_not_win"
+      ]
+    },
+    "b3w_p2": {
+      "function": "continue",
+      "event": "The root shows Rowan the founders: desperate parents burying too many children.",
+      "requires": [
+        "understand_not_win"
+      ],
+      "establishes": [
+        "founders_were_parents",
+        "founders_grief_bargain"
+      ]
+    },
+    "b3w_p3": {
+      "function": "continue",
+      "event": "Rowan asks the root for the whole truth.",
+      "requires": [
+        "seed_greening",
+        "founders_grief_bargain"
+      ],
+      "establishes": []
+    },
+    "b3w_d1": {
+      "function": "decision",
+      "event": "An even trade of one year, or force the truth into every mind.",
+      "requires": [
+        "understand_not_win"
+      ],
+      "establishes": []
+    },
+    "e_b3wn": {
+      "function": "ending",
+      "event": "Rowan trades a year of her own for the year she was born here.",
+      "requires": [
+        "understand_not_win"
+      ],
+      "establishes": [
+        "even_trade_year",
+        "early_childhood_in_alderwick"
+      ]
+    },
+    "b3w_m": {
+      "function": "decision",
+      "event": "The root's memory is too much grief for one mind: carry it wisely or pour it out.",
+      "requires": [
+        "understand_not_win"
+      ],
+      "establishes": [
+        "root_memory_is_grief"
+      ]
+    },
+    "e_b3ws": {
+      "function": "ending",
+      "event": "Rowan forces the truth on the town; it chooses forgetting.",
+      "requires": [
+        "root_memory_is_grief"
+      ],
+      "establishes": [
+        "truth_too_heavy"
+      ]
+    },
+    "b3wt_p1": {
+      "function": "continue",
+      "event": "The spring opens its memory to Rowan alone: a family's grief.",
+      "requires": [
+        "understand_not_win"
+      ],
+      "establishes": [
+        "root_memory_is_grief"
+      ]
+    },
+    "b3wt_p2": {
+      "function": "continue",
+      "event": "The root wants its grief witnessed.",
+      "requires": [
+        "root_memory_is_grief"
+      ],
+      "establishes": [
+        "root_wants_witness"
+      ]
+    },
+    "b3wt_p3": {
+      "function": "continue",
+      "event": "Rowan prepares to acknowledge the tree's sorrow aloud.",
+      "requires": [
+        "root_wants_witness"
+      ],
+      "establishes": []
+    },
+    "n_b4": {
+      "function": "decision",
+      "event": "Frost silvers the grass above; the seed is green; Odile and Teo are with her; the root waits to bargain.",
+      "requires": [
+        "at_spring",
+        "seed_greening",
+        "quiet_named"
+      ],
+      "establishes": [
+        "first_frost_silvering",
+        "seed_green_whole"
+      ]
+    },
+    "fin_all_1": {
+      "function": "decision",
+      "event": "Rowan speaks the bargain backward and a flood of the town's memory pours down the stair.",
+      "requires": [
+        "seed_green_whole"
+      ],
+      "establishes": [
+        "memory_flood"
+      ]
+    },
+    "e_all_flood": {
+      "function": "ending",
+      "event": "The flood breaks past Rowan alone; the town is left half-remembering.",
+      "requires": [
+        "memory_flood"
+      ],
+      "establishes": [
+        "flood_unsteered"
+      ]
+    },
+    "fin_all_2": {
+      "function": "continue",
+      "event": "Odile and Teo help Rowan steer the flood, with the town's remembering behind them; the spring reverses into a keeping.",
+      "requires": [
+        "memory_flood",
+        "odile_and_teo_arrive"
+      ],
+      "establishes": [
+        "spring_reverses"
+      ]
+    },
+    "fin_share_1": {
+      "function": "decision",
+      "event": "Townsfolk crowd down the stair; Rowan asks them to vow aloud to remember, and the root leans toward the gift.",
+      "requires": [],
+      "establishes": [
+        "shared_vow",
+        "crowd_at_stair"
+      ]
+    },
+    "e_share_lost": {
+      "function": "ending",
+      "event": "The crowd loses its nerve and leaves; the vow goes unfinished.",
+      "requires": [
+        "shared_vow",
+        "crowd_at_stair"
+      ],
+      "establishes": [
+        "vow_lost"
+      ]
+    },
+    "fin_share_2": {
+      "function": "continue",
+      "event": "The vow spreads lightly across every heart and the root accepts it.",
+      "requires": [
+        "shared_vow",
+        "crowd_at_stair"
+      ],
+      "establishes": [
+        "root_accepts_shared_keeping"
+      ]
+    },
+    "n_b5": {
+      "function": "decision",
+      "event": "The wall knits shut and the lost years return at first light, the bakery and a gap-toothed girl among them; Rowan looks for what the restoration missed.",
+      "requires": [
+        "bakery_vanished",
+        "root_cracked_founding_wall",
+        "memorial_names_unplaced"
+      ],
+      "establishes": [
+        "town_restored",
+        "root_accepts_shared_keeping"
+      ]
+    },
+    "e_all_restore": {
+      "function": "ending",
+      "event": "Alderwick wakes whole in morning light, remembering on purpose.",
+      "requires": [
+        "town_restored",
+        "memorial_names_unplaced"
+      ],
+      "establishes": [
+        "town_whole"
+      ]
+    },
+    "n_b5_2": {
+      "function": "decision",
+      "event": "Rowan's grandmother, held deepest for forty years, has not come back with the returning years.",
+      "requires": [
+        "town_restored",
+        "grandmother_among_lost"
+      ],
+      "establishes": [
+        "grandmother_not_returned",
+        "grandmother_gone_forty_years",
+        "grandmother_was_keeper"
+      ]
+    },
+    "e_all_grandmother": {
+      "function": "ending",
+      "event": "Rowan lifts her grandmother, the lost keeper, out of the spring under the frost; the line is mended.",
+      "requires": [
+        "grandmother_not_returned",
+        "seed_green_whole"
+      ],
+      "establishes": [
+        "grandmother_returned"
+      ]
+    },
+    "e_all_rest": {
+      "function": "ending",
+      "event": "Rowan lets her grandmother rest, honoured in the orchard's memory.",
+      "requires": [
+        "grandmother_not_returned",
+        "grandmother_gone_forty_years"
+      ],
+      "establishes": [
+        "grandmother_rests"
+      ]
+    },
+    "fin_one_1": {
+      "function": "decision",
+      "event": "Rowan holds the neighbour girl in mind, her playmate lost the winter Rowan was taken away, and readies a memory to pay.",
+      "requires": [
+        "seed_green_whole"
+      ],
+      "establishes": [
+        "neighbour_girl",
+        "early_childhood_in_alderwick"
+      ]
+    },
+    "e_one_hesitate": {
+      "function": "ending",
+      "event": "Rowan hesitates; the frost seals the spring for forty years and the girl stays lost.",
+      "requires": [
+        "neighbour_girl",
+        "frost_deadline"
+      ],
+      "establishes": [
+        "frost_sealed",
+        "bargain_every_40_years"
+      ]
+    },
+    "fin_one_2": {
+      "function": "decision",
+      "event": "Rowan gives her first summer in Alderwick and the girl rises alive.",
+      "requires": [
+        "neighbour_girl"
+      ],
+      "establishes": [
+        "first_summer_given",
+        "girl_restored",
+        "early_childhood_in_alderwick"
+      ]
+    },
+    "e_one_saved": {
+      "function": "ending",
+      "event": "Rowan brings the girl up into the frost-bright morning and the town remembers her.",
+      "requires": [
+        "girl_restored"
+      ],
+      "establishes": []
+    },
+    "e_one_content": {
+      "function": "ending",
+      "event": "Rowan accepts one life for one memory and walks home with the girl.",
+      "requires": [
+        "girl_restored"
+      ],
+      "establishes": []
+    },
+    "fin_trade_1": {
+      "function": "decision",
+      "event": "Rowan offers her memory of the day she stepped off the bus for one year back.",
+      "requires": [
+        "rowan_arrives_by_bus",
+        "only_rowan_remembers"
+      ],
+      "establishes": [
+        "certainty_traded"
+      ]
+    },
+    "e_trade_greed": {
+      "function": "ending",
+      "event": "Rowan grasps for more; the root keeps her memory and gives nothing.",
+      "requires": [
+        "certainty_traded"
+      ],
+      "establishes": [
+        "greed_unrewarded"
+      ]
+    },
+    "fin_trade_2": {
+      "function": "decision",
+      "event": "The root returns one year: the bakery lit golden on the square in the dark.",
+      "requires": [
+        "certainty_traded",
+        "bakery_vanished"
+      ],
+      "establishes": [
+        "year_restored"
+      ]
+    },
+    "e_trade_even": {
+      "function": "ending",
+      "event": "Rowan carries the one restored year home into a frost-bright morning.",
+      "requires": [
+        "year_restored"
+      ],
+      "establishes": []
+    },
+    "e_trade_keeper_light": {
+      "function": "ending",
+      "event": "Rowan promises the root a visit every frost, one memory for one year.",
+      "requires": [
+        "year_restored"
+      ],
+      "establishes": [
+        "yearly_keeper"
+      ]
+    },
+    "e_trade_photo": {
+      "function": "ending",
+      "event": "Rowan holds back the one photograph she brought from home, the orchard gate, and buys nothing back.",
+      "requires": [
+        "year_restored",
+        "quiet_named"
+      ],
+      "establishes": [
+        "photo_kept"
+      ]
+    }
+  },
+  "choices": {
+    "c_open": {
+      "intent": "take in the changed town before acting",
+      "cost": "none (single continue)"
+    },
+    "c_n_start_1": {
+      "intent": "investigate through the town's records",
+      "cost": "hidden: a frightened clerk and fading ink"
+    },
+    "c_n_start_2": {
+      "intent": "seek the last orchard-keeper's knowledge",
+      "cost": "hidden: a blind mentor who tests her nerve"
+    },
+    "c_n_start_3": {
+      "intent": "study the changing family photographs",
+      "cost": "hidden: watching people being unmade"
+    },
+    "c_n_start_4": {
+      "intent": "go straight for the sealed cellar",
+      "cost": "hidden: the most direct and most dangerous way"
+    },
+    "c_rec_entry_1": {
+      "intent": "ask the frightened clerk what he remembers",
+      "cost": "his distress"
+    },
+    "c_rec_entry_2": {
+      "intent": "read the old leases instead",
+      "cost": "slow work in old paper"
+    },
+    "c_rec_a_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_a_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_a_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_a_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_adec_1": {
+      "intent": "steady the clerk and read on together",
+      "cost": "patience; no quick answer"
+    },
+    "c_rec_adec_2": {
+      "intent": "press the clerk until he breaks",
+      "cost": "his trust and the hall's records"
+    },
+    "c_rec_b_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_b_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_b_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_b_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_bdec_1": {
+      "intent": "read the keeper's name calmly",
+      "cost": "facing the fear in place"
+    },
+    "c_rec_bdec_2": {
+      "intent": "tear out the founding lease and run",
+      "cost": "the only hard evidence, which will not survive"
+    },
+    "c_rec_conv_1": {
+      "intent": "follow the envelopes toward the root",
+      "cost": "none (single continue)"
+    },
+    "c_rec_t_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_t_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_t_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_t_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_rec_clue_1": {
+      "intent": "take what she found to the cider house",
+      "cost": "none (single continue)"
+    },
+    "c_kee_entry_1": {
+      "intent": "ask Odile what is eating the town",
+      "cost": "a hard test of her nerve"
+    },
+    "c_kee_entry_2": {
+      "intent": "examine the keeper's cord",
+      "cost": "the weight of the forgotten keepers"
+    },
+    "c_kee_a_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_a_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_a_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_a_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_adec_1": {
+      "intent": "ask what feeding the tree would truly cost",
+      "cost": "admitting she does not know yet"
+    },
+    "c_kee_adec_2": {
+      "intent": "swear to starve the tree",
+      "cost": "Odile's trust and the knowledge she holds"
+    },
+    "c_kee_b_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_b_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_b_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_b_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_bdec_1": {
+      "intent": "let Odile guide her along the knots",
+      "cost": "patience"
+    },
+    "c_kee_bdec_2": {
+      "intent": "cut the cord to break the line",
+      "cost": "the only record of the forgotten keepers"
+    },
+    "c_kee_conv_1": {
+      "intent": "follow the seed toward the root",
+      "cost": "none (single continue)"
+    },
+    "c_kee_t_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_t_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_t_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_t_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_kee_clue_1": {
+      "intent": "take what she found to the cider house",
+      "cost": "none (single continue)"
+    },
+    "c_pho_entry_1": {
+      "intent": "try to catch a face vanishing",
+      "cost": "watching the loss up close"
+    },
+    "c_pho_entry_2": {
+      "intent": "look for a photograph that will not change",
+      "cost": "a stranger, more frightening find"
+    },
+    "c_pho_a_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_a_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_a_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_a_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_adec_1": {
+      "intent": "photograph the prints and study who vanishes",
+      "cost": "patience with horror"
+    },
+    "c_pho_adec_2": {
+      "intent": "burn the fading prints",
+      "cost": "the last proof the forgotten existed"
+    },
+    "c_pho_b_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_b_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_b_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_b_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_bdec_1": {
+      "intent": "compare the orchard photos year by year",
+      "cost": "being pulled further in"
+    },
+    "c_pho_bdec_2": {
+      "intent": "seal the album and walk away",
+      "cost": "her own understanding"
+    },
+    "c_pho_conv_1": {
+      "intent": "follow the photographs toward the root",
+      "cost": "none (single continue)"
+    },
+    "c_pho_t_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_t_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_t_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_t_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_pho_clue_1": {
+      "intent": "take what she found to the cider house",
+      "cost": "none (single continue)"
+    },
+    "c_cel_entry_1": {
+      "intent": "pry the barklocked door open",
+      "cost": "slow work against a living thing"
+    },
+    "c_cel_entry_2": {
+      "intent": "test how deep the cold goes first",
+      "cost": "caution, then a long descent"
+    },
+    "c_cel_a_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_a_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_a_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_a_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_adec_1": {
+      "intent": "descend toward the pulsing light",
+      "cost": "facing the root"
+    },
+    "c_cel_adec_2": {
+      "intent": "reseal the door and pretend she never came",
+      "cost": "the town's last chance"
+    },
+    "c_cel_b_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_b_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_b_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_b_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_bdec_1": {
+      "intent": "mark the steps and keep going down",
+      "cost": "time and nerve on the stair"
+    },
+    "c_cel_bdec_2": {
+      "intent": "retreat while she still remembers why she came",
+      "cost": "her purpose drains anyway"
+    },
+    "c_cel_conv_1": {
+      "intent": "look into the spring toward the root",
+      "cost": "none (single continue)"
+    },
+    "c_cel_t_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_t_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_t_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_t_p4_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_cel_clue_1": {
+      "intent": "gather what she found at the spring",
+      "cost": "none (single continue)"
+    },
+    "c_n_b1_1": {
+      "intent": "reach into the spring to understand it",
+      "cost": "risking her own memory"
+    },
+    "c_n_b1_2": {
+      "intent": "refuse the spring and wall the root off by force",
+      "cost": "labour that the root may simply drink"
+    },
+    "c_n_b1_3": {
+      "intent": "run and call the town to witness",
+      "cost": "facing a town that cannot hear"
+    },
+    "c_b1a_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1a_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1a_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1a_dec_1": {
+      "intent": "keep her hands in the water for the deeper truth",
+      "cost": "the cold and the risk of the spring turning"
+    },
+    "c_b1a_dec_2": {
+      "intent": "pull back from the water",
+      "cost": "the deeper truth"
+    },
+    "c_b1at_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1at_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1at_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1b_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1b_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1b_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1b_dec_1": {
+      "intent": "learn from the seed's effect on the water",
+      "cost": "giving up winning by force"
+    },
+    "c_b1b_dec_2": {
+      "intent": "ignore the seed and keep building the wall",
+      "cost": "the wall fails and the town pays"
+    },
+    "c_b1bt_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1bt_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1bt_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1c_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1c_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1c_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1c_dec_1": {
+      "intent": "build on Teo's stubborn memory",
+      "cost": "trusting someone else"
+    },
+    "c_b1c_dec_2": {
+      "intent": "keep shouting alone",
+      "cost": "her voice, and Teo's patience"
+    },
+    "c_b1ct_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1ct_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b1ct_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_n_b2_1": {
+      "intent": "weigh giving the root a memory of her own",
+      "cost": "parts of herself, memory by memory"
+    },
+    "c_n_b2_2": {
+      "intent": "weigh taking the empty keeper's place",
+      "cost": "her whole self, forgotten by all"
+    },
+    "c_b2t_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2t_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2t_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2t_d1_1": {
+      "intent": "press the root to show the true price",
+      "cost": "a closer look at what she will lose"
+    },
+    "c_b2t_d1_2": {
+      "intent": "snatch her hand back and keep everything",
+      "cost": "the town keeps fading"
+    },
+    "c_b2t_m_1": {
+      "intent": "follow the cost to its end before paying",
+      "cost": "patience"
+    },
+    "c_b2t_m_2": {
+      "intent": "let the root take a memory she cannot spare",
+      "cost": "her memory of her grandmother"
+    },
+    "c_b2tt_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2tt_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2tt_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2k_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2k_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2k_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2k_d1_1": {
+      "intent": "study the keeper's fate honestly",
+      "cost": "looking at her own erasure"
+    },
+    "c_b2k_d1_2": {
+      "intent": "decide no one should have to vanish",
+      "cost": "no anchor for the town"
+    },
+    "c_b2k_m_1": {
+      "intent": "follow the cost to its end before choosing",
+      "cost": "patience"
+    },
+    "c_b2k_m_2": {
+      "intent": "tie herself to the keeper's knot now",
+      "cost": "fading from everyone she loves"
+    },
+    "c_b2kt_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2kt_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b2kt_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_n_b3_1": {
+      "intent": "ask the whole town to share the weight",
+      "cost": "everything rides on a crowd arriving"
+    },
+    "c_n_b3_2": {
+      "intent": "offer the root one thing to save one soul",
+      "cost": "most of the town stays lost"
+    },
+    "c_n_b3_3": {
+      "intent": "bargain only to understand, not to win",
+      "cost": "gives up restoring the town"
+    },
+    "c_b3u_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3u_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3u_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3u_d1_1": {
+      "intent": "teach the root a new shared bargain",
+      "cost": "an untried gamble with the whole town"
+    },
+    "c_b3u_d1_2": {
+      "intent": "let the town forgive the orchard and go home",
+      "cost": "the vanished stay gone"
+    },
+    "c_b3u_m_1": {
+      "intent": "wait until enough people have come",
+      "cost": "time against the frost"
+    },
+    "c_b3u_m_2": {
+      "intent": "begin before the town has arrived",
+      "cost": "the few who came are broken"
+    },
+    "c_b3ut_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3ut_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3ut_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3v_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3v_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3v_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3v_d1_1": {
+      "intent": "pay a real memory for the girl",
+      "cost": "something precious, forever"
+    },
+    "c_b3v_d1_2": {
+      "intent": "only ask to see her face",
+      "cost": "the girl stays lost"
+    },
+    "c_b3v_m_1": {
+      "intent": "pay the fair price honestly",
+      "cost": "the memory she chose"
+    },
+    "c_b3v_m_2": {
+      "intent": "demand the girl without paying",
+      "cost": "the root refuses and keeps both"
+    },
+    "c_b3vt_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3vt_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3vt_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3w_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3w_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3w_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3w_d1_1": {
+      "intent": "take on the root's whole memory",
+      "cost": "a grief that could break her or others"
+    },
+    "c_b3w_d1_2": {
+      "intent": "take one year back on the root's terms",
+      "cost": "a year of her own life"
+    },
+    "c_b3w_m_1": {
+      "intent": "carry the truth wisely herself",
+      "cost": "bearing it alone"
+    },
+    "c_b3w_m_2": {
+      "intent": "force the truth into every mind",
+      "cost": "the town breaks under it"
+    },
+    "c_b3wt_p1_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3wt_p2_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_b3wt_p3_1": {
+      "intent": "go on",
+      "cost": "none (single continue)"
+    },
+    "c_n_b4_1": {
+      "intent": "anchor the whole town's memory at once",
+      "cost": "a flood that needs many hands"
+    },
+    "c_n_b4_2": {
+      "intent": "bind the shared vow of the living into the root",
+      "cost": "depends on the crowd's nerve"
+    },
+    "c_n_b4_3": {
+      "intent": "save the one soul she came for",
+      "cost": "a memory of her own; the rest stay lost"
+    },
+    "c_n_b4_4": {
+      "intent": "accept a bittersweet even trade",
+      "cost": "one memory of hers for one year back"
+    },
+    "c_fin_all_1_1": {
+      "intent": "steer the flood together",
+      "cost": "none beyond trusting Odile, Teo and the town"
+    },
+    "c_fin_all_1_2": {
+      "intent": "falter as the current grows too strong",
+      "cost": "the chance is spent"
+    },
+    "c_fin_all_2_1": {
+      "intent": "seal the new keeping",
+      "cost": "none (single continue)"
+    },
+    "c_fin_share_1_1": {
+      "intent": "bind the vow into the root",
+      "cost": "the crowd must hold its nerve"
+    },
+    "c_fin_share_1_2": {
+      "intent": "lose the crowd's nerve at the last moment",
+      "cost": "the vow goes unfinished"
+    },
+    "c_fin_share_2_1": {
+      "intent": "seal the shared keeping for good",
+      "cost": "none (single continue)"
+    },
+    "c_n_b5_1": {
+      "intent": "watch the town wake whole",
+      "cost": "leaves the one gap unexamined"
+    },
+    "c_n_b5_2": {
+      "intent": "notice the one gap the flood missed",
+      "cost": "one more hard choice"
+    },
+    "c_n_b5_2_1": {
+      "intent": "reach for her grandmother too",
+      "cost": "risking the gift her grandmother gave"
+    },
+    "c_n_b5_2_2": {
+      "intent": "let her grandmother rest",
+      "cost": "an absence the family keeps"
+    },
+    "c_fin_one_1_1": {
+      "intent": "give the memory freely for the one",
+      "cost": "a summer of her own"
+    },
+    "c_fin_one_1_2": {
+      "intent": "hesitate over which memory to lose",
+      "cost": "the frost comes first"
+    },
+    "c_fin_one_2_1": {
+      "intent": "bring the girl up into the light",
+      "cost": "none beyond the summer already paid"
+    },
+    "c_fin_one_2_2": {
+      "intent": "ask whether she might save one more",
+      "cost": "none; she learns to stop"
+    },
+    "c_fin_trade_1_1": {
+      "intent": "accept the even trade and let go",
+      "cost": "her certain memory of arrival"
+    },
+    "c_fin_trade_1_2": {
+      "intent": "grasp for more than the root will give",
+      "cost": "the memory, for nothing"
+    },
+    "c_fin_trade_2_1": {
+      "intent": "carry the one restored year home",
+      "cost": "none beyond the trade"
+    },
+    "c_fin_trade_2_2": {
+      "intent": "promise the root a visit every frost",
+      "cost": "a lifetime of yearly trades"
+    },
+    "c_fin_trade_2_3": {
+      "intent": "hold back one thing she will never give",
+      "cost": "buys nothing back"
+    }
+  },
+  "threads": {},
+  "endings": {
+    "e_rec_a": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "the bolted door shows what pressing a frightened person costs; the patient road was open"
+    },
+    "e_rec_b": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "the blank page proves the town lets you take only what will fade"
+    },
+    "e_kee_a": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "Odile's warning about roots, frost and a door in the dark, and the lesson that starving a hunger feeds it"
+    },
+    "e_kee_b": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "the scattered knots show the cord was the town's last memory of its keepers"
+    },
+    "e_pho_a": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "the ash shows that destroying the evidence completes the erasure"
+    },
+    "e_pho_b": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "losing her understanding by morning shows the Quiet takes what you turn away from"
+    },
+    "e_cel_a": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "the root drinks on behind the resealed door; the door was the way"
+    },
+    "e_cel_b": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "a stair that drinks purpose: the reason to mark each step"
+    },
+    "e_b1a": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "a glimpse of the founders and the drowned faces, and the cost of holding on past the offer"
+    },
+    "e_b1b": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "a wall cannot stop a hunger; the seed was the answer she ignored"
+    },
+    "e_b1c": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "Teo's held memory was the thread she let go"
+    },
+    "e_b2ta": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "a whole quarter of the lost town glimpsed, and the weight of having kept herself whole"
+    },
+    "e_b2tb": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "a lane bought back at the price of the person she meant to honour"
+    },
+    "e_b2ka": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "refusing the keeper's place shows the hunger only grows without one"
+    },
+    "e_b2kb": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "a keeper made of fright: the town is steadied but she fades"
+    },
+    "e_b3un": {
+      "valence": "neutral",
+      "kind": "discovery",
+      "gift": "a gentle peace with the orchard and an end to the fear, though the lost stay lost"
+    },
+    "e_b3us": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "timing matters: too few hands break under the weight"
+    },
+    "e_b3vn": {
+      "valence": "neutral",
+      "kind": "discovery",
+      "gift": "the face and name of the lost girl, carried for life"
+    },
+    "e_b3vs": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "the root cannot be cheated; it keeps both the girl and the wasted hour"
+    },
+    "e_b3wn": {
+      "valence": "neutral",
+      "kind": "discovery",
+      "gift": "the year Rowan was born, returned, for a year of her own"
+    },
+    "e_b3ws": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "why the founders chose to forget in the first place"
+    },
+    "e_all_flood": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "a fragile half-calm, and the lesson that the flood needed more hands"
+    },
+    "e_share_lost": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "a vow that needed the whole town to finish it"
+    },
+    "e_all_restore": {
+      "valence": "positive",
+      "kind": "completion",
+      "gift": "the whole town restored and remembering on purpose"
+    },
+    "e_all_grandmother": {
+      "valence": "positive",
+      "kind": "success",
+      "gift": "her grandmother returned and the keeper line mended"
+    },
+    "e_all_rest": {
+      "valence": "positive",
+      "kind": "completion",
+      "gift": "the town whole around one honoured absence"
+    },
+    "e_one_hesitate": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "the frost comes first; one honest choice away from saved"
+    },
+    "e_one_saved": {
+      "valence": "positive",
+      "kind": "success",
+      "gift": "one lost girl walking and laughing in Alderwick again"
+    },
+    "e_one_content": {
+      "valence": "positive",
+      "kind": "success",
+      "gift": "the wisdom that saving one wholly is enough"
+    },
+    "e_trade_greed": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "the root is exact and does not reward grasping"
+    },
+    "e_trade_even": {
+      "valence": "neutral",
+      "kind": "discovery",
+      "gift": "one restored year and the bakery lit again"
+    },
+    "e_trade_keeper_light": {
+      "valence": "neutral",
+      "kind": "discovery",
+      "gift": "a gentler yearly keeping, one memory for one year"
+    },
+    "e_trade_photo": {
+      "valence": "negative",
+      "kind": "setback",
+      "gift": "one kept photograph of the orchard gate, and the knowledge that keeping buys nothing"
+    }
+  },
+  "provenance": {
+    "producer": "hand-written from a full read of the book (WP-0.3, control book, unrevised)",
+    "model": "claude-opus-5-5",
+    "approver": null,
+    "authoring_minutes": 9,
+    "book_file": "out/the-vanishing-orchard.filled.json",
+    "book_sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+    "notes": [
+      "Migrated from the 0.0 dialect. Superseded 0.0 binding: book sha256 46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716; shape hash sha256:0e15db63026be6a617976e7288998708b6fe585555de3d2ede15bb1c450520c6 (sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order); shape id was null. Binding is now provenance.book_sha256.",
+      "threads_note: The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
+      "continuity_notes: PLAIN CONTRADICTION, most routes: rowan_knew_grandmother vs grandmother_gone_forty_years. kee_a_p3, b2k_p1, b2kt_p3, n_b5_2 and e_all_grandmother say the grandmother went into the spring forty years ago and has been held there since; pho_conv and cel_t_p3 ('younger than Rowan had ever known her'), pho_t_p1 (birthday cards) and b2t_p1/e_b2tb (her Sunday kitchen) say teenage Rowan knew her. Example route: c_n_start_2 > c_kee_entry_1 ... c_n_b2_1 > b2t_p1.",
+      "continuity_notes: PLAIN CONTRADICTION, same route (kee_entry > c_kee_entry_2 > kee_b_p1): kee_entry has the knotted cord 'looped at her belt'; kee_b_p1 has it hanging 'on a nail beside Odile', the nail rubbed smooth by generations.",
+      "continuity_notes: PLAIN CONTRADICTION, kee routes into n_b3: kee_t_p3 says Odile's legs 'would no longer carry her down the steep hill' and she will send Teo instead; n_b3 has her come down to the spring on Teo's arm, and b3ut_p1/fin_all_2 have her teaching and steering there.",
+      "continuity_notes: PLAIN CONTRADICTION, same route (c_n_b2_1 > b2t_p1 ... c_b2t_m_2 > e_b2tb): b2t_p1 gives the root the memory of her grandmother's Sunday kitchen and b2t_m says a traded memory is gone for good; e_b2tb then gives 'her whole memory of her grandmother, ... the Sunday kitchens' again.",
+      "continuity_notes: PLAIN CONTRADICTION, cadence of the bargain: rec_b_p2/rec_b_p4, cel_t_p4, n_b4 and e_one_hesitate say once every fortieth year; kee_a_p3 says one willing name a year; n_b1 (on every route) says a little each season. Same-route clashes: any rec_b route through n_b1; any kee_a route reaching e_one_hesitate or n_b4.",
+      "continuity_notes: PLAIN CONTRADICTION, Rowan's childhood: kee_t_p1 ('You were never planted here'), b1at_p1 ('her childhood banked in streets the orchard had never owned') vs b3v_p2 ('children together for a few short years'), fin_one_1 ('the neighbour girl she had grown up beside'), fin_one_2 ('her own first summer in Alderwick') and e_b3wn. Same route example: kee route > n_b3 > c_n_b3_2 > b3v_p2.",
+      "continuity_notes: UNESTABLISHED REFERENCE, cel routes (c_n_start_4): cel_a_p3 ('Odile's warning came back to her'), cel_a_p4 ('the black spring Odile had described') and cel_t_p1 ('understood what Odile had meant') cite a conversation that happens only on the keeper branch; Rowan never meets Odile on any cel route.",
+      "continuity_notes: UNESTABLISHED REFERENCE, cel_b route (c_cel_entry_2): cel_b_p1 drops a pebble 'through the gap in the barklocked door' and cel_b_p3 lowers the lamp 'through the gap', but the gap is chiselled only on the cel_a branch; cel_b_p4 then 'opened the door fully' with no prying of the living bar.",
+      "continuity_notes: UNESTABLISHED REFERENCE, rec routes: rec_clue says 'this time the door did not bar itself behind her', but the hall door is barred only in the ending e_rec_a.",
+      "continuity_notes: UNESTABLISHED NAME, pho routes (c_n_start_3) and cel_b/cel_t: 'the Quiet' is used as a known name (pho_a_p3, pho_b_p1, pho_b_p4, pho_t_p3, e_pho_a, e_pho_b, cel_b_p2, cel_t_p1) though it is introduced only by Odile on the keeper branch; n_b1 then presents it as known on every route.",
+      "continuity_notes: CROSS-BRANCH LEAK: kee_a_p1 explains 'why the register ran blank' and kee_b_p2 compares Odile to 'the clerk', both seen only on the records branch.",
+      "continuity_notes: MERGE DEFECT, n_b1 (all four entries): Rowan holds 'a withered seed, the token every keeper carries' in her palm, but the seed is given only on the keeper branch (kee_conv). The rec, pho and cel routes never hand it to her.",
+      "continuity_notes: MERGE DEFECT, rec_conv from rec_a (c_rec_adec_1): 'the name written on the latest clause' and rec_clue's 'the fortieth-year clause' cite the lease clause found only on rec_b.",
+      "continuity_notes: MERGE DEFECT, pho_t_p1..pho_t_p4 and pho_clue from pho_a (c_pho_adec_1): 'the album', 'the steady orchard album' cite the album found only on pho_b.",
+      "continuity_notes: MERGE DEFECT, b1a_p3 from rec, pho and cel routes: 'exactly what the empty knot was waiting for' cites the empty knot shown only at kee_conv.",
+      "continuity_notes: MERGE DEFECT, b1bt_p1 from pho and cel routes via b1b: 'her untaken memory', 'her outsideness' presuppose grew_up_elsewhere, not yet told on those routes.",
+      "continuity_notes: MERGE DEFECT, b2k_p1 from cel routes: recaps the grandmother as the keeper whose line broke forty years ago, never told on cel routes (the cel branch only shows her among the drowned).",
+      "continuity_notes: MERGE DEFECT, fin_all_1, fin_all_2, fin_share_1, fin_share_2, e_share_lost from b3v (c_n_b3_2) and b3w (c_n_b3_3): all address 'the gathered town', gathered only on b3u. n_b4 hedges ('the gathered town, or else a single beloved face') but offers all four finales on every route.",
+      "continuity_notes: MERGE DEFECT, n_b5 and n_b5_2 from fin_share: the choice 'Notice the one gap the flood did not reach' and n_b5_2's 'the great rising flood of remembering' cite the flood that happens only in fin_all_1.",
+      "continuity_notes: MERGE DEFECT, minor: b3u_p1 relies on 'Teo's stubborn kind of love' (told only on kee or b1c routes); b3u_p2 names 'Old Mr Hallet' (b1c only) and 'the frightened clerk' (rec only); fin_one_1 introduces the neighbour girl as known on b3u/b3w routes (it restates enough to stand alone).",
+      "continuity_notes: SOFT, callback: n_b5 shows 'a gap-toothed girl who had once won every game of conkers', a callback to the neighbour girl who is introduced only on b3v; on b3u routes (the main way into fin_all/fin_share) the detail is unexplained.",
+      "continuity_notes: SOFT, time of day: n_open has Rowan arrive at dusk; rec_t_p4, pho_clue, cel_a_p1, e_cel_a, e_cel_b and e_b2ta place the investigation in the afternoon with no night passing on the page; b1c_p1 and b3u_p1 are at dusk again; n_b5 lights the bakery 'in the dusk' and e_all_restore steps straight into 'morning light'.",
+      "continuity_notes: SOFT, motive of the bargain: kee_a_p2, b1a_p2 and b3w_p2 make it grief relief; rec_b_p4 and n_b1 make it memory for a fruitful harvest. Compatible if both are true, but the book never joins them.",
+      "continuity_notes: SOFT, 'last keeper': Odile is 'the last orchard-keeper' and 'the last keeper on Mabb Hill' (kee_entry, n_b3, e_b2ka) while the grandmother is 'the last keeper to pay the price' (kee_conv, n_b5_2). And kee_a_p3 has keepers feed the tree another willing name, where pho_t_p2, b1a_p3 and b2k_d1 make the keeper the one who is kept.",
+      "continuity_notes: SOFT: cel_entry says 'every thread she had followed in Alderwick ended here' though on that route she followed none; e_cel_b mentions 'the old woman on the hill' whom she has not met.",
+      "continuity_notes: SOFT, same route (b1c > b1ct_p3 > n_b2 > ... > n_b3): Teo is already 'beside her' returning to the spring at b1ct_p3, yet n_b3 has him arrive on the stair, and e_b2kb has him 'climbing down to find her'.",
+      "continuity_notes: UNPAID SETUPS: the margin word 'enough' (rec_b_p3), the pressed blossom and child's lock of hair (pho_b_p3), the eleven mill-fire children (rec_t_p2) and the clerk's daughter (rec_a_p2) are never returned to on any route.",
+      "continuity_resolution.pass: WP-0.4 second-reader continuity pass, 2026-11-21 (control book: continuity only, no agency changes)",
+      "continuity_resolution.findings: docs/planning/evidence/story-plan-retro/findings-the-vanishing-orchard.md",
+      "continuity_resolution.backstory_decision: Grandmother went into the spring forty years ago and Rowan never met her (supported by both grandmother endings, n_b5_2, kee_a_p3, kee_conv, rec_conv, b2k/b2kt, cel_t_p3); Rowan was born in Alderwick, carried away as a small child, raised elsewhere (supported by n_open on every route, b3v_p2, fin_one_1, fin_one_2, e_b3wn, and every 'grew up elsewhere' line); cadence: lease renewed every fortieth year, one willing name a year.",
+      "continuity_resolution.note: continuity_notes below are the pre-fix record written in WP-0.3; every PLAIN CONTRADICTION, UNESTABLISHED and MERGE DEFECT entry is resolved in the book. SOFT 'last keeper' wording, the two-faced motive, the unpaid setups and the n_b5 conkers callback are not plain contradictions and stay as written (control).",
+      "sp9_condensed 2026-11-21: pitch.obstacle, pitch.ending_kind, truth.statement, facts.rowan_has_seed.text; pre-condensation text at commit 315a79d"
+    ]
+  }
+}

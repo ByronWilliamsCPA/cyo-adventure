@@ -1,0 +1,4760 @@
+{
+  "plan_version": "0.1",
+  "book": {
+    "slug": "the-mapmakers-island",
+    "storybook_id": "sk_mapmakers_island",
+    "storybook_version": 1,
+    "title": "The Mapmaker's Island"
+  },
+  "request": {
+    "text": null,
+    "band": "10-13",
+    "length": "long",
+    "style": "prose",
+    "tone": "bright, wondering exploration with moderate peril and scariness; no violence",
+    "note": "catalog book; no request text available; plan written by reading the book"
+  },
+  "pitch": {
+    "hero": "Wren, a would-be mapmaker put ashore alone on an island no map has named",
+    "want": "to fill one blank sheet with a true chart before the ship returns at dusk and win a Chart House apprenticeship",
+    "obstacle": "tides, cliffs, floods and cave squeezes, and endless wonders that eat the daylight",
+    "stake": "the apprenticeship, and finishing the chart the lost mapmaker Alder left half drawn",
+    "ending_kind": "finished masterwork named or signed, a safe-landing or rescue win, or a lingering, tide or nerve setback"
+  },
+  "cast": {
+    "wren": {
+      "name": "Wren",
+      "role": "protagonist; would-be Chart House apprentice",
+      "want": "to chart the island truly by dusk and earn the apprenticeship",
+      "voice": "close third past, no gendered pronouns; careful, curious, easily held by wonders; learns patience over haste",
+      "knows": [
+        "mate_set_test",
+        "chart_house",
+        "tide_rule"
+      ]
+    },
+    "alder": {
+      "name": "Alder",
+      "role": "absent predecessor mapmaker, lost in a storm; guide through notes and carvings",
+      "want": "for someone to finish the island's chart and give it a name",
+      "voice": "small, sure hand; kind, patient notes to whoever comes after",
+      "knows": [
+        "alder_chart_at_camp",
+        "alder_wish_name"
+      ]
+    },
+    "mate": {
+      "name": "the mate",
+      "role": "ship's mate who sets and judges the test",
+      "want": "a true chart, drawn with Wren's own eyes, by dusk",
+      "voice": "plain, weathered, sparing praise; speaks in short verdicts",
+      "knows": [
+        "mate_set_test",
+        "ship_returns_dusk"
+      ]
+    },
+    "sailors": {
+      "name": "two sailors",
+      "role": "crew sent ashore when Wren signals",
+      "want": "to help before the tide returns",
+      "voice": "silent helpers who laugh and cheer",
+      "knows": [
+        "sailors_landed"
+      ]
+    }
+  },
+  "truth": {
+    "statement": "Before Wren, a mapmaker named Alder spent seasons charting the island, drew half of it, and left that chart with pens, a brass spyglass and a signal mirror at a stone and canvas camp on the ridge below the summit, meaning to return; a storm took the boat and Alder never came back. Notes, carvings, a bottle and a logbook across the island point to that camp. Only from the summit can the whole island be seen, so the true chart is finished there, on Alder's half, before the ship returns at dusk.",
+    "facts": [
+      "mate_set_test",
+      "alder_name",
+      "alder_chart_at_camp",
+      "alder_camp",
+      "alder_chart_half_drawn",
+      "alder_tools",
+      "alder_lost_in_storm",
+      "alder_never_returned",
+      "summit_sees_island"
+    ],
+    "question": "Who charted the island before Wren, and where can a true chart be finished by dusk?"
+  },
+  "facts": {
+    "wren_rowed_ashore": {
+      "text": "Wren is rowed ashore alone at first light onto an island and the boat pulls away."
+    },
+    "island_unnamed": {
+      "text": "No map has ever named the island."
+    },
+    "wren_has_satchel": {
+      "text": "Wren carries a satchel."
+    },
+    "wren_has_flask": {
+      "text": "Wren carries a flask."
+    },
+    "wren_has_sketchbook": {
+      "text": "Wren carries a sketchbook for field notes."
+    },
+    "wren_has_blank_sheet": {
+      "text": "Wren carries one blank sheet of paper meant for the chart."
+    },
+    "mate_set_test": {
+      "text": "The ship's mate set the rule: fill the sheet with a true chart of the island before the ship returns."
+    },
+    "ship_returns_dusk": {
+      "text": "The ship returns for Wren at dusk."
+    },
+    "chart_house": {
+      "text": "The prize is an apprenticeship at the Chart House, which goes to somebody else if Wren fails."
+    },
+    "five_ways": {
+      "text": "Five ways lead inland: a mangrove coast, a cloud-forest ridge, sink-hole caverns, a ruined survey tower and tidal flats."
+    },
+    "alder_name": {
+      "text": "A mapmaker named Alder came to the island before Wren and left marks behind."
+    },
+    "alder_identity_unknown": {
+      "text": "Wren does not know who Alder was."
+    },
+    "ridge_camp": {
+      "text": "A camp of grey canvas stands high on the island's ridge."
+    },
+    "alder_chart_at_camp": {
+      "text": "Alder left a chart of the island at the camp on the ridge."
+    },
+    "alder_arrow_to_camp": {
+      "text": "Marks left by Alder point uphill toward the camp."
+    },
+    "alder_camp": {
+      "text": "The ridge camp is Alder's: a low shelter of grey canvas and stone at the end of a line of cairns."
+    },
+    "alder_chart_half_drawn": {
+      "text": "Alder's chart at the camp has half the island drawn and the rest left blank."
+    },
+    "alder_tools": {
+      "text": "At the camp lie Alder's pens, a brass spyglass and a small signal mirror."
+    },
+    "alder_meant_to_return": {
+      "text": "Alder meant to come back for the chart."
+    },
+    "alder_never_returned": {
+      "text": "Alder never came back."
+    },
+    "alder_lost_in_storm": {
+      "text": "A storm cut Alder's work short and took the boat that never came back."
+    },
+    "alder_work_unfinished": {
+      "text": "Alder left the island's chart for someone else to finish."
+    },
+    "alder_charted_cove": {
+      "text": "Alder's chart draws the coast true, marks the caves and fixes the reef and the cove; high ground and far shore are blank."
+    },
+    "alder_finish_note": {
+      "text": "Alder wrote across the blank of the chart: finish this and it is yours."
+    },
+    "alder_named_cove": {
+      "text": "Alder's journal tells of naming a hidden cove and fixing a spring and the reef."
+    },
+    "alder_wish_name": {
+      "text": "Alder's last journal wish: whoever finds this, finish the chart and give the island its name."
+    },
+    "wren_carries_alder_chart": {
+      "text": "Wren carries Alder's half chart."
+    },
+    "wren_carries_alder_tools": {
+      "text": "Wren carries Alder's tools: pens, the brass spyglass and the signal mirror."
+    },
+    "summit_sees_island": {
+      "text": "From the summit the whole island can be seen at once."
+    },
+    "mangrove_maze": {
+      "text": "The mangrove coast is a maze of roots and mud, and the low water will not last."
+    },
+    "mg_leads": {
+      "text": "In the mangrove a log bridge, oyster rocks, a hidden creek and a green lagoon offer bearings."
+    },
+    "log_bridge_channel": {
+      "text": "A slippery fallen log crosses a channel as the tide turns."
+    },
+    "carved_driftwood": {
+      "text": "A knot of driftwood wedged against the log bears old carved marks."
+    },
+    "farbank_rookery": {
+      "text": "A heron rookery clatters on the far bank of the log bridge."
+    },
+    "driftwood_marks": {
+      "text": "The driftwood marks are mapmaker's shorthand: arrows and a compass rose, one arrow to the sea caves, one up to high ground."
+    },
+    "farbank_fork": {
+      "text": "Past the log the path splits into a quick mud slick and firm palms."
+    },
+    "coast_cut_off": {
+      "text": "The tide closes over the log bridge and cuts off that finger of coast, left blank on the chart."
+    },
+    "hidden_cove": {
+      "text": "A hidden cove of calm water lies inside the reef, ringed by cliffs."
+    },
+    "reef_offshore": {
+      "text": "A long curl of reef lies offshore."
+    },
+    "oyster_turtle": {
+      "text": "A small sea turtle lies unhurt but stranded on its back in a draining pool among the oyster rocks."
+    },
+    "signal_help_idea": {
+      "text": "Wren could mark a stranded creature's spot and send help once the ship can be signalled from a high place."
+    },
+    "wren_marked_oyster_turtle": {
+      "text": "Wren marks the stranded turtle's spot to send help later.",
+      "implicit_plant": "no variable; never paid off directly: meet_boat offers a different reef turtle and a cove sea-cave pup"
+    },
+    "wren_righted_turtle": {
+      "text": "Wren rights the oyster-rock turtle and it swims away."
+    },
+    "fresh_water_from_spring": {
+      "text": "The island's fresh water runs down from a spring on higher ground."
+    },
+    "gully_forks": {
+      "text": "The fern gully forks toward a bright spring pool and a mossy overhang."
+    },
+    "old_firepit_shelter": {
+      "text": "Under a mossy overhang lie an old firepit, a dented tin cup and a name scratched on the wall."
+    },
+    "otter_family": {
+      "text": "A mother otter and two kits slip upstream on the hidden creek."
+    },
+    "heron_island": {
+      "text": "Across the creek a loud heron island crowds the channel."
+    },
+    "trees_choice": {
+      "text": "Off the creek the trees close in; a brightness uphill promises open ground and a level game trail tempts."
+    },
+    "game_trail_loops": {
+      "text": "The level game trail curls back on itself with no landmark in sight."
+    },
+    "mangrove_circle": {
+      "text": "The mangrove walked Wren in a slow circle for an hour."
+    },
+    "lagoon_features": {
+      "text": "The green lagoon holds a half-sunk dugout canoe, a root tunnel and a driftwood dam."
+    },
+    "dugout_old": {
+      "text": "The dugout is old but sound, carved from one log, and may sink if trusted too far."
+    },
+    "dugout_sank": {
+      "text": "The dugout swamps and sinks under Wren in the lagoon."
+    },
+    "cleared_ground": {
+      "text": "Across the lagoon lies a strip of old cleared ground, too neat to be wild."
+    },
+    "stone_mound_posts": {
+      "text": "On the cleared strip stand a low mound of stones and weathered posts."
+    },
+    "fishing_camp": {
+      "text": "The mound and posts are the remains of a fishing camp where people once lived."
+    },
+    "first_people": {
+      "text": "People reached and lived on the island long before any mapmaker came."
+    },
+    "root_tunnel_fork": {
+      "text": "The root tunnel forks toward open sky and on into the dark."
+    },
+    "root_maze": {
+      "text": "The deep root tunnel branches endlessly and Wren must backtrack by feel."
+    },
+    "alder_stake": {
+      "text": "Alder's numbered survey stake stands in the otters' driftwood dam."
+    },
+    "heron_island_features": {
+      "text": "The heron island has a watching blind on stilts, a wide mud bank and a seething rookery."
+    },
+    "alder_blind": {
+      "text": "Alder's watching blind is carved with a tide table and the bearings of every headland."
+    },
+    "firm_ribbon": {
+      "text": "A firm ribbon of sand threads safely across the soft mud bank."
+    },
+    "bird_storm": {
+      "text": "Cutting across the mud bank startles the flock and sinks Wren knee-deep."
+    },
+    "wren_saved_chick": {
+      "text": "Wren sets a fallen heron chick back on a branch."
+    },
+    "cf_paths": {
+      "text": "The cloud-forest ridge offers a steep switchback, a gentle traverse, a mossy hollow and a hidden waterfall."
+    },
+    "pale_gleam_hollow": {
+      "text": "Something pale gleams in a mossy hollow on the ridge slope."
+    },
+    "switch_fork": {
+      "text": "A bare rock rib and a green shelf both climb on from the switchback ledge."
+    },
+    "grassy_bench": {
+      "text": "A broad grassy bench marks where the ridge path begins its climb."
+    },
+    "contour_path": {
+      "text": "The green shelf is a contour path a surveyor cut long ago."
+    },
+    "ancient_grove": {
+      "text": "A grove of giant mossy trees stands off the grassy bench."
+    },
+    "cairn_line": {
+      "text": "A line of small cairns set by a careful hand marks the safe way to the camp."
+    },
+    "ridge_split": {
+      "text": "The ridge splits into a sheltered ledge and an airy crest."
+    },
+    "wren_froze_ridge": {
+      "text": "Wren freezes on the high ridge and edges back without reaching the camp."
+    },
+    "alpine_flowers": {
+      "text": "Cushions of alpine flowers grow in the sheltered ledge's cracks."
+    },
+    "crest_cloud": {
+      "text": "Cloud pours over the island's spine like a slow white river."
+    },
+    "island_spring": {
+      "text": "The island's spring is a cold clear pool, the source of all its streams."
+    },
+    "hidden_dell": {
+      "text": "A deer path leads to a hidden dell."
+    },
+    "orchid_curtain": {
+      "text": "The pale gleam is a curtain of white orchids over a rock face."
+    },
+    "tin_box": {
+      "text": "A moss-furred tin box marked with a compass rose is hidden behind the orchids."
+    },
+    "box_contents": {
+      "text": "The tin box holds field notes, a pencil stub and a dark brass locket."
+    },
+    "locket_girl": {
+      "text": "The locket holds a faded picture of a young girl whose eyes look a little like Wren's."
+    },
+    "wren_keeps_locket": {
+      "text": "Wren pockets the locket."
+    },
+    "caverns_flood": {
+      "text": "The caverns flood fast and deep at high tide."
+    },
+    "waterfall_ways": {
+      "text": "At the waterfall a wet rock scramble, a mossy log above the lip and a pool below offer ways on."
+    },
+    "wren_slipped_pool": {
+      "text": "Wren slips on mossy rock and slides into the waterfall pool, soaked but unhurt."
+    },
+    "water_gauge": {
+      "text": "A cut stone water gauge by Alder lies sunk in the waterfall pool."
+    },
+    "grove_features": {
+      "text": "The grove holds a frayed rope ladder into the canopy and a small shell-dressed cairn shrine."
+    },
+    "ladder_rung_broke": {
+      "text": "A rotten upper rung of the rope ladder parts and Wren climbs back down."
+    },
+    "treetop_lookout": {
+      "text": "A surveyor's treetop platform carries a brass sighting ring stamped Alder."
+    },
+    "grove_shrine": {
+      "text": "The cairn shrine, topped by a carved wooden bird, was left by the island's first people."
+    },
+    "dell_features": {
+      "text": "The dell holds a small spring, a stream running downhill and a mossy carved bench."
+    },
+    "mapmakers_bench": {
+      "text": "The dell bench is carved with the marks of many mapmakers, Alder among them."
+    },
+    "sinkhole_rope": {
+      "text": "A knotted rope tied by someone before hangs down into the sink-hole."
+    },
+    "cavern_passages": {
+      "text": "The cavern offers dripping water, a glitter, warm air and a high hole of daylight."
+    },
+    "cave_tide_line": {
+      "text": "A scratched line on the cave wall marks how high the water rises at the turn of the tide."
+    },
+    "arch_flooding": {
+      "text": "The low arch is filling with the tide while a dry ledge runs beside it."
+    },
+    "wren_nearly_flooded": {
+      "text": "Wren is nearly caught by the flooding cave and scrambles back soaked."
+    },
+    "spring_underground": {
+      "text": "The upstream cave chamber is the underground face of the island's spring."
+    },
+    "quartz_not_treasure": {
+      "text": "The cave glitter is quartz crystal, not treasure."
+    },
+    "ochre_handprints": {
+      "text": "Red ochre handprints older than any chart mark the cave wall."
+    },
+    "ochre_map": {
+      "text": "The ochre handprints form a map of the island marking the spring and the high peak."
+    },
+    "ochre_oldest_map": {
+      "text": "The ochre handprint map is the oldest map of all."
+    },
+    "bat_colony": {
+      "text": "A colony of bats warms the breathing passage."
+    },
+    "cave_seal_pup": {
+      "text": "A seal pup lies stranded on a ledge in the warm bat cave, far from the sea."
+    },
+    "pup_sea_tube": {
+      "text": "The cave pup came in through a flooded tube from the sea."
+    },
+    "wren_cannot_lift_pup": {
+      "text": "Wren cannot lift the seal pup alone."
+    },
+    "wren_marked_cave_pup": {
+      "text": "Wren marks the cave pup's spot to send help later.",
+      "implicit_plant": "no variable; never paid off directly: meet_boat offers a different reef turtle and a cove sea-cave pup"
+    },
+    "stone_gallery": {
+      "text": "A gallery of pale stone formations lies off the skylight chamber."
+    },
+    "goat_bones_lantern": {
+      "text": "Goat bones and a rusted lantern in the gallery show a human searcher came this way."
+    },
+    "underground_lake": {
+      "text": "An underground black lake has a raft of lashed planks on a pale sand beach."
+    },
+    "raft_dunk": {
+      "text": "The raft's lashing gives and Wren is dunked in the black lake."
+    },
+    "blind_fish": {
+      "text": "Blind white fish live in the far cave pool beside a flowstone stair to daylight."
+    },
+    "stone_footprints": {
+      "text": "Children's footprints turned to stone mark the hidden lake beach."
+    },
+    "glowworm_rift": {
+      "text": "A side rift glows with thousands of glowworms."
+    },
+    "squeeze_stuck": {
+      "text": "Wren sticks fast in the cold squeeze and wriggles back out."
+    },
+    "survey_tower": {
+      "text": "A leaning survey tower built by mapmakers before Wren was born stands on the headland."
+    },
+    "tower_features": {
+      "text": "The tower has a ground room, an outside stair, a cellar hatch and keeper's quarters."
+    },
+    "ruined_instruments": {
+      "text": "The tower ground room is full of ruined survey instruments."
+    },
+    "tower_logbook": {
+      "text": "A damp-swollen logbook on the slate desk records the tower's final days."
+    },
+    "alder_logbook": {
+      "text": "The tower logbook was Alder's."
+    },
+    "alidade": {
+      "text": "Wren finds a working brass alidade among the ruined instruments."
+    },
+    "wren_has_tower_find": {
+      "text": "Wren carries something found at the tower."
+    },
+    "stair_gap": {
+      "text": "Two thirds up the outside stair a span has fallen beside a crumbling ledge."
+    },
+    "summit_higher": {
+      "text": "The island's true summit stands higher than the tower, across the ridge."
+    },
+    "beacon_brazier": {
+      "text": "An old beacon brazier stands on the headland."
+    },
+    "cellar_stores": {
+      "text": "The tower cellar holds sound rope, oil, food and a lamp."
+    },
+    "chart_tube": {
+      "text": "A leather chart tube tied with a faded ribbon stands in the cellar."
+    },
+    "alder_draft": {
+      "text": "The cellar tube holds Alder's half-finished, water-stained draft chart."
+    },
+    "wren_took_rope_oil": {
+      "text": "Wren takes rope and a tin of oil from the tower cellar."
+    },
+    "chalk_line": {
+      "text": "A chalked surveyor's line in the cellar points along a marked path to the ridge."
+    },
+    "keeper_quarters": {
+      "text": "The keeper's quarters hold a bunk, a cold hearth, a latched sea chest and a wall of pinned charts."
+    },
+    "alder_wall_charts": {
+      "text": "Alder's pinned charts show a dozen other islands mapped over a lifetime."
+    },
+    "sea_chest_compass": {
+      "text": "The sea chest holds a salt-stiff oilskin coat and a brass compass that still swings true."
+    },
+    "alder_family_drawing": {
+      "text": "A child's crayon drawing marked For Alder shows the family Alder left ashore."
+    },
+    "wren_took_compass": {
+      "text": "Wren takes the working brass compass."
+    },
+    "iron_strongbox": {
+      "text": "Under a floor slab sits an iron strongbox with a seized lock and a rusted key on a nail."
+    },
+    "brass_tools_letter": {
+      "text": "The strongbox holds fine brass drawing tools and a sealed letter from Alder to whoever finishes the work."
+    },
+    "wren_took_brass_tools": {
+      "text": "Wren takes the brass drawing tools and Alder's sealed letter."
+    },
+    "alder_letter_charge": {
+      "text": "Alder's letter charges the finder to love the island and finish the map."
+    },
+    "stone_dial": {
+      "text": "A carved stone bearing dial is set in the rock by the beacon."
+    },
+    "beacon_fuel_idea": {
+      "text": "The beacon once warned ships off the reef and must have had a fuel store nearby."
+    },
+    "alder_last_note": {
+      "text": "On the fuel store door Alder wrote: gone to finish the ridge chart, back by the storm."
+    },
+    "alder_dial": {
+      "text": "Alder carved the bearing dial, every landmark's bearing cut in stone."
+    },
+    "tide_rule": {
+      "text": "The tide returns over the flats faster than a person can run."
+    },
+    "flats_features": {
+      "text": "The flats offer a wrecked sandbar, firm channel edges, a strand line and mussel beds."
+    },
+    "sandbar_hull": {
+      "text": "A boat's ribbed hull lies on the far sandbar."
+    },
+    "tide_turning": {
+      "text": "The tide has turned and is sliding back in over the flats."
+    },
+    "wren_cut_off_flats": {
+      "text": "The returning tide cuts Wren off and Wren wades back chest-deep."
+    },
+    "green_gap": {
+      "text": "A green gap opens in the shoreline where the land climbs inland."
+    },
+    "valley_stream": {
+      "text": "A green gap opens on a valley whose stream climbs toward falling water inland."
+    },
+    "cliff_gap": {
+      "text": "At the foot of a ring of cliffs a gap of wet sand is bared only at low tide."
+    },
+    "great_wreck": {
+      "text": "A great old wreck lies stranded on the bar."
+    },
+    "bottle_in_strand": {
+      "text": "A corked bottle with paper inside lies in the strand line."
+    },
+    "bottle_note": {
+      "text": "Alder's bottled note says the island is real and its chart waits at the ridge camp."
+    },
+    "dune_marker": {
+      "text": "A weathered marker post leans on the highest dune."
+    },
+    "marker_view": {
+      "text": "From the marker dune the whole pattern of the flats lies clear."
+    },
+    "seal_colony": {
+      "text": "A seal colony basks on a low rock beyond the mussel beds."
+    },
+    "deep_gully": {
+      "text": "A deep gully cuts through the flats toward the cliffs."
+    },
+    "net_pup": {
+      "text": "A seal pup in the colony is tangled in old fishing net."
+    },
+    "wren_marked_net_pup": {
+      "text": "Wren marks the tangled pup to send help later.",
+      "implicit_plant": "no variable; never paid off directly: meet_boat offers a different reef turtle and a cove sea-cave pup"
+    },
+    "wren_freed_net_pup": {
+      "text": "Wren frees the tangled pup but the colony stampedes and the tide window closes."
+    },
+    "weed_tide_lines": {
+      "text": "Weed lines high on the gully walls show how deep and fast it floods."
+    },
+    "wreck_parts": {
+      "text": "The wreck has a flooded hold, a tilted deck and a carved figurehead."
+    },
+    "marigold": {
+      "text": "The wreck is the Marigold, the ship that carried settler families to the island long ago."
+    },
+    "bow_view": {
+      "text": "From the wreck's bow rail the whole pattern of the flats lies clear."
+    },
+    "cove_never_charted": {
+      "text": "No chart has ever shown the hidden cove to the world.",
+      "contradicts": []
+    },
+    "cove_compass_rose": {
+      "text": "A compass rose drawn on a flat rock in the cove points up toward the ridge."
+    },
+    "dotted_slab": {
+      "text": "A tilted slab on the cove path is pecked with patterned dots."
+    },
+    "star_map": {
+      "text": "The dotted slab is a star map the first people steered by, marking the island's peak."
+    },
+    "star_oldest_map": {
+      "text": "The star map is the oldest map of all.",
+      "contradicts": [
+        "ochre_oldest_map"
+      ]
+    },
+    "cove_sea_cave": {
+      "text": "A small sea cave breathes in the cove cliff beside the tide pools."
+    },
+    "alder_pencil_note": {
+      "text": "In the sea cave Alder left a tin with a spare pencil and a note: the way up is behind you, friend."
+    },
+    "wren_took_alder_pencil": {
+      "text": "Wren takes Alder's spare pencil."
+    },
+    "reef_edge": {
+      "text": "The tide pools trace the reef edge and the cove's safe channel."
+    },
+    "five_streams": {
+      "text": "From the spring, water runs five ways to five shores."
+    },
+    "drainage_sketch": {
+      "text": "Wren pencils the island's whole drainage from the spring."
+    },
+    "goat_meadow": {
+      "text": "A high meadow where wild goats graze lies on the way to the camp."
+    },
+    "boundary_cairn": {
+      "text": "An old tumbled boundary cairn rings the high meadow."
+    },
+    "alder_boundary_mark": {
+      "text": "The cairn capstone bears Alder's survey mark fixing the middle of the island."
+    },
+    "camp_trunk": {
+      "text": "A tin trunk sits closed beneath the camp cot."
+    },
+    "trunk_contents": {
+      "text": "The trunk holds nibs, ink, a polishing cloth and Alder's journal."
+    },
+    "summit_cairns": {
+      "text": "A line of cairns marks the safe way from the camp to the summit, beside a scree shortcut."
+    },
+    "scree_slide": {
+      "text": "The scree shortcut slides away and costs Wren time and nerve."
+    },
+    "ship_back": {
+      "text": "The ship is already back, standing off the reef, waiting for dusk."
+    },
+    "reef_turtle": {
+      "text": "Through the spyglass Wren spots a small turtle on its back in a draining pool on the reef."
+    },
+    "distress_rhythm": {
+      "text": "Every Chart House apprentice is drilled in the flash, pause, flash distress rhythm."
+    },
+    "ship_answers": {
+      "text": "The ship sees Wren's flash and steers for the cove."
+    },
+    "cove_cave_pup": {
+      "text": "A young seal pup is stuck in a sea cave in the cove cliffs."
+    },
+    "sailors_landed": {
+      "text": "Two sailors land at the cove, sent by the mate who understood the signal."
+    },
+    "pup_rescued": {
+      "text": "Wren and the sailors carry the cave pup out to the sea."
+    },
+    "reef_turtle_rescued": {
+      "text": "Wren and the sailors carry the reef turtle to deep water."
+    },
+    "chart_filling": {
+      "text": "From the summit the blank half of Alder's chart fills under Wren's pencil."
+    },
+    "chart_muddled": {
+      "text": "Rushing every detail at once leaves Wren's chart full but wrong in places."
+    },
+    "coasts_fixed": {
+      "text": "Wren takes careful sightings of every coast from the summit."
+    },
+    "reef_cove_chart": {
+      "text": "Wren charts the reef, the cove and the safe channels for landings."
+    },
+    "far_shore_charted": {
+      "text": "Wren charts the wild windward far shore, which no one had ever mapped."
+    },
+    "pieces_ready": {
+      "text": "Alder's chart and the day's sketches lie together ready for the final drawing."
+    },
+    "detailed_chart": {
+      "text": "Wren pencils a soft, fully detailed chart of the island."
+    },
+    "chart_unsigned": {
+      "text": "Wren keeps fussing and leaves the detailed chart unsigned at dusk.",
+      "contradicts": [
+        "chart_signed"
+      ]
+    },
+    "two_charts": {
+      "text": "Wren draws two finished charts, a master and a working copy."
+    },
+    "banner_blank": {
+      "text": "Alder left the banner across the top of the half chart blank for whoever finished it."
+    },
+    "chart_signed": {
+      "text": "Wren's masterwork is drawn and signed."
+    },
+    "island_named_alder": {
+      "text": "Wren names the island Alder's Island.",
+      "contradicts": [
+        "island_named_both",
+        "island_left_unnamed"
+      ]
+    },
+    "island_named_both": {
+      "text": "Wren names the island for both mapmakers together.",
+      "contradicts": [
+        "island_left_unnamed"
+      ]
+    },
+    "island_left_unnamed": {
+      "text": "Wren leaves the banner blank for the Chart House to name the island."
+    },
+    "living_margins": {
+      "text": "Wren rings the chart's margins with the island's living things."
+    },
+    "naming_honour": {
+      "text": "The mate grants Wren the honour of naming the next island."
+    },
+    "wren_keeps_spare": {
+      "text": "Wren gives the mate one chart and keeps the spare."
+    },
+    "out_chart_finished": {
+      "text": "Wren finishes a complete, true chart of the island."
+    },
+    "out_chart_unfinished": {
+      "text": "Wren's chart of the island is left unfinished.",
+      "contradicts": [
+        "out_chart_finished"
+      ]
+    },
+    "out_apprenticed": {
+      "text": "The mate takes Wren on as a Chart House apprentice."
+    },
+    "out_not_apprenticed": {
+      "text": "Wren goes home without the apprenticeship, for now.",
+      "contradicts": [
+        "out_apprenticed"
+      ]
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "Wren is rowed ashore at first light with a satchel, flask, sketchbook and one blank sheet; the mate's rule is a true chart by dusk or no Chart House apprenticeship.",
+      "requires": [],
+      "establishes": [
+        "wren_rowed_ashore",
+        "island_unnamed",
+        "wren_has_satchel",
+        "wren_has_flask",
+        "wren_has_sketchbook",
+        "wren_has_blank_sheet",
+        "mate_set_test",
+        "ship_returns_dusk",
+        "chart_house"
+      ]
+    },
+    "n_start": {
+      "function": "decision",
+      "event": "Five ways lead inland from the beach: mangrove, cloud forest, caverns, survey tower and tidal flats.",
+      "requires": [],
+      "establishes": [
+        "five_ways"
+      ]
+    },
+    "mg_enter": {
+      "function": "decision",
+      "event": "Wren wades into the mangrove maze, where a log bridge, oyster rocks, a hidden creek and a lagoon offer bearings.",
+      "requires": [],
+      "establishes": [
+        "mangrove_maze",
+        "mg_leads"
+      ]
+    },
+    "mg_bridge": {
+      "function": "decision",
+      "event": "Crossing a slippery log as the tide turns, Wren spots carved driftwood; a rookery clatters on the far bank.",
+      "requires": [],
+      "establishes": [
+        "log_bridge_channel",
+        "carved_driftwood",
+        "farbank_rookery"
+      ]
+    },
+    "mg_carve": {
+      "function": "decision",
+      "event": "The carvings are mapmaker's shorthand with arrows to the sea caves and to high ground.",
+      "requires": [
+        "carved_driftwood"
+      ],
+      "establishes": [
+        "driftwood_marks"
+      ]
+    },
+    "mg_readmarks": {
+      "function": "continue",
+      "event": "Read slowly, the marks name Alder and promise a chart left at a camp on the ridge.",
+      "requires": [
+        "driftwood_marks",
+        "chart_house"
+      ],
+      "establishes": [
+        "alder_name",
+        "alder_identity_unknown",
+        "ridge_camp",
+        "alder_chart_at_camp",
+        "alder_arrow_to_camp"
+      ]
+    },
+    "mg_farbank": {
+      "function": "decision",
+      "event": "The rookery bursts up as Wren steps off the log; the path splits into a mud slick and firm palms.",
+      "requires": [
+        "farbank_rookery"
+      ],
+      "establishes": [
+        "farbank_fork"
+      ]
+    },
+    "e_mg_mud_trap": {
+      "function": "ending",
+      "event": "The mud slick grips Wren, and the tide closes over the log bridge, cutting off that coast.",
+      "requires": [
+        "log_bridge_channel",
+        "wren_has_blank_sheet"
+      ],
+      "establishes": [
+        "coast_cut_off",
+        "out_chart_unfinished"
+      ]
+    },
+    "mg_highground": {
+      "function": "decision",
+      "event": "Out of the swamp, Wren sees the reef and a hidden cove; a goat track forks to the cove or a spring gully.",
+      "requires": [],
+      "establishes": [
+        "hidden_cove",
+        "reef_offshore"
+      ]
+    },
+    "mg_oyster": {
+      "function": "decision",
+      "event": "Among the oyster rocks a turtle lies stranded on its back in a draining pool.",
+      "requires": [],
+      "establishes": [
+        "oyster_turtle"
+      ]
+    },
+    "mg_turtle_note": {
+      "function": "decision",
+      "event": "Wren weighs righting the turtle now against marking it and signalling the ship for help later.",
+      "requires": [
+        "oyster_turtle",
+        "wren_has_blank_sheet"
+      ],
+      "establishes": [
+        "signal_help_idea"
+      ]
+    },
+    "e_mg_turtle_seen": {
+      "function": "ending",
+      "event": "Wren rights the turtle, but the tide floods back and only one corner of coast gets mapped.",
+      "requires": [
+        "oyster_turtle",
+        "mate_set_test",
+        "wren_has_blank_sheet"
+      ],
+      "establishes": [
+        "wren_righted_turtle",
+        "out_chart_unfinished"
+      ]
+    },
+    "mg_rockpath": {
+      "function": "continue",
+      "event": "A cold sweet seep leads inland from the rocks toward a spring on higher ground.",
+      "requires": [
+        "wren_has_satchel"
+      ],
+      "establishes": [
+        "fresh_water_from_spring"
+      ]
+    },
+    "mg_seep": {
+      "function": "decision",
+      "event": "Wren fills the flask in a fern gully that forks to a spring pool and a mossy overhang.",
+      "requires": [
+        "wren_has_flask"
+      ],
+      "establishes": [
+        "gully_forks"
+      ]
+    },
+    "mg_overhang": {
+      "function": "decision",
+      "event": "Under the overhang are an old firepit, a tin cup and Alder's name with an arrow toward a camp.",
+      "requires": [],
+      "establishes": [
+        "old_firepit_shelter",
+        "alder_name",
+        "alder_identity_unknown",
+        "alder_arrow_to_camp",
+        "ridge_camp"
+      ]
+    },
+    "e_mg_shelter": {
+      "function": "ending",
+      "event": "Wren sketches the snug shelter all morning and leaves the island blank.",
+      "requires": [
+        "old_firepit_shelter",
+        "wren_has_blank_sheet"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "mg_creek": {
+      "function": "decision",
+      "event": "On the hidden creek Wren meets an otter family; ways lead upstream, into the trees, or to a heron island.",
+      "requires": [],
+      "establishes": [
+        "otter_family",
+        "heron_island"
+      ]
+    },
+    "mg_otter": {
+      "function": "continue",
+      "event": "Upstream the creek water tastes sweet, fed by a spring above, and Wren climbs onto dry ground.",
+      "requires": [],
+      "establishes": [
+        "fresh_water_from_spring"
+      ]
+    },
+    "mg_trees": {
+      "function": "decision",
+      "event": "Away from the creek Wren must choose between a brightness uphill and an easy level game trail.",
+      "requires": [],
+      "establishes": [
+        "trees_choice"
+      ]
+    },
+    "mg_gametrail": {
+      "function": "decision",
+      "event": "The game trail keeps curling back on itself; the brightness still shows behind.",
+      "requires": [],
+      "establishes": [
+        "game_trail_loops"
+      ]
+    },
+    "e_mg_lost": {
+      "function": "ending",
+      "event": "The mangrove has walked Wren in a circle for an hour; the coast is drawn with a blank middle.",
+      "requires": [],
+      "establishes": [
+        "mangrove_circle",
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_enter": {
+      "function": "decision",
+      "event": "On the misty ridge, ways part: a switchback, a traverse, a hollow with a pale gleam and a waterfall.",
+      "requires": [],
+      "establishes": [
+        "cf_paths",
+        "pale_gleam_hollow"
+      ]
+    },
+    "cf_switch": {
+      "function": "decision",
+      "event": "At a ledge on the switchback, a bare rock rib and a green shelf both climb on.",
+      "requires": [],
+      "establishes": [
+        "switch_fork"
+      ]
+    },
+    "cf_ledge": {
+      "function": "continue",
+      "event": "Wren climbs the airy rib onto a grassy bench where a worn ridge path begins.",
+      "requires": [],
+      "establishes": [
+        "grassy_bench"
+      ]
+    },
+    "cf_shelf": {
+      "function": "continue",
+      "event": "The green shelf is an old surveyor's contour path that leads to the grassy bench.",
+      "requires": [],
+      "establishes": [
+        "contour_path",
+        "grassy_bench"
+      ]
+    },
+    "cf_bench": {
+      "function": "decision",
+      "event": "From the windy bench a trail climbs to a grey canvas camp, and an ancient grove stands aside.",
+      "requires": [
+        "wren_has_satchel"
+      ],
+      "establishes": [
+        "ridge_camp",
+        "ancient_grove"
+      ]
+    },
+    "cf_campapproach": {
+      "function": "continue",
+      "event": "A line of careful cairns leads Wren through broken rock toward the camp.",
+      "requires": [
+        "ridge_camp"
+      ],
+      "establishes": [
+        "cairn_line"
+      ]
+    },
+    "camp_ascent1": {
+      "function": "continue",
+      "event": "On the open ridge Wren follows the cairns toward the distant camp.",
+      "requires": [
+        "cairn_line",
+        "ridge_camp",
+        "wren_has_satchel"
+      ],
+      "establishes": []
+    },
+    "camp_ascent2": {
+      "function": "decision",
+      "event": "The ridge splits into a sheltered ledge and an airy crest, and the height daunts Wren.",
+      "requires": [
+        "cairn_line"
+      ],
+      "establishes": [
+        "ridge_split"
+      ]
+    },
+    "e_ascent_daunted": {
+      "function": "ending",
+      "event": "Wren freezes on the dizzying ridge, edges back and maps it from below, the camp out of reach.",
+      "requires": [
+        "ridge_camp"
+      ],
+      "establishes": [
+        "wren_froze_ridge",
+        "out_chart_unfinished"
+      ]
+    },
+    "camp_ascent3a": {
+      "function": "continue",
+      "event": "The sheltered ledge is slow and sure past alpine flowers and rejoins the crest.",
+      "requires": [
+        "ridge_split"
+      ],
+      "establishes": [
+        "alpine_flowers"
+      ]
+    },
+    "camp_ascent3b": {
+      "function": "continue",
+      "event": "The airy crest is pure exhilaration, cloud pouring over the island's spine.",
+      "requires": [
+        "ridge_split"
+      ],
+      "establishes": [
+        "crest_cloud"
+      ]
+    },
+    "camp_ascent4": {
+      "function": "continue",
+      "event": "The two ways rejoin on a level shelf thick with cairns, one short pull from the camp.",
+      "requires": [
+        "cairn_line",
+        "ridge_camp",
+        "wren_has_satchel",
+        "wren_has_sketchbook"
+      ],
+      "establishes": []
+    },
+    "camp_ascent5": {
+      "function": "continue",
+      "event": "At the cliff foot stands a low camp with a board painted Alder at the end of the cairns.",
+      "requires": [
+        "cairn_line"
+      ],
+      "establishes": [
+        "alder_name",
+        "alder_camp"
+      ]
+    },
+    "cf_traverse": {
+      "function": "decision",
+      "event": "Following a stream up from the traverse, Wren finds the island's spring; a deer path leads to a dell.",
+      "requires": [],
+      "establishes": [
+        "fresh_water_from_spring",
+        "island_spring",
+        "hidden_dell"
+      ]
+    },
+    "cf_upper": {
+      "function": "decision",
+      "event": "Higher up, a path climbs to the ridge while the pale gleam seen that morning shows in the hollow below.",
+      "requires": [
+        "pale_gleam_hollow"
+      ],
+      "establishes": []
+    },
+    "cf_hollow": {
+      "function": "decision",
+      "event": "The pale gleam is white orchids hiding a compass-marked tin box in a cleft.",
+      "requires": [
+        "pale_gleam_hollow"
+      ],
+      "establishes": [
+        "orchid_curtain",
+        "tin_box"
+      ]
+    },
+    "cf_box": {
+      "function": "decision",
+      "event": "The tin box holds field notes, a pencil stub and a locket with a girl who looks a little like Wren.",
+      "requires": [
+        "tin_box"
+      ],
+      "establishes": [
+        "box_contents",
+        "locket_girl"
+      ]
+    },
+    "e_cf_locket": {
+      "function": "ending",
+      "event": "Wren pockets the locket, and its mystery distracts the whole morning into a scrawled map.",
+      "requires": [
+        "locket_girl",
+        "mate_set_test"
+      ],
+      "establishes": [
+        "wren_keeps_locket",
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_notes": {
+      "function": "continue",
+      "event": "The notes are Alder's: a chart left at the ridge camp and a warning that the caverns flood.",
+      "requires": [
+        "box_contents"
+      ],
+      "establishes": [
+        "alder_name",
+        "alder_chart_at_camp",
+        "ridge_camp",
+        "caverns_flood",
+        "alder_arrow_to_camp"
+      ]
+    },
+    "cv_enter": {
+      "function": "decision",
+      "event": "Wren climbs down a knotted rope into the sink-hole cavern, where four ways lead on.",
+      "requires": [],
+      "establishes": [
+        "sinkhole_rope",
+        "cavern_passages"
+      ]
+    },
+    "cv_water": {
+      "function": "decision",
+      "event": "By an underground stream a scratched line marks the tide's rise; ways lead to an arch, upstream or a glowworm rift.",
+      "requires": [],
+      "establishes": [
+        "cave_tide_line"
+      ]
+    },
+    "cv_arch": {
+      "function": "decision",
+      "event": "The low arch is filling with the tide; a dry ledge runs beside it toward light.",
+      "requires": [],
+      "establishes": [
+        "arch_flooding"
+      ]
+    },
+    "e_cv_flood": {
+      "function": "ending",
+      "event": "Under the arch the passage floods exactly as the scratched line warned; Wren scrambles back soaked.",
+      "requires": [
+        "cave_tide_line"
+      ],
+      "establishes": [
+        "wren_nearly_flooded",
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_upflow": {
+      "function": "continue",
+      "event": "Upstream the passage opens into a sunlit chamber, the underground face of the island's spring.",
+      "requires": [],
+      "establishes": [
+        "spring_underground",
+        "island_spring"
+      ]
+    },
+    "cv_glitter": {
+      "function": "decision",
+      "event": "The glitter is quartz, not treasure, and among it are ancient red ochre handprints.",
+      "requires": [],
+      "establishes": [
+        "quartz_not_treasure",
+        "ochre_handprints"
+      ]
+    },
+    "cv_ochre": {
+      "function": "decision",
+      "event": "Copied, the handprints form the oldest map of all, marking the spring and the peak.",
+      "requires": [
+        "ochre_handprints",
+        "chart_house"
+      ],
+      "establishes": [
+        "ochre_map",
+        "ochre_oldest_map",
+        "first_people"
+      ]
+    },
+    "e_cv_paintings": {
+      "function": "ending",
+      "event": "Wren fills a page with the ochre map, and the Chart House keepers fall silent over it.",
+      "requires": [
+        "ochre_map",
+        "chart_house"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_deepglow": {
+      "function": "decision",
+      "event": "Squeezing toward daylight, Wren tumbles out into a hidden cove; a dark side passage murmurs with water.",
+      "requires": [],
+      "establishes": [
+        "hidden_cove"
+      ]
+    },
+    "cv_warm": {
+      "function": "decision",
+      "event": "In the warm passage a bat colony hangs over a stranded seal pup.",
+      "requires": [],
+      "establishes": [
+        "bat_colony",
+        "cave_seal_pup"
+      ]
+    },
+    "cv_pup": {
+      "function": "decision",
+      "event": "The pup came in by a sea tube; Wren cannot lift it alone and could mark it and signal the ship.",
+      "requires": [
+        "cave_seal_pup",
+        "wren_has_blank_sheet"
+      ],
+      "establishes": [
+        "pup_sea_tube",
+        "wren_cannot_lift_pup",
+        "signal_help_idea"
+      ]
+    },
+    "e_cv_pup_fail": {
+      "function": "ending",
+      "event": "Wren's lone try to coax the pup out fails; Wren marks the sea tube and backs away.",
+      "requires": [
+        "cave_seal_pup"
+      ],
+      "establishes": [
+        "wren_cannot_lift_pup",
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_backout": {
+      "function": "continue",
+      "event": "Backing past the bats, Wren finds a root-choked vent with daylight beyond.",
+      "requires": [
+        "bat_colony"
+      ],
+      "establishes": []
+    },
+    "cv_tohigh": {
+      "function": "continue",
+      "event": "Wren climbs out onto the ridge flank and sees a grey canvas camp above.",
+      "requires": [],
+      "establishes": [
+        "ridge_camp"
+      ]
+    },
+    "tw_enter": {
+      "function": "decision",
+      "event": "Wren reaches the leaning survey tower: a ground room, an outside stair, a cellar hatch and keeper's quarters.",
+      "requires": [],
+      "establishes": [
+        "survey_tower",
+        "tower_features"
+      ]
+    },
+    "tw_ground": {
+      "function": "decision",
+      "event": "The ground room holds ruined instruments and a damp-swollen logbook.",
+      "requires": [],
+      "establishes": [
+        "ruined_instruments",
+        "tower_logbook"
+      ]
+    },
+    "e_tw_log": {
+      "function": "ending",
+      "event": "The logbook is Alder's: the chart was carried to the ridge camp before a storm; Wren copies it until dusk.",
+      "requires": [
+        "tower_logbook",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "alder_logbook",
+        "alder_chart_at_camp",
+        "ridge_camp",
+        "alder_meant_to_return",
+        "alder_never_returned",
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_salvage": {
+      "function": "decision",
+      "event": "Among the instruments Wren finds a working brass alidade.",
+      "requires": [
+        "ruined_instruments"
+      ],
+      "establishes": [
+        "alidade"
+      ]
+    },
+    "tw_toridge": {
+      "function": "continue",
+      "event": "With the tower's find stowed, Wren takes the headland path toward a grey canvas camp on the ridge.",
+      "requires": [
+        "wren_has_tower_find"
+      ],
+      "establishes": [
+        "ridge_camp"
+      ]
+    },
+    "tw_stair": {
+      "function": "decision",
+      "event": "Two thirds up the outside stair a span has fallen beside a crumbling ledge.",
+      "requires": [],
+      "establishes": [
+        "stair_gap"
+      ]
+    },
+    "e_tw_stair_fail": {
+      "function": "ending",
+      "event": "The crumbling ledge sheds stones; Wren retreats and draws that corner from guesswork.",
+      "requires": [
+        "stair_gap"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_top": {
+      "function": "decision",
+      "event": "From the tower top Wren sees a hidden cove, the higher summit with a camp below it, and a beacon brazier.",
+      "requires": [],
+      "establishes": [
+        "hidden_cove",
+        "summit_higher",
+        "ridge_camp",
+        "beacon_brazier"
+      ]
+    },
+    "tw_ridgeway": {
+      "function": "continue",
+      "event": "Wren walks a knife of rock from the tower to the grassy bench where the camp trail begins.",
+      "requires": [
+        "ridge_camp"
+      ],
+      "establishes": [
+        "grassy_bench"
+      ]
+    },
+    "tw_cellar": {
+      "function": "decision",
+      "event": "The cellar holds sound stores and a leather chart tube.",
+      "requires": [],
+      "establishes": [
+        "cellar_stores",
+        "chart_tube"
+      ]
+    },
+    "tw_tube": {
+      "function": "decision",
+      "event": "The tube holds Alder's water-stained draft; the good copy went to the ridge camp.",
+      "requires": [
+        "chart_tube"
+      ],
+      "establishes": [
+        "alder_draft",
+        "alder_name",
+        "alder_chart_at_camp",
+        "ridge_camp"
+      ]
+    },
+    "e_tw_draft": {
+      "function": "ending",
+      "event": "Wren copies Alder's ruined draft in full and has no new ground of Wren's own.",
+      "requires": [
+        "alder_draft",
+        "alder_name"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_supplies": {
+      "function": "continue",
+      "event": "Wren takes rope and oil and follows a chalked line toward a camp on the ridge.",
+      "requires": [
+        "cellar_stores"
+      ],
+      "establishes": [
+        "wren_took_rope_oil",
+        "chalk_line",
+        "ridge_camp"
+      ]
+    },
+    "tf_enter": {
+      "function": "decision",
+      "event": "On the mirror-bright flats, the Chart House rule says the tide returns faster than a person can run.",
+      "requires": [
+        "chart_house"
+      ],
+      "establishes": [
+        "tide_rule",
+        "flats_features"
+      ]
+    },
+    "tf_sandbar": {
+      "function": "decision",
+      "event": "A boat's hull lies on the sandbar as the tide turns back in.",
+      "requires": [],
+      "establishes": [
+        "sandbar_hull",
+        "tide_turning"
+      ]
+    },
+    "e_tf_stranded": {
+      "function": "ending",
+      "event": "The tide fills the channels and Wren wades back chest-deep, the flats left blank.",
+      "requires": [
+        "tide_turning",
+        "wren_has_sketchbook"
+      ],
+      "establishes": [
+        "wren_cut_off_flats",
+        "out_chart_unfinished"
+      ]
+    },
+    "tf_sketchrun": {
+      "function": "continue",
+      "event": "Wren sketches the wreck fast and reaches firm ground ahead of the water.",
+      "requires": [
+        "sandbar_hull",
+        "wren_has_satchel"
+      ],
+      "establishes": [
+        "green_gap"
+      ]
+    },
+    "tf_gap": {
+      "function": "continue",
+      "event": "Wren follows a valley stream inland toward the sound of falling water.",
+      "requires": [],
+      "establishes": [
+        "valley_stream"
+      ]
+    },
+    "tf_channel": {
+      "function": "decision",
+      "event": "The firm channel edges lead to a cliff gap bared at low tide; a great wreck lies on the bar.",
+      "requires": [],
+      "establishes": [
+        "cliff_gap",
+        "great_wreck"
+      ]
+    },
+    "tf_cliffgap": {
+      "function": "continue",
+      "event": "Through the low-tide gap Wren enters a hidden cove ringed by cliffs.",
+      "requires": [],
+      "establishes": [
+        "hidden_cove"
+      ]
+    },
+    "tf_strand": {
+      "function": "decision",
+      "event": "In the strand line lies a corked bottle with a message inside.",
+      "requires": [],
+      "establishes": [
+        "bottle_in_strand"
+      ]
+    },
+    "tf_bottle": {
+      "function": "decision",
+      "event": "The bottle holds Alder's note: the island is real and its chart waits at the ridge camp.",
+      "requires": [
+        "bottle_in_strand"
+      ],
+      "establishes": [
+        "bottle_note",
+        "alder_name",
+        "alder_chart_at_camp",
+        "ridge_camp"
+      ]
+    },
+    "e_tf_bottle": {
+      "function": "ending",
+      "event": "Wren keeps Alder's note as a find and waits for the ship with a blank chart and no apprenticeship yet.",
+      "requires": [
+        "bottle_note",
+        "alder_name",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "out_chart_unfinished",
+        "out_not_apprenticed"
+      ]
+    },
+    "L_cove": {
+      "function": "decision",
+      "event": "The hidden cove is calm and uncharted, with a fresh rill, a hand-cut path and a compass rose pointing up.",
+      "requires": [
+        "hidden_cove"
+      ],
+      "establishes": [
+        "cove_never_charted",
+        "cove_compass_rose"
+      ]
+    },
+    "e_cove_rest": {
+      "function": "ending",
+      "event": "Wren sketches the calm cove all morning; only the cove is drawn.",
+      "requires": [
+        "hidden_cove",
+        "wren_has_satchel"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cove_rise": {
+      "function": "decision",
+      "event": "A hand-cut path climbs from the low ground past a slab pecked with patterned dots.",
+      "requires": [],
+      "establishes": [
+        "dotted_slab"
+      ]
+    },
+    "cove_starrock": {
+      "function": "decision",
+      "event": "The slab is the first people's star map, marking the island's peak.",
+      "requires": [
+        "dotted_slab",
+        "chart_house"
+      ],
+      "establishes": [
+        "star_map",
+        "star_oldest_map",
+        "first_people"
+      ]
+    },
+    "e_star_map": {
+      "function": "ending",
+      "event": "Wren copies the oldest map, drawn in stars, and the Chart House keepers fall quiet over it.",
+      "requires": [
+        "star_map",
+        "chart_house"
+      ],
+      "establishes": [
+        "star_oldest_map",
+        "out_chart_unfinished"
+      ]
+    },
+    "cove_ridge": {
+      "function": "continue",
+      "event": "The cut path tops out on the grassy bench with a camp trail climbing above.",
+      "requires": [
+        "wren_has_satchel"
+      ],
+      "establishes": [
+        "grassy_bench",
+        "ridge_camp"
+      ]
+    },
+    "L_fresh": {
+      "function": "decision",
+      "event": "At the island's spring Wren sees how its water runs to five shores; a path climbs toward a camp.",
+      "requires": [
+        "wren_has_flask"
+      ],
+      "establishes": [
+        "island_spring",
+        "five_streams",
+        "ridge_camp"
+      ]
+    },
+    "e_fresh_linger": {
+      "function": "ending",
+      "event": "Tracing every stream, Wren ends with a beautiful tangle and no coast.",
+      "requires": [
+        "island_spring"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "fresh_study": {
+      "function": "continue",
+      "event": "Wren pencils the island's whole drainage, then answers the call of the camp.",
+      "requires": [
+        "island_spring",
+        "ridge_camp"
+      ],
+      "establishes": [
+        "drainage_sketch"
+      ]
+    },
+    "fresh_climb": {
+      "function": "continue",
+      "event": "The path climbs to a high meadow of grazing goats on the way to the camp.",
+      "requires": [
+        "ridge_camp"
+      ],
+      "establishes": [
+        "goat_meadow"
+      ]
+    },
+    "fresh_meadow": {
+      "function": "decision",
+      "event": "An old tumbled boundary cairn rings the meadow; the camp trail lifts beyond.",
+      "requires": [
+        "goat_meadow",
+        "ridge_camp"
+      ],
+      "establishes": [
+        "boundary_cairn"
+      ]
+    },
+    "fresh_cairn": {
+      "function": "decision",
+      "event": "The cairn's capstone bears Alder's survey mark fixing the island's middle.",
+      "requires": [
+        "boundary_cairn"
+      ],
+      "establishes": [
+        "alder_name",
+        "alder_boundary_mark"
+      ]
+    },
+    "e_fresh_cairn": {
+      "function": "ending",
+      "event": "Wren copies Alder's boundary mark, dozes in the meadow and wakes to a lower sun.",
+      "requires": [
+        "alder_boundary_mark",
+        "alder_name"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "L_camp": {
+      "function": "decision",
+      "event": "Alder's empty camp holds a half-drawn chart, pens, a spyglass, a signal mirror and a trunk.",
+      "requires": [
+        "alder_name",
+        "alder_camp"
+      ],
+      "establishes": [
+        "alder_chart_half_drawn",
+        "alder_tools",
+        "camp_trunk"
+      ]
+    },
+    "camp_chart": {
+      "function": "decision",
+      "event": "Alder's chart is honest and unfinished, with a note: finish this and it is yours.",
+      "requires": [
+        "alder_chart_half_drawn",
+        "alder_name"
+      ],
+      "establishes": [
+        "alder_charted_cove",
+        "alder_finish_note",
+        "alder_work_unfinished"
+      ]
+    },
+    "e_camp_copy": {
+      "function": "ending",
+      "event": "Wren copies Alder's half chart; the mate calls it a story, not a survey, and no apprenticeship comes.",
+      "requires": [
+        "alder_chart_half_drawn",
+        "alder_name",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "out_chart_unfinished",
+        "out_not_apprenticed"
+      ]
+    },
+    "camp_trunk": {
+      "function": "decision",
+      "event": "The trunk holds nibs, ink and Alder's journal, cut off the day a storm took the boat.",
+      "requires": [
+        "camp_trunk",
+        "alder_tools",
+        "alder_name"
+      ],
+      "establishes": [
+        "trunk_contents",
+        "alder_lost_in_storm",
+        "alder_never_returned"
+      ]
+    },
+    "camp_journal": {
+      "function": "decision",
+      "event": "Alder's journal tells of seasons of mapping, a named cove, and a last wish to finish and name the island.",
+      "requires": [
+        "trunk_contents",
+        "alder_name"
+      ],
+      "establishes": [
+        "alder_named_cove",
+        "alder_wish_name",
+        "alder_lost_in_storm",
+        "alder_never_returned"
+      ]
+    },
+    "e_camp_journal": {
+      "function": "ending",
+      "event": "Wren reads the journal all afternoon and rows out with a blank chart and Alder's story.",
+      "requires": [
+        "alder_wish_name",
+        "alder_name",
+        "alder_never_returned",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "camp_ready": {
+      "function": "continue",
+      "event": "With Alder's tools and half chart, Wren sets out for the summit.",
+      "requires": [
+        "alder_name",
+        "alder_chart_half_drawn",
+        "wren_has_satchel"
+      ],
+      "establishes": [
+        "wren_carries_alder_chart",
+        "wren_carries_alder_tools"
+      ]
+    },
+    "camp_summitpath": {
+      "function": "decision",
+      "event": "Above the camp, cairns mark the safe way to the summit beside a tempting scree shortcut.",
+      "requires": [
+        "wren_carries_alder_chart",
+        "alder_name"
+      ],
+      "establishes": [
+        "summit_cairns"
+      ]
+    },
+    "e_camp_scree": {
+      "function": "ending",
+      "event": "The scree slides away, as the cairns warned, and Wren judges the summit too far.",
+      "requires": [
+        "summit_cairns"
+      ],
+      "establishes": [
+        "scree_slide",
+        "out_chart_unfinished"
+      ]
+    },
+    "ridge_notch": {
+      "function": "continue",
+      "event": "The cairns lead through a wind-funnelling notch to the final boulder field.",
+      "requires": [
+        "summit_cairns"
+      ],
+      "establishes": []
+    },
+    "wind_gap": {
+      "function": "continue",
+      "event": "Wren crosses the boulder field block by block to the top.",
+      "requires": [],
+      "establishes": []
+    },
+    "L_summit": {
+      "function": "decision",
+      "event": "From the summit cairn Wren sees the whole island, but the wind is fierce and the light leans on.",
+      "requires": [
+        "wren_has_blank_sheet",
+        "alder_name"
+      ],
+      "establishes": [
+        "summit_sees_island"
+      ]
+    },
+    "e_summit_gaze": {
+      "function": "ending",
+      "event": "Wren only stares at the view and reaches the beach at dusk with a bare chart.",
+      "requires": [
+        "summit_sees_island",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "summit_survey": {
+      "function": "decision",
+      "event": "On Alder's half chart Wren sights and marks the island, the blank half filling.",
+      "requires": [
+        "wren_carries_alder_chart",
+        "alder_chart_half_drawn",
+        "alder_name"
+      ],
+      "establishes": [
+        "chart_filling"
+      ]
+    },
+    "e_ch_rush": {
+      "function": "ending",
+      "event": "Rushing everything, Wren smudges the chart into a muddle; the mate calls it a near miss.",
+      "requires": [
+        "mate_set_test"
+      ],
+      "establishes": [
+        "chart_muddled"
+      ]
+    },
+    "ch_sightings": {
+      "function": "continue",
+      "event": "With Alder's spyglass Wren fixes every coast true.",
+      "requires": [
+        "alder_name"
+      ],
+      "establishes": [
+        "coasts_fixed"
+      ]
+    },
+    "ch_reef": {
+      "function": "decision",
+      "event": "Wren fixes the reef, the cove and the channels Alder had begun.",
+      "requires": [
+        "alder_chart_half_drawn",
+        "alder_name"
+      ],
+      "establishes": [
+        "reef_cove_chart"
+      ]
+    },
+    "e_ch_reef": {
+      "function": "ending",
+      "event": "The mate takes Wren on for the safe-landing chart, the map that keeps sailors alive.",
+      "requires": [
+        "reef_cove_chart",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "out_chart_unfinished",
+        "out_apprenticed"
+      ]
+    },
+    "ch_gather": {
+      "function": "continue",
+      "event": "In the cairn's lee Wren spreads Alder's chart beside the day's sketches, ready to draw.",
+      "requires": [
+        "wren_carries_alder_chart",
+        "alder_name"
+      ],
+      "establishes": [
+        "pieces_ready"
+      ]
+    },
+    "ch_table": {
+      "function": "decision",
+      "event": "Wren chooses how to draw the final chart: bold ink, fine pencil, or two copies.",
+      "requires": [
+        "pieces_ready"
+      ],
+      "establishes": []
+    },
+    "ch_ink": {
+      "function": "continue",
+      "event": "Wren inks a bold, permanent chart with Alder's good pen, the two halves made one.",
+      "requires": [
+        "alder_name"
+      ],
+      "establishes": [
+        "out_chart_finished"
+      ]
+    },
+    "ch_pencil": {
+      "function": "decision",
+      "event": "Wren pencils every small detail of the island onto one crowded page.",
+      "requires": [],
+      "establishes": [
+        "detailed_chart"
+      ]
+    },
+    "e_ch_dusk": {
+      "function": "ending",
+      "event": "Wren keeps adding detail until the ship's horn sounds and the chart is never signed.",
+      "requires": [
+        "detailed_chart",
+        "mate_set_test",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "chart_unsigned",
+        "out_chart_unfinished"
+      ]
+    },
+    "ch_double": {
+      "function": "continue",
+      "event": "Wren copies the finished chart twice, a master and a working copy.",
+      "requires": [
+        "alder_name",
+        "chart_house"
+      ],
+      "establishes": [
+        "two_charts",
+        "out_chart_finished"
+      ]
+    },
+    "ch_sign": {
+      "function": "decision",
+      "event": "The finished chart waits under the blank banner Alder left for the island's name.",
+      "requires": [
+        "alder_chart_half_drawn",
+        "alder_name",
+        "mate_set_test"
+      ],
+      "establishes": [
+        "out_chart_finished",
+        "banner_blank"
+      ]
+    },
+    "e_ch_alder_name": {
+      "function": "ending",
+      "event": "Wren names the island Alder's Island and the mate names Wren the new apprentice.",
+      "requires": [
+        "alder_name",
+        "banner_blank",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "island_named_alder",
+        "out_chart_finished",
+        "out_apprenticed"
+      ]
+    },
+    "e_ch_both_name": {
+      "function": "ending",
+      "event": "Wren names the island for both mapmakers, and the mate praises the shared credit.",
+      "requires": [
+        "alder_name",
+        "banner_blank",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "island_named_both",
+        "out_chart_finished",
+        "out_apprenticed"
+      ]
+    },
+    "e_ch_survey": {
+      "function": "ending",
+      "event": "Wren leaves the banner blank and signs the survey; the mate offers the apprenticeship.",
+      "requires": [
+        "banner_blank",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "island_left_unnamed",
+        "out_chart_finished",
+        "out_apprenticed"
+      ]
+    },
+    "ch_sign_double": {
+      "function": "decision",
+      "event": "With two charts in hand, Wren decides whether to present both or keep the spare.",
+      "requires": [
+        "two_charts",
+        "mate_set_test"
+      ],
+      "establishes": []
+    },
+    "e_ch_double_win": {
+      "function": "ending",
+      "event": "Presenting both charts shows judgement, and the mate grants the apprenticeship.",
+      "requires": [
+        "two_charts",
+        "alder_name",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "out_chart_finished",
+        "out_apprenticed"
+      ]
+    },
+    "e_ch_spare": {
+      "function": "ending",
+      "event": "Wren gives one chart, keeps the spare, and is welcomed to the Chart House.",
+      "requires": [
+        "two_charts",
+        "alder_name",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "wren_keeps_spare",
+        "out_chart_finished",
+        "out_apprenticed"
+      ]
+    },
+    "summit_signal": {
+      "function": "decision",
+      "event": "The ship is back offshore; with Alder's mirror Wren could call it in to help a turtle stranded on the reef.",
+      "requires": [
+        "wren_has_satchel",
+        "alder_name"
+      ],
+      "establishes": [
+        "ship_back",
+        "reef_turtle"
+      ]
+    },
+    "signal_aim": {
+      "function": "continue",
+      "event": "Wren catches the low sun in the mirror and aims the flash at the far sail.",
+      "requires": [
+        "ship_back"
+      ],
+      "establishes": []
+    },
+    "signal_flash": {
+      "function": "continue",
+      "event": "Wren flashes the Chart House distress rhythm through long doubt.",
+      "requires": [
+        "ship_back",
+        "chart_house"
+      ],
+      "establishes": [
+        "distress_rhythm"
+      ]
+    },
+    "ship_turns": {
+      "function": "continue",
+      "event": "The ship comes about and steers for the cove, answering the lost mapmaker's mirror.",
+      "requires": [],
+      "establishes": [
+        "ship_answers"
+      ]
+    },
+    "race_down": {
+      "function": "continue",
+      "event": "Wren runs cairn to cairn past the camp and down to the cove as the boat comes in.",
+      "requires": [
+        "ridge_camp",
+        "ship_answers"
+      ],
+      "establishes": []
+    },
+    "meet_boat": {
+      "function": "decision",
+      "event": "Two sailors land; Wren can lead them to the stranded reef turtle or a seal pup crying in a cove sea cave.",
+      "requires": [
+        "reef_turtle",
+        "mate_set_test"
+      ],
+      "establishes": [
+        "sailors_landed",
+        "cove_cave_pup"
+      ]
+    },
+    "e_rescue_pup": {
+      "function": "ending",
+      "event": "Three pairs of hands free the pup, and the mate takes Wren on as a mapmaker who saves lives.",
+      "requires": [
+        "cove_cave_pup",
+        "sailors_landed",
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "pup_rescued",
+        "out_apprenticed"
+      ]
+    },
+    "e_rescue_turtle": {
+      "function": "ending",
+      "event": "The turtle swims free; the mate offers the place though the chart is only half finished.",
+      "requires": [
+        "reef_turtle",
+        "sailors_landed",
+        "mate_set_test"
+      ],
+      "establishes": [
+        "reef_turtle_rescued",
+        "out_chart_unfinished",
+        "out_apprenticed"
+      ]
+    },
+    "mg_lagoon": {
+      "function": "decision",
+      "event": "At the still lagoon wait a sunken dugout, a root tunnel and a driftwood dam.",
+      "requires": [],
+      "establishes": [
+        "lagoon_features"
+      ]
+    },
+    "mg_canoe": {
+      "function": "decision",
+      "event": "The old dugout could carry Wren across if tested with care, or sink if trusted too fast.",
+      "requires": [
+        "lagoon_features"
+      ],
+      "establishes": [
+        "dugout_old"
+      ]
+    },
+    "e_mg_canoe": {
+      "function": "ending",
+      "event": "Trusted too far, the dugout swamps; Wren saves the sketchbook but loses the morning.",
+      "requires": [
+        "lagoon_features",
+        "wren_has_sketchbook"
+      ],
+      "establishes": [
+        "dugout_sank",
+        "out_chart_unfinished"
+      ]
+    },
+    "mg_paddle": {
+      "function": "continue",
+      "event": "From the floating dugout Wren traces the shore and spots cleared ground across the lagoon.",
+      "requires": [
+        "dugout_old"
+      ],
+      "establishes": [
+        "cleared_ground"
+      ]
+    },
+    "mg_lagfar": {
+      "function": "decision",
+      "event": "On the cleared strip stand a stone mound and posts; a firm path climbs toward the creek.",
+      "requires": [
+        "cleared_ground"
+      ],
+      "establishes": [
+        "stone_mound_posts"
+      ]
+    },
+    "mg_ruin": {
+      "function": "decision",
+      "event": "The mound and posts are a long-abandoned fishing camp, older than any chart.",
+      "requires": [
+        "stone_mound_posts",
+        "chart_house"
+      ],
+      "establishes": [
+        "fishing_camp",
+        "first_people"
+      ]
+    },
+    "e_mg_village": {
+      "function": "ending",
+      "event": "Wren maps the vanished village stone by stone and carries home a village instead of a coastline.",
+      "requires": [
+        "fishing_camp",
+        "mate_set_test",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "mg_lagtunnel": {
+      "function": "decision",
+      "event": "The root tunnel forks toward open sky and on into the dark.",
+      "requires": [],
+      "establishes": [
+        "root_tunnel_fork"
+      ]
+    },
+    "e_mg_tunnellost": {
+      "function": "ending",
+      "event": "The dark tunnel branches endlessly; Wren backtracks by feel and leaves a scribble.",
+      "requires": [
+        "root_tunnel_fork"
+      ],
+      "establishes": [
+        "root_maze",
+        "out_chart_unfinished"
+      ]
+    },
+    "mg_dam": {
+      "function": "decision",
+      "event": "In the otters' driftwood dam stands a survey stake burned with Alder's name.",
+      "requires": [],
+      "establishes": [
+        "alder_stake",
+        "alder_name",
+        "alder_identity_unknown"
+      ]
+    },
+    "e_mg_stake": {
+      "function": "ending",
+      "event": "Wren prises Alder's stake free as a relic and barely starts the map.",
+      "requires": [
+        "alder_stake",
+        "alder_name"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_falls": {
+      "function": "decision",
+      "event": "At a roaring waterfall Wren can climb wet rock, cross a log above the lip or wade the pool.",
+      "requires": [],
+      "establishes": [
+        "waterfall_ways"
+      ]
+    },
+    "cf_fallclimb": {
+      "function": "decision",
+      "event": "The wet rocks beside the falls have good holds for careful hands.",
+      "requires": [],
+      "establishes": []
+    },
+    "e_cf_slip": {
+      "function": "ending",
+      "event": "Scrambling too fast, Wren slides into the pool; the sketchbook stays dry but the climbing is over.",
+      "requires": [
+        "wren_has_sketchbook"
+      ],
+      "establishes": [
+        "wren_slipped_pool",
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_fallcross": {
+      "function": "continue",
+      "event": "Wren crosses the firm mossy log above the lip onto the upper traverse.",
+      "requires": [],
+      "establishes": []
+    },
+    "cf_fallpool": {
+      "function": "decision",
+      "event": "Sunk in the pool is a stone water gauge with Alder's name.",
+      "requires": [],
+      "establishes": [
+        "water_gauge",
+        "alder_name"
+      ]
+    },
+    "e_cf_gauge": {
+      "function": "ending",
+      "event": "Wren copies Alder's water gauge notch by notch while the island stays blank.",
+      "requires": [
+        "water_gauge",
+        "alder_name"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_skylight": {
+      "function": "decision",
+      "event": "Under the high hole of daylight, a rock slope climbs out and a stone gallery glows aside.",
+      "requires": [],
+      "establishes": [
+        "stone_gallery"
+      ]
+    },
+    "cv_chimney": {
+      "function": "decision",
+      "event": "The last climb to daylight is a narrow chimney to be braced up steadily.",
+      "requires": [],
+      "establishes": []
+    },
+    "e_cv_chimney": {
+      "function": "ending",
+      "event": "Rushing the chimney, Wren tires and slides back down to search for another way.",
+      "requires": [],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_gallery": {
+      "function": "decision",
+      "event": "Among stone columns lie goat bones and a rusted lantern left by an earlier searcher.",
+      "requires": [
+        "stone_gallery"
+      ],
+      "establishes": [
+        "goat_bones_lantern"
+      ]
+    },
+    "e_cv_lantern": {
+      "function": "ending",
+      "event": "Wren draws the stone gallery and the lantern and leaves the coastline undrawn.",
+      "requires": [
+        "goat_bones_lantern"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_quarters": {
+      "function": "decision",
+      "event": "The keeper's quarters hold a bunk, a cold hearth, a sea chest and a wall of charts.",
+      "requires": [],
+      "establishes": [
+        "keeper_quarters"
+      ]
+    },
+    "tw_wallcharts": {
+      "function": "decision",
+      "event": "The pinned charts are a dozen other islands, all drawn and signed by Alder.",
+      "requires": [
+        "keeper_quarters"
+      ],
+      "establishes": [
+        "alder_wall_charts",
+        "alder_name"
+      ]
+    },
+    "e_tw_charts": {
+      "function": "ending",
+      "event": "Wren studies Alder's wall of islands all day and goes home with this island blank.",
+      "requires": [
+        "alder_wall_charts",
+        "alder_name",
+        "wren_has_sketchbook",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_seachest": {
+      "function": "decision",
+      "event": "The sea chest holds a coat, a true compass and a child's drawing For Alder.",
+      "requires": [
+        "keeper_quarters"
+      ],
+      "establishes": [
+        "sea_chest_compass",
+        "alder_family_drawing",
+        "alder_name"
+      ]
+    },
+    "e_tw_drawing": {
+      "function": "ending",
+      "event": "The drawing of a family who waited for a parent who never came home stops Wren for the day.",
+      "requires": [
+        "alder_family_drawing",
+        "alder_name",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "alder_never_returned",
+        "out_chart_unfinished"
+      ]
+    },
+    "tf_mussel": {
+      "function": "decision",
+      "event": "Past the mussel beds a seal colony basks and a deep gully cuts toward the cliffs.",
+      "requires": [],
+      "establishes": [
+        "seal_colony",
+        "deep_gully"
+      ]
+    },
+    "tf_seals": {
+      "function": "decision",
+      "event": "One seal pup is tangled in old net; freeing it might stampede the colony.",
+      "requires": [
+        "seal_colony"
+      ],
+      "establishes": [
+        "net_pup"
+      ]
+    },
+    "e_tf_seals": {
+      "function": "ending",
+      "event": "Wren frees the pup, the colony stampedes, and the tide window closes.",
+      "requires": [
+        "net_pup"
+      ],
+      "establishes": [
+        "wren_freed_net_pup",
+        "out_chart_unfinished"
+      ]
+    },
+    "tf_gully": {
+      "function": "decision",
+      "event": "Weed lines high on the gully walls show how fast it floods.",
+      "requires": [
+        "deep_gully"
+      ],
+      "establishes": [
+        "weed_tide_lines"
+      ]
+    },
+    "e_tf_gully": {
+      "function": "ending",
+      "event": "Dawdling over the weed lines, Wren is chased out by the returning water.",
+      "requires": [
+        "weed_tide_lines",
+        "tide_rule"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "ch_farshore": {
+      "function": "decision",
+      "event": "Through the glass Wren charts the wild windward shore no one had ever mapped.",
+      "requires": [],
+      "establishes": [
+        "far_shore_charted"
+      ]
+    },
+    "e_ch_farshore": {
+      "function": "ending",
+      "event": "The mate keeps Wren on for charting the unknown coast, though the rest is rough.",
+      "requires": [
+        "far_shore_charted",
+        "mate_set_test"
+      ],
+      "establishes": [
+        "out_chart_unfinished",
+        "out_apprenticed"
+      ]
+    },
+    "ch_seal_final": {
+      "function": "decision",
+      "event": "With the masterwork signed, Wren may ring its margins with the island's living things.",
+      "requires": [],
+      "establishes": [
+        "chart_signed"
+      ]
+    },
+    "e_ch_living": {
+      "function": "ending",
+      "event": "The living chart wins the apprenticeship and the honour of naming the next island.",
+      "requires": [
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "living_margins",
+        "out_chart_finished",
+        "out_apprenticed",
+        "naming_honour"
+      ]
+    },
+    "e_ch_clean": {
+      "function": "ending",
+      "event": "The clean, faultless chart makes Wren the House's newest apprentice.",
+      "requires": [
+        "mate_set_test",
+        "chart_house"
+      ],
+      "establishes": [
+        "out_chart_finished",
+        "out_apprenticed"
+      ]
+    },
+    "mg_heron": {
+      "function": "decision",
+      "event": "Wren poles a reed raft to the heron island: a watching blind, a mud bank and a rookery.",
+      "requires": [
+        "heron_island"
+      ],
+      "establishes": [
+        "heron_island_features"
+      ]
+    },
+    "mg_blind": {
+      "function": "decision",
+      "event": "The blind is Alder's, carved with a tide table and headland bearings; a plank walk leads to the seep.",
+      "requires": [
+        "heron_island_features"
+      ],
+      "establishes": [
+        "alder_name",
+        "alder_blind"
+      ]
+    },
+    "e_mg_tidetable": {
+      "function": "ending",
+      "event": "Wren copies Alder's whole tide table and leaves the island's shape for another day.",
+      "requires": [
+        "alder_blind",
+        "alder_name"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "mg_mudbank": {
+      "function": "decision",
+      "event": "A firm ribbon of sand crosses the soft mud bank toward a far channel.",
+      "requires": [
+        "heron_island_features"
+      ],
+      "establishes": [
+        "firm_ribbon"
+      ]
+    },
+    "e_mg_birdstorm": {
+      "function": "ending",
+      "event": "Cutting across the mud startles a thousand birds and sinks Wren knee-deep as the tide turns.",
+      "requires": [
+        "firm_ribbon"
+      ],
+      "establishes": [
+        "bird_storm",
+        "out_chart_unfinished"
+      ]
+    },
+    "mg_farchannel": {
+      "function": "continue",
+      "event": "The sand ribbon carries Wren to a far channel and a lookout rise above the tide.",
+      "requires": [
+        "firm_ribbon"
+      ],
+      "establishes": []
+    },
+    "mg_rookery": {
+      "function": "decision",
+      "event": "Counting nests, Wren returns a fallen chick and sketches the colony.",
+      "requires": [
+        "heron_island_features",
+        "wren_has_sketchbook"
+      ],
+      "establishes": [
+        "wren_saved_chick"
+      ]
+    },
+    "e_mg_chick": {
+      "function": "ending",
+      "event": "Wren watches the herons too long; the rookery is drawn and the coast is not.",
+      "requires": [
+        "wren_saved_chick",
+        "wren_has_sketchbook"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_grove": {
+      "function": "decision",
+      "event": "In the ancient grove hang a frayed rope ladder and a small shell-dressed cairn shrine.",
+      "requires": [
+        "ancient_grove"
+      ],
+      "establishes": [
+        "grove_features"
+      ]
+    },
+    "cf_canopy": {
+      "function": "decision",
+      "event": "The ladder's lower rungs hold but the upper ones look rotten.",
+      "requires": [
+        "grove_features"
+      ],
+      "establishes": []
+    },
+    "e_cf_ladder": {
+      "function": "ending",
+      "event": "A rotten rung parts; Wren climbs down shaken and the grove is mapped as a guess.",
+      "requires": [
+        "grove_features"
+      ],
+      "establishes": [
+        "ladder_rung_broke",
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_treetop": {
+      "function": "decision",
+      "event": "Atop the ladder is a surveyor's platform with a brass sighting ring stamped Alder.",
+      "requires": [],
+      "establishes": [
+        "treetop_lookout",
+        "alder_name"
+      ]
+    },
+    "e_cf_canopy": {
+      "function": "ending",
+      "event": "Wren lingers in the swaying crown and climbs down with a fragment and no chart.",
+      "requires": [
+        "wren_has_sketchbook"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_shrine": {
+      "function": "decision",
+      "event": "The shrine, topped with a carved wooden bird, was left by the island's first people.",
+      "requires": [
+        "grove_features",
+        "chart_house"
+      ],
+      "establishes": [
+        "grove_shrine",
+        "first_people"
+      ]
+    },
+    "e_cf_shrine": {
+      "function": "ending",
+      "event": "Wren sits long before the shrine, and only the shrine gets drawn.",
+      "requires": [
+        "grove_shrine"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_lake": {
+      "function": "decision",
+      "event": "A passage opens on a black underground lake with a plank raft on a pale beach.",
+      "requires": [],
+      "establishes": [
+        "underground_lake"
+      ]
+    },
+    "cv_raft": {
+      "function": "decision",
+      "event": "The raft floats but its old lashings need a slow, even crossing.",
+      "requires": [
+        "underground_lake"
+      ],
+      "establishes": []
+    },
+    "e_cv_raft": {
+      "function": "ending",
+      "event": "Poling in haste, Wren snaps a lashing and is dunked in the black lake.",
+      "requires": [
+        "underground_lake",
+        "wren_has_sketchbook"
+      ],
+      "establishes": [
+        "raft_dunk",
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_farcave": {
+      "function": "decision",
+      "event": "On the far shore hang blind white fish beside a flowstone stair to daylight.",
+      "requires": [],
+      "establishes": [
+        "blind_fish"
+      ]
+    },
+    "e_cv_fish": {
+      "function": "ending",
+      "event": "Wren studies the blind fish for pages while the island stays blank.",
+      "requires": [
+        "blind_fish",
+        "chart_house"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_lakebeach": {
+      "function": "decision",
+      "event": "The pale beach holds children's footprints turned to stone.",
+      "requires": [
+        "underground_lake"
+      ],
+      "establishes": [
+        "stone_footprints",
+        "first_people"
+      ]
+    },
+    "e_cv_prints": {
+      "function": "ending",
+      "event": "Wren maps every stone footprint and leaves the coastline for another morning.",
+      "requires": [
+        "stone_footprints"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_beacon": {
+      "function": "decision",
+      "event": "By the old beacon brazier lies a carved stone bearing dial.",
+      "requires": [
+        "beacon_brazier"
+      ],
+      "establishes": [
+        "stone_dial"
+      ]
+    },
+    "tw_brazier": {
+      "function": "decision",
+      "event": "The dead brazier must once have had a fuel store nearby.",
+      "requires": [
+        "beacon_brazier"
+      ],
+      "establishes": [
+        "beacon_fuel_idea"
+      ]
+    },
+    "e_tw_nofuel": {
+      "function": "ending",
+      "event": "Wren gives up on the dead beacon after a wasted hour.",
+      "requires": [
+        "beacon_brazier",
+        "wren_has_blank_sheet"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_fuelstore": {
+      "function": "decision",
+      "event": "The fuel store door bears Alder's last note: gone to finish the ridge chart, back by the storm.",
+      "requires": [
+        "beacon_fuel_idea"
+      ],
+      "establishes": [
+        "alder_last_note",
+        "alder_name",
+        "alder_meant_to_return",
+        "alder_lost_in_storm",
+        "alder_never_returned"
+      ]
+    },
+    "e_tw_note": {
+      "function": "ending",
+      "event": "Wren sits with Alder's unanswered message and the chart stays empty.",
+      "requires": [
+        "alder_last_note",
+        "alder_name",
+        "alder_never_returned",
+        "alder_lost_in_storm",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_viewdial": {
+      "function": "decision",
+      "event": "The dial is Alder's stone compass rose with every landmark's bearing cut in.",
+      "requires": [
+        "stone_dial"
+      ],
+      "establishes": [
+        "alder_dial",
+        "alder_name"
+      ]
+    },
+    "e_tw_dial": {
+      "function": "ending",
+      "event": "Wren copies every bearing on the dial and draws no coastline.",
+      "requires": [
+        "alder_dial",
+        "alder_name"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tf_wreck": {
+      "function": "decision",
+      "event": "The great wreck on the bar has a flooded hold, a tilted deck and a figurehead.",
+      "requires": [
+        "great_wreck"
+      ],
+      "establishes": [
+        "wreck_parts"
+      ]
+    },
+    "tf_hold": {
+      "function": "decision",
+      "event": "Shapes of cargo show in the flooded hold as the light on the flats turns silver.",
+      "requires": [
+        "wreck_parts"
+      ],
+      "establishes": [
+        "tide_turning"
+      ]
+    },
+    "e_tf_hold": {
+      "function": "ending",
+      "event": "Deep in the hold as the tide returns, Wren barely squeezes out.",
+      "requires": [
+        "wreck_parts"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tf_cargo": {
+      "function": "decision",
+      "event": "A green bell in the hold names the wreck the Marigold, the settlers' ship.",
+      "requires": [
+        "wreck_parts"
+      ],
+      "establishes": [
+        "marigold"
+      ]
+    },
+    "e_tf_bell": {
+      "function": "ending",
+      "event": "Wren pieces together the Marigold's story and the tide takes the flats.",
+      "requires": [
+        "marigold",
+        "chart_house"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tf_deck": {
+      "function": "decision",
+      "event": "From the tilted bow Wren sees the whole pattern of the flats.",
+      "requires": [
+        "wreck_parts"
+      ],
+      "establishes": [
+        "bow_view"
+      ]
+    },
+    "e_tf_figurehead": {
+      "function": "ending",
+      "event": "Wren draws the figurehead in loving detail and the tide cuts off the way.",
+      "requires": [
+        "wreck_parts"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cove_pools": {
+      "function": "decision",
+      "event": "The cove's tide pools fix the reef edge, and a sea cave breathes in the cliff.",
+      "requires": [
+        "hidden_cove"
+      ],
+      "establishes": [
+        "cove_sea_cave"
+      ]
+    },
+    "cove_seacave": {
+      "function": "decision",
+      "event": "In the dry back of the sea cave Alder left a pencil and a note: the way up is behind you, friend.",
+      "requires": [
+        "cove_sea_cave"
+      ],
+      "establishes": [
+        "alder_name",
+        "alder_identity_unknown",
+        "alder_pencil_note"
+      ]
+    },
+    "e_cove_tin": {
+      "function": "ending",
+      "event": "Wren sits with Alder's kind note and climbs out with an empty page.",
+      "requires": [
+        "alder_pencil_note",
+        "alder_name"
+      ],
+      "establishes": [
+        "alder_identity_unknown",
+        "out_chart_unfinished"
+      ]
+    },
+    "cove_rockpool": {
+      "function": "decision",
+      "event": "The tide pools trace the reef edge and the cove's safe channel.",
+      "requires": [
+        "hidden_cove"
+      ],
+      "establishes": [
+        "reef_edge"
+      ]
+    },
+    "e_cove_reefmap": {
+      "function": "ending",
+      "event": "Wren maps every pool and ends with one flawless reef and a blank island.",
+      "requires": [
+        "reef_edge"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_rift": {
+      "function": "decision",
+      "event": "The side rift glows with glowworms; it pinches to a squeeze one way and a still pool the other.",
+      "requires": [],
+      "establishes": [
+        "glowworm_rift"
+      ]
+    },
+    "cv_squeeze": {
+      "function": "decision",
+      "event": "The squeeze is tight but leads to the wider caves if taken calmly.",
+      "requires": [],
+      "establishes": []
+    },
+    "e_cv_squeeze": {
+      "function": "ending",
+      "event": "Forcing the squeeze, Wren sticks fast, wriggles back and leaves the rift as a shaky note.",
+      "requires": [],
+      "establishes": [
+        "squeeze_stuck",
+        "out_chart_unfinished"
+      ]
+    },
+    "cv_glowworm": {
+      "function": "decision",
+      "event": "Wren draws the rift by glowworm light and hears a spring ahead.",
+      "requires": [
+        "glowworm_rift"
+      ],
+      "establishes": []
+    },
+    "e_cv_glow": {
+      "function": "ending",
+      "event": "Wren lies under the glowworms too long and goes home with a page of underground sky.",
+      "requires": [
+        "glowworm_rift"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_dell": {
+      "function": "decision",
+      "event": "The hidden dell holds a spring, a stream running downhill and a mossy carved bench.",
+      "requires": [
+        "hidden_dell"
+      ],
+      "establishes": [
+        "dell_features"
+      ]
+    },
+    "e_cf_dell_lost": {
+      "function": "ending",
+      "event": "Wren dozes in the dell and loses the morning.",
+      "requires": [
+        "dell_features"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "cf_dellspring": {
+      "function": "continue",
+      "event": "Following the dell stream down, Wren reaches the island's true spring and sees the watershed.",
+      "requires": [
+        "dell_features"
+      ],
+      "establishes": [
+        "island_spring"
+      ]
+    },
+    "cf_dellcarve": {
+      "function": "decision",
+      "event": "The bench is carved with many mapmakers' marks, Alder's name among them.",
+      "requires": [
+        "dell_features"
+      ],
+      "establishes": [
+        "mapmakers_bench",
+        "alder_name"
+      ]
+    },
+    "e_cf_carve": {
+      "function": "ending",
+      "event": "Wren copies every name on the bench while the island stays bare.",
+      "requires": [
+        "mapmakers_bench",
+        "alder_name"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_slab": {
+      "function": "decision",
+      "event": "Under a floor slab sits an iron strongbox with a seized lock and a rusted key.",
+      "requires": [],
+      "establishes": [
+        "iron_strongbox"
+      ]
+    },
+    "e_tw_slab": {
+      "function": "ending",
+      "event": "Forcing the lock bends the bar and barks a knuckle; the box stays shut.",
+      "requires": [
+        "iron_strongbox"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tw_cache": {
+      "function": "decision",
+      "event": "Patiently opened, the box holds brass drawing tools and Alder's sealed letter to whoever finishes the work.",
+      "requires": [
+        "iron_strongbox"
+      ],
+      "establishes": [
+        "brass_tools_letter",
+        "alder_name",
+        "alder_work_unfinished"
+      ]
+    },
+    "e_tw_cache": {
+      "function": "ending",
+      "event": "Alder's letter charges the finder to finish the map; the reading takes the light.",
+      "requires": [
+        "brass_tools_letter",
+        "alder_name",
+        "mate_set_test",
+        "ship_returns_dusk"
+      ],
+      "establishes": [
+        "alder_letter_charge",
+        "out_chart_unfinished"
+      ]
+    },
+    "tf_dune": {
+      "function": "decision",
+      "event": "A marker post tops the soft dunes behind the beach.",
+      "requires": [],
+      "establishes": [
+        "dune_marker"
+      ]
+    },
+    "e_tf_dune": {
+      "function": "ending",
+      "event": "The soft dunes defeat Wren and the flats become a hurried scribble.",
+      "requires": [
+        "dune_marker",
+        "wren_has_blank_sheet"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    },
+    "tf_marker": {
+      "function": "decision",
+      "event": "From the surveyor's marker dune the whole flats lie clear.",
+      "requires": [
+        "dune_marker"
+      ],
+      "establishes": [
+        "marker_view"
+      ]
+    },
+    "e_tf_marker": {
+      "function": "ending",
+      "event": "Wren perfects the flats from the dune and leaves the rest untouched.",
+      "requires": [
+        "marker_view"
+      ],
+      "establishes": [
+        "out_chart_unfinished"
+      ]
+    }
+  },
+  "choices": {
+    "c_open": {
+      "intent": "shoulder the kit and start inland",
+      "cost": "none"
+    },
+    "c_n_start_1": {
+      "intent": "wade into the mangrove coast",
+      "cost": "None."
+    },
+    "c_n_start_2": {
+      "intent": "climb toward the cloud-forest ridge",
+      "cost": "None."
+    },
+    "c_n_start_3": {
+      "intent": "descend into the sink-hole caverns",
+      "cost": "None."
+    },
+    "c_n_start_4": {
+      "intent": "cross to the ruined survey tower",
+      "cost": "None."
+    },
+    "c_n_start_5": {
+      "intent": "walk out onto the tidal flats",
+      "cost": "None."
+    },
+    "c_mg_enter_1": {
+      "intent": "follow the log bridge upcoast",
+      "cost": "gives up the other three routes"
+    },
+    "c_mg_enter_2": {
+      "intent": "pick along the oyster rocks downcoast",
+      "cost": "gives up the other three routes"
+    },
+    "c_mg_enter_3": {
+      "intent": "push inland up the hidden creek",
+      "cost": "gives up the other three routes"
+    },
+    "c_mg_enter_4": {
+      "intent": "wade toward the still green lagoon",
+      "cost": "gives up the other three routes"
+    },
+    "c_mg_bridge_1": {
+      "intent": "stop to copy the carved driftwood",
+      "cost": "time on a greasy log while the tide rises"
+    },
+    "c_mg_bridge_2": {
+      "intent": "hurry across before the tide",
+      "cost": "gives up the other route"
+    },
+    "c_mg_carve_1": {
+      "intent": "trust the arrow toward high ground",
+      "cost": "gives up the other route"
+    },
+    "c_mg_carve_2": {
+      "intent": "read the marks slowly for a message",
+      "cost": "gives up the other route"
+    },
+    "c_mg_readmarks_1": {
+      "intent": "head for high ground as Alder marked",
+      "cost": "none",
+      "requires": [
+        "alder_arrow_to_camp"
+      ]
+    },
+    "c_mg_farbank_1": {
+      "intent": "cross the mud slick quickly",
+      "cost": "ends the day in a setback: The Tide Closes In"
+    },
+    "c_mg_farbank_2": {
+      "intent": "keep to the firm palms",
+      "cost": "gives up the other route"
+    },
+    "c_mg_highground_1": {
+      "intent": "take the goat track down to the cove",
+      "cost": "gives up the other route"
+    },
+    "c_mg_highground_2": {
+      "intent": "angle inland toward a spring gully",
+      "cost": "gives up the other route"
+    },
+    "c_mg_oyster_1": {
+      "intent": "study the turtle and read the tide pools",
+      "cost": "gives up the other route"
+    },
+    "c_mg_oyster_2": {
+      "intent": "search the rocks for a way inland",
+      "cost": "gives up the other route"
+    },
+    "c_mg_turtle_note_1": {
+      "intent": "mark the turtle and press on inland",
+      "cost": "leaves the turtle stranded for now",
+      "establishes": [
+        "wren_marked_oyster_turtle"
+      ]
+    },
+    "c_mg_turtle_note_2": {
+      "intent": "stop and right the turtle now",
+      "cost": "the low tide and most of the map"
+    },
+    "c_mg_rockpath_1": {
+      "intent": "follow the clear seep upward",
+      "cost": "none"
+    },
+    "c_mg_seep_1": {
+      "intent": "climb to the bright spring pool",
+      "cost": "gives up the other route"
+    },
+    "c_mg_seep_2": {
+      "intent": "duck under the mossy overhang",
+      "cost": "gives up the other route"
+    },
+    "c_mg_overhang_1": {
+      "intent": "follow Alder's arrow toward the camp",
+      "cost": "gives up the other route",
+      "requires": [
+        "alder_arrow_to_camp"
+      ]
+    },
+    "c_mg_overhang_2": {
+      "intent": "copy the firepit shelter and rest a while",
+      "cost": "ends the day in a setback: The Dry Shelter"
+    },
+    "c_mg_creek_1": {
+      "intent": "follow the otters upstream",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_creek_2": {
+      "intent": "cut away from the water into the trees",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_creek_3": {
+      "intent": "pole across to the loud heron island",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_otter_1": {
+      "intent": "climb along the sweet water",
+      "cost": "none"
+    },
+    "c_mg_trees_1": {
+      "intent": "climb toward the brightness",
+      "cost": "gives up the other route"
+    },
+    "c_mg_trees_2": {
+      "intent": "take the level game trail",
+      "cost": "gives up the other route"
+    },
+    "c_mg_gametrail_1": {
+      "intent": "backtrack toward the bright rise",
+      "cost": "gives up the other route"
+    },
+    "c_mg_gametrail_2": {
+      "intent": "gamble on one more bend",
+      "cost": "ends the day in a setback: The Mangrove's Maze"
+    },
+    "c_cf_enter_1": {
+      "intent": "take the steep switchback up",
+      "cost": "gives up the other three routes"
+    },
+    "c_cf_enter_2": {
+      "intent": "angle across the gentle traverse",
+      "cost": "gives up the other three routes"
+    },
+    "c_cf_enter_3": {
+      "intent": "drop to the pale gleam in the hollow",
+      "cost": "gives up the other three routes"
+    },
+    "c_cf_enter_4": {
+      "intent": "follow the roar toward a hidden waterfall",
+      "cost": "gives up the other three routes"
+    },
+    "c_cf_switch_1": {
+      "intent": "climb the bare rock rib",
+      "cost": "an exposed, airy climb"
+    },
+    "c_cf_switch_2": {
+      "intent": "follow the green shelf",
+      "cost": "gives up the other route"
+    },
+    "c_cf_ledge_1": {
+      "intent": "follow the ridge path higher",
+      "cost": "none"
+    },
+    "c_cf_shelf_1": {
+      "intent": "join the ridge path",
+      "cost": "none"
+    },
+    "c_cf_bench_1": {
+      "intent": "climb the stony trail toward the camp",
+      "cost": "gives up the other route"
+    },
+    "c_cf_bench_2": {
+      "intent": "detour into the grove of ancient trees",
+      "cost": "gives up the other route"
+    },
+    "c_cf_campapproach_1": {
+      "intent": "follow the cairns onto the high ridge",
+      "cost": "none"
+    },
+    "c_camp_ascent1_1": {
+      "intent": "push on along the cairned ridge",
+      "cost": "none"
+    },
+    "c_camp_ascent2_1": {
+      "intent": "take the sheltered ledge",
+      "cost": "gives up the other two routes"
+    },
+    "c_camp_ascent2_2": {
+      "intent": "brave the airy crest",
+      "cost": "an exposed, airy crossing"
+    },
+    "c_camp_ascent2_3": {
+      "intent": "stop here, daunted by the height",
+      "cost": "ends the day in a setback: The Airy Ridge"
+    },
+    "c_camp_ascent3a_1": {
+      "intent": "rejoin the ridgeline",
+      "cost": "none"
+    },
+    "c_camp_ascent3b_1": {
+      "intent": "come down to the level shelf",
+      "cost": "none"
+    },
+    "c_camp_ascent4_1": {
+      "intent": "make the final pull to the camp",
+      "cost": "none"
+    },
+    "c_camp_ascent5_1": {
+      "intent": "step into Alder's camp",
+      "cost": "none"
+    },
+    "c_cf_traverse_1": {
+      "intent": "rest at the spring",
+      "cost": "gives up the other two routes"
+    },
+    "c_cf_traverse_2": {
+      "intent": "keep traversing along the slope",
+      "cost": "gives up the other two routes"
+    },
+    "c_cf_traverse_3": {
+      "intent": "follow a deer path to a hidden dell",
+      "cost": "gives up the other two routes"
+    },
+    "c_cf_upper_1": {
+      "intent": "climb the faint path on",
+      "cost": "gives up the other route"
+    },
+    "c_cf_upper_2": {
+      "intent": "drop to the pale gleam",
+      "cost": "gives up the other route"
+    },
+    "c_cf_hollow_1": {
+      "intent": "open the tin box",
+      "cost": "gives up the other route"
+    },
+    "c_cf_hollow_2": {
+      "intent": "leave the box and climb back up",
+      "cost": "gives up the other route"
+    },
+    "c_cf_box_1": {
+      "intent": "read the field notes",
+      "cost": "gives up the other route"
+    },
+    "c_cf_box_2": {
+      "intent": "pocket the locket and hurry on",
+      "cost": "ends the day with a find instead of a chart: The Brass Locket",
+      "establishes": [
+        "wren_keeps_locket"
+      ]
+    },
+    "c_cf_notes_1": {
+      "intent": "follow Alder's notes toward the camp",
+      "cost": "none",
+      "requires": [
+        "alder_chart_at_camp"
+      ]
+    },
+    "c_cv_enter_1": {
+      "intent": "follow the dripping water",
+      "cost": "gives up the other three routes"
+    },
+    "c_cv_enter_2": {
+      "intent": "head toward the glitter",
+      "cost": "gives up the other three routes"
+    },
+    "c_cv_enter_3": {
+      "intent": "trace the warm breathing air",
+      "cost": "gives up the other three routes"
+    },
+    "c_cv_enter_4": {
+      "intent": "climb toward a high hole of daylight",
+      "cost": "gives up the other three routes"
+    },
+    "c_cv_water_1": {
+      "intent": "wade the stream toward the arch",
+      "cost": "gives up the other two routes"
+    },
+    "c_cv_water_2": {
+      "intent": "climb the stream upward against the flow",
+      "cost": "gives up the other two routes"
+    },
+    "c_cv_water_3": {
+      "intent": "explore a side rift lit with glowworms",
+      "cost": "gives up the other two routes"
+    },
+    "c_cv_arch_1": {
+      "intent": "edge along the dry ledge to the light",
+      "cost": "gives up the other route"
+    },
+    "c_cv_arch_2": {
+      "intent": "duck under the low arch",
+      "cost": "ends the day in a setback: When the Cave Breathes Water"
+    },
+    "c_cv_upflow_1": {
+      "intent": "climb the daylight shaft to the spring",
+      "cost": "none"
+    },
+    "c_cv_glitter_1": {
+      "intent": "copy the handprints carefully",
+      "cost": "gives up the other route"
+    },
+    "c_cv_glitter_2": {
+      "intent": "push past toward a further glow",
+      "cost": "gives up the other route"
+    },
+    "c_cv_ochre_1": {
+      "intent": "follow the ochre mark toward the spring",
+      "cost": "gives up the other route"
+    },
+    "c_cv_ochre_2": {
+      "intent": "fill a whole page with the old painting",
+      "cost": "ends the day with a find instead of a chart: The Oldest Map"
+    },
+    "c_cv_deepglow_1": {
+      "intent": "climb up into the cove",
+      "cost": "gives up the other route"
+    },
+    "c_cv_deepglow_2": {
+      "intent": "follow the passage toward the lapping water",
+      "cost": "gives up the other route"
+    },
+    "c_cv_warm_1": {
+      "intent": "study how the pup got in",
+      "cost": "gives up the other route"
+    },
+    "c_cv_warm_2": {
+      "intent": "back away and leave the warm dark",
+      "cost": "gives up the other route"
+    },
+    "c_cv_pup_1": {
+      "intent": "mark the pup and climb toward the light",
+      "cost": "leaves the pup stranded for now",
+      "establishes": [
+        "wren_marked_cave_pup"
+      ]
+    },
+    "c_cv_pup_2": {
+      "intent": "try to coax the pup out alone now",
+      "cost": "ends the day in a setback: Too Heavy Alone"
+    },
+    "c_cv_backout_1": {
+      "intent": "squeeze out toward the daylight",
+      "cost": "none"
+    },
+    "c_cv_tohigh_1": {
+      "intent": "make for the ridge camp",
+      "cost": "none"
+    },
+    "c_tw_enter_1": {
+      "intent": "search the ground room",
+      "cost": "gives up the other three routes"
+    },
+    "c_tw_enter_2": {
+      "intent": "climb the outside stair",
+      "cost": "gives up the other three routes"
+    },
+    "c_tw_enter_3": {
+      "intent": "lift the cellar hatch",
+      "cost": "gives up the other three routes"
+    },
+    "c_tw_enter_4": {
+      "intent": "explore the keeper's side quarters",
+      "cost": "gives up the other three routes"
+    },
+    "c_tw_ground_1": {
+      "intent": "read the swollen logbook",
+      "cost": "ends the day with a find instead of a chart: Alder's Last Entry"
+    },
+    "c_tw_ground_2": {
+      "intent": "salvage a working instrument",
+      "cost": "gives up the other two routes"
+    },
+    "c_tw_ground_3": {
+      "intent": "pry up a loose slab in the floor",
+      "cost": "gives up the other two routes"
+    },
+    "c_tw_salvage_1": {
+      "intent": "take the alidade inland toward the ridge",
+      "cost": "skips the view from the tower top",
+      "establishes": [
+        "wren_has_tower_find"
+      ]
+    },
+    "c_tw_salvage_2": {
+      "intent": "take it up the tower stair first",
+      "cost": "time and risk on the broken stair",
+      "establishes": [
+        "wren_has_tower_find"
+      ]
+    },
+    "c_tw_toridge_1": {
+      "intent": "follow the headland path to the ridge",
+      "cost": "none"
+    },
+    "c_tw_stair_1": {
+      "intent": "stride boldly across the gap",
+      "cost": "a bold stride over a long drop"
+    },
+    "c_tw_stair_2": {
+      "intent": "clamber the crumbling ledge",
+      "cost": "ends the day in a setback: The Broken Stair"
+    },
+    "c_tw_top_1": {
+      "intent": "cross the ridge toward the camp",
+      "cost": "gives up the other two routes"
+    },
+    "c_tw_top_2": {
+      "intent": "climb down toward the hidden cove",
+      "cost": "gives up the other two routes"
+    },
+    "c_tw_top_3": {
+      "intent": "examine the old beacon brazier",
+      "cost": "gives up the other two routes"
+    },
+    "c_tw_ridgeway_1": {
+      "intent": "join the camp trail",
+      "cost": "none"
+    },
+    "c_tw_cellar_1": {
+      "intent": "open the leather tube",
+      "cost": "gives up the other route"
+    },
+    "c_tw_cellar_2": {
+      "intent": "take rope and oil and climb back out",
+      "cost": "gives up the other route"
+    },
+    "c_tw_tube_1": {
+      "intent": "follow the draft toward the ridge camp",
+      "cost": "gives up the other route",
+      "establishes": [
+        "wren_has_tower_find"
+      ]
+    },
+    "c_tw_tube_2": {
+      "intent": "sit and copy the ruined draft in full",
+      "cost": "ends the day with a find instead of a chart: Someone Else's Map",
+      "requires": [
+        "alder_draft"
+      ]
+    },
+    "c_tw_supplies_1": {
+      "intent": "follow the chalk line to the ridge",
+      "cost": "none"
+    },
+    "c_tf_enter_1": {
+      "intent": "wade toward the distant sandbar",
+      "cost": "gives up the other three routes"
+    },
+    "c_tf_enter_2": {
+      "intent": "trace the firm channel edges",
+      "cost": "gives up the other three routes"
+    },
+    "c_tf_enter_3": {
+      "intent": "search the strand line near shore",
+      "cost": "gives up the other three routes"
+    },
+    "c_tf_enter_4": {
+      "intent": "pick across the dark mussel beds",
+      "cost": "gives up the other three routes"
+    },
+    "c_tf_sandbar_1": {
+      "intent": "sketch fast, then run for shore",
+      "cost": "only a rough sketch of the wreck"
+    },
+    "c_tf_sandbar_2": {
+      "intent": "linger over the wreck too long",
+      "cost": "ends the day in a setback: The Tide Comes Back"
+    },
+    "c_tf_sketchrun_1": {
+      "intent": "follow the green gap inland",
+      "cost": "none"
+    },
+    "c_tf_gap_1": {
+      "intent": "climb the stream toward the falls",
+      "cost": "none"
+    },
+    "c_tf_channel_1": {
+      "intent": "follow the channels to the cliff gap",
+      "cost": "gives up the other two routes"
+    },
+    "c_tf_channel_2": {
+      "intent": "cut inland up a firm rise",
+      "cost": "gives up the other two routes"
+    },
+    "c_tf_channel_3": {
+      "intent": "detour to the great wreck on the bar",
+      "cost": "gives up the other two routes"
+    },
+    "c_tf_cliffgap_1": {
+      "intent": "explore the hidden cove",
+      "cost": "none"
+    },
+    "c_tf_strand_1": {
+      "intent": "open the bottle",
+      "cost": "gives up the other two routes"
+    },
+    "c_tf_strand_2": {
+      "intent": "leave it and read the shoreline",
+      "cost": "gives up the other two routes"
+    },
+    "c_tf_strand_3": {
+      "intent": "climb the grassy dunes behind the beach",
+      "cost": "gives up the other two routes"
+    },
+    "c_tf_bottle_1": {
+      "intent": "set out inland for the ridge camp",
+      "cost": "gives up the other route",
+      "requires": [
+        "ridge_camp"
+      ]
+    },
+    "c_tf_bottle_2": {
+      "intent": "keep the note as a find and stop here",
+      "cost": "ends the day with a find instead of a chart: A Note From the Sea"
+    },
+    "c_L_cove_1": {
+      "intent": "map the cove, then climb the rill toward the spring",
+      "cost": "gives up the compass-rose path, the pools and the rest"
+    },
+    "c_L_cove_2": {
+      "intent": "follow the compass rose up toward the ridge",
+      "cost": "gives up the other three routes"
+    },
+    "c_L_cove_3": {
+      "intent": "search the cove's tide pools and sea cave",
+      "cost": "gives up the other three routes"
+    },
+    "c_L_cove_4": {
+      "intent": "rest too long in the calm cove",
+      "cost": "ends the day in a setback: Lost in the Calm"
+    },
+    "c_cove_rise_1": {
+      "intent": "study the dotted slab",
+      "cost": "gives up the other route"
+    },
+    "c_cove_rise_2": {
+      "intent": "press straight on up to the ridge",
+      "cost": "gives up the other route"
+    },
+    "c_cove_starrock_1": {
+      "intent": "copy it quickly and climb on",
+      "cost": "gives up the other route"
+    },
+    "c_cove_starrock_2": {
+      "intent": "copy it in full and go no further",
+      "cost": "ends the day with a find instead of a chart: The Map of Stars"
+    },
+    "c_cove_ridge_1": {
+      "intent": "climb the camp trail",
+      "cost": "none"
+    },
+    "c_L_fresh_1": {
+      "intent": "fill the flask and climb toward the ridge camp",
+      "cost": "gives up the other two routes"
+    },
+    "c_L_fresh_2": {
+      "intent": "trace the streams to understand the whole island",
+      "cost": "gives up the other two routes"
+    },
+    "c_L_fresh_3": {
+      "intent": "linger mapping every single stream",
+      "cost": "ends the day in a setback: Every Stream at Once"
+    },
+    "c_fresh_study_1": {
+      "intent": "climb to the ridge camp with the water mapped",
+      "cost": "none"
+    },
+    "c_fresh_climb_1": {
+      "intent": "cross the high meadow toward the camp",
+      "cost": "none"
+    },
+    "c_fresh_meadow_1": {
+      "intent": "cross the meadow to the camp trail",
+      "cost": "gives up the other route"
+    },
+    "c_fresh_meadow_2": {
+      "intent": "investigate the old boundary cairn",
+      "cost": "gives up the other route"
+    },
+    "c_fresh_cairn_1": {
+      "intent": "note the boundary mark and climb to the camp",
+      "cost": "gives up the other route"
+    },
+    "c_fresh_cairn_2": {
+      "intent": "copy the boundary survey in full and rest here",
+      "cost": "ends the day in a setback: The Warm Meadow"
+    },
+    "c_L_camp_1": {
+      "intent": "study Alder's chart at the table",
+      "cost": "gives up the other two routes"
+    },
+    "c_L_camp_2": {
+      "intent": "open the tin trunk under the cot",
+      "cost": "gives up the other two routes"
+    },
+    "c_L_camp_3": {
+      "intent": "take Alder's chart and start for the summit",
+      "cost": "gives up studying the chart and opening the trunk",
+      "establishes": [
+        "wren_carries_alder_chart"
+      ]
+    },
+    "c_camp_chart_1": {
+      "intent": "take up the tools and ready to finish it",
+      "cost": "gives up the other route",
+      "establishes": [
+        "wren_carries_alder_tools"
+      ]
+    },
+    "c_camp_chart_2": {
+      "intent": "simply copy Alder's half chart and call it done",
+      "cost": "ends the day with a find instead of a chart: The Lost Mapmaker's Story"
+    },
+    "c_camp_trunk_1": {
+      "intent": "gather the tools and ready to climb on",
+      "cost": "gives up the other route",
+      "establishes": [
+        "wren_carries_alder_tools"
+      ]
+    },
+    "c_camp_trunk_2": {
+      "intent": "read the journal to its last page",
+      "cost": "gives up the other route"
+    },
+    "c_camp_journal_1": {
+      "intent": "carry Alder's wish on toward the summit",
+      "cost": "gives up the other route"
+    },
+    "c_camp_journal_2": {
+      "intent": "close the journal, moved, and simply keep it",
+      "cost": "ends the day with a find instead of a chart: What Alder Left Behind"
+    },
+    "c_camp_ready_1": {
+      "intent": "set out for the summit",
+      "cost": "none"
+    },
+    "c_camp_summitpath_1": {
+      "intent": "follow the cairns the safe way",
+      "cost": "the longer safe way"
+    },
+    "c_camp_summitpath_2": {
+      "intent": "try the scree shortcut straight up",
+      "cost": "ends the day in a setback: The Sliding Scree"
+    },
+    "c_ridge_notch_1": {
+      "intent": "cross the boulder field to the rise",
+      "cost": "none"
+    },
+    "c_wind_gap_1": {
+      "intent": "stand up onto the summit",
+      "cost": "none"
+    },
+    "c_L_summit_1": {
+      "intent": "set up to survey the whole island now",
+      "cost": "gives up the other two routes"
+    },
+    "c_L_summit_2": {
+      "intent": "signal the far ship first with Alder's mirror",
+      "cost": "most of the light meant for the chart",
+      "requires": []
+    },
+    "c_L_summit_3": {
+      "intent": "just stand and take it all in",
+      "cost": "ends the day in a setback: Too Big to Draw"
+    },
+    "c_summit_survey_1": {
+      "intent": "take careful sightings of every coast",
+      "cost": "gives up the other three routes"
+    },
+    "c_summit_survey_2": {
+      "intent": "fix the reef and cove for safe landings first",
+      "cost": "gives up the other three routes"
+    },
+    "c_summit_survey_3": {
+      "intent": "turn the glass on the wild far shore",
+      "cost": "gives up the other three routes"
+    },
+    "c_summit_survey_4": {
+      "intent": "rush every detail at once",
+      "cost": "ends the day in a setback: All at Once, and None of It"
+    },
+    "c_ch_sightings_1": {
+      "intent": "gather the sketches to draw the final chart",
+      "cost": "none"
+    },
+    "c_ch_reef_1": {
+      "intent": "push on toward the full masterwork",
+      "cost": "gives up the other route"
+    },
+    "c_ch_reef_2": {
+      "intent": "stop with the safe-landing chart done",
+      "cost": "gives up the full masterwork"
+    },
+    "c_ch_gather_1": {
+      "intent": "draw the final chart",
+      "cost": "none"
+    },
+    "c_ch_table_1": {
+      "intent": "ink the final chart in bold clean lines",
+      "cost": "gives up the other two routes"
+    },
+    "c_ch_table_2": {
+      "intent": "pencil it soft and add every small detail",
+      "cost": "far more time and light"
+    },
+    "c_ch_table_3": {
+      "intent": "copy it twice, one to keep and one to give",
+      "cost": "the last of the light for two copies"
+    },
+    "c_ch_ink_1": {
+      "intent": "sign the finished masterwork",
+      "cost": "none"
+    },
+    "c_ch_pencil_1": {
+      "intent": "sign the detailed masterwork",
+      "cost": "gives up the other route"
+    },
+    "c_ch_pencil_2": {
+      "intent": "fuss over one last detail as the sun sinks",
+      "cost": "ends the day in a setback: One More Detail"
+    },
+    "c_ch_double_1": {
+      "intent": "sign both charts",
+      "cost": "none"
+    },
+    "c_ch_sign_1": {
+      "intent": "name it for Alder who came before",
+      "cost": "gives up the other three namings"
+    },
+    "c_ch_sign_2": {
+      "intent": "name it for both mapmakers together",
+      "cost": "gives up the other three namings"
+    },
+    "c_ch_sign_3": {
+      "intent": "ring the margins with the island's living things",
+      "cost": "gives up the other three routes"
+    },
+    "c_ch_sign_4": {
+      "intent": "leave the banner blank and sign the survey",
+      "cost": "leaves the island unnamed by Wren"
+    },
+    "c_ch_sign_double_1": {
+      "intent": "present both to show a surveyor's care",
+      "cost": "gives away the spare copy"
+    },
+    "c_ch_sign_double_2": {
+      "intent": "give one and keep the spare quietly",
+      "cost": "keeps back the proof of care"
+    },
+    "c_summit_signal_1": {
+      "intent": "aim the mirror and flash the ship",
+      "cost": "the finishing of the chart, or most of it"
+    },
+    "c_summit_signal_2": {
+      "intent": "signal, then turn back to finish the chart",
+      "cost": "a quick signal only; the ship may not answer"
+    },
+    "c_signal_aim_1": {
+      "intent": "hold the flash steady and wait",
+      "cost": "none"
+    },
+    "c_signal_flash_1": {
+      "intent": "keep signalling",
+      "cost": "none"
+    },
+    "c_ship_turns_1": {
+      "intent": "race down toward the cove to meet the boat",
+      "cost": "none"
+    },
+    "c_race_down_1": {
+      "intent": "meet the boat at the cove",
+      "cost": "none"
+    },
+    "c_meet_boat_1": {
+      "intent": "lead them to the seal pup in the cave",
+      "cost": "leaves the reef turtle to the tide"
+    },
+    "c_meet_boat_2": {
+      "intent": "lead them to the turtle on the reef",
+      "cost": "leaves the cave pup to the tide"
+    },
+    "c_mg_lagoon_1": {
+      "intent": "bail out the sunken canoe",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_lagoon_2": {
+      "intent": "take the root tunnel deeper",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_lagoon_3": {
+      "intent": "wade to the driftwood dam",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_canoe_1": {
+      "intent": "bail it and paddle across",
+      "cost": "the slower careful test before trusting it"
+    },
+    "c_mg_canoe_2": {
+      "intent": "trust it too far, too fast",
+      "cost": "ends the day in a setback: The Leaky Dugout"
+    },
+    "c_mg_paddle_1": {
+      "intent": "land and explore the cleared ground",
+      "cost": "none"
+    },
+    "c_mg_lagfar_1": {
+      "intent": "examine the stone mound and posts",
+      "cost": "gives up the other route"
+    },
+    "c_mg_lagfar_2": {
+      "intent": "take the firm path up toward the creek",
+      "cost": "gives up the other route"
+    },
+    "c_mg_ruin_1": {
+      "intent": "record the vanished village and climb on",
+      "cost": "gives up the other route"
+    },
+    "c_mg_ruin_2": {
+      "intent": "sit and map the whole village in loving detail",
+      "cost": "ends the day with a find instead of a chart: The Vanished Village"
+    },
+    "c_mg_lagtunnel_1": {
+      "intent": "head for the brightening sky",
+      "cost": "gives up the other route"
+    },
+    "c_mg_lagtunnel_2": {
+      "intent": "push deeper into the dark",
+      "cost": "ends the day in a setback: Under the Roots"
+    },
+    "c_mg_dam_1": {
+      "intent": "note Alder's stake and follow the creek",
+      "cost": "gives up the other route",
+      "requires": [
+        "alder_stake"
+      ]
+    },
+    "c_mg_dam_2": {
+      "intent": "prise the stake free as a keepsake",
+      "cost": "ends the day with a find instead of a chart: Alder's Survey Stake"
+    },
+    "c_cf_falls_1": {
+      "intent": "climb the wet rocks beside the falls",
+      "cost": "gives up the other two routes"
+    },
+    "c_cf_falls_2": {
+      "intent": "cross the mossy log above the lip",
+      "cost": "gives up the other two routes"
+    },
+    "c_cf_falls_3": {
+      "intent": "wade into the pool below",
+      "cost": "gives up the other two routes"
+    },
+    "c_cf_fallclimb_1": {
+      "intent": "climb carefully, testing each hold",
+      "cost": "gives up the other route"
+    },
+    "c_cf_fallclimb_2": {
+      "intent": "scramble up fast and reckless",
+      "cost": "ends the day in a setback: The Slippery Falls"
+    },
+    "c_cf_fallcross_1": {
+      "intent": "step off onto the upper traverse",
+      "cost": "none"
+    },
+    "c_cf_fallpool_1": {
+      "intent": "note the gauge and climb the falls",
+      "cost": "gives up the other route"
+    },
+    "c_cf_fallpool_2": {
+      "intent": "copy the gauge stone in full detail",
+      "cost": "ends the day with a find instead of a chart: Alder's Water Gauge"
+    },
+    "c_cv_skylight_1": {
+      "intent": "climb the rock slope toward the light",
+      "cost": "gives up the other route"
+    },
+    "c_cv_skylight_2": {
+      "intent": "explore the gallery of formations",
+      "cost": "gives up the other route"
+    },
+    "c_cv_chimney_1": {
+      "intent": "chimney up steadily to the surface",
+      "cost": "slow, hard climbing"
+    },
+    "c_cv_chimney_2": {
+      "intent": "rush the chimney and tire too soon",
+      "cost": "ends the day in a setback: The Narrow Chimney"
+    },
+    "c_cv_gallery_1": {
+      "intent": "follow where the searcher went, toward the glitter",
+      "cost": "gives up the other route"
+    },
+    "c_cv_gallery_2": {
+      "intent": "sketch the whole stone gallery",
+      "cost": "ends the day with a find instead of a chart: The Frozen Forest"
+    },
+    "c_tw_quarters_1": {
+      "intent": "read the wall of pinned charts",
+      "cost": "gives up the other route"
+    },
+    "c_tw_quarters_2": {
+      "intent": "open the sea chest at the bunk's foot",
+      "cost": "gives up the other route"
+    },
+    "c_tw_wallcharts_1": {
+      "intent": "take heart from Alder's life and climb the stair",
+      "cost": "gives up the other route",
+      "requires": [
+        "alder_wall_charts"
+      ]
+    },
+    "c_tw_wallcharts_2": {
+      "intent": "study the wall of a mapmaker's whole life",
+      "cost": "ends the day with a find instead of a chart: A Life of Islands"
+    },
+    "c_tw_seachest_1": {
+      "intent": "take the working compass and climb on",
+      "cost": "gives up the other route",
+      "establishes": [
+        "wren_took_compass"
+      ]
+    },
+    "c_tw_seachest_2": {
+      "intent": "sit with the child's drawing, undone",
+      "cost": "ends the day with a find instead of a chart: The Family Ashore"
+    },
+    "c_tf_mussel_1": {
+      "intent": "approach the basking seals",
+      "cost": "gives up the other route"
+    },
+    "c_tf_mussel_2": {
+      "intent": "follow the deep gully toward the cliffs",
+      "cost": "gives up the other route"
+    },
+    "c_tf_seals_1": {
+      "intent": "mark the tangled pup to send help later",
+      "cost": "leaves the pup tangled for now",
+      "establishes": [
+        "wren_marked_net_pup"
+      ]
+    },
+    "c_tf_seals_2": {
+      "intent": "try to free the tangled pup yourself now",
+      "cost": "ends the day with a find instead of a chart: The Tangled Net"
+    },
+    "c_tf_gully_1": {
+      "intent": "hurry through the gully to the cliff gap",
+      "cost": "a hurried crossing of a gully that floods",
+      "requires": []
+    },
+    "c_tf_gully_2": {
+      "intent": "dawdle reading the weed lines too long",
+      "cost": "ends the day in a setback: The Flooding Gully"
+    },
+    "c_ch_farshore_1": {
+      "intent": "add the far shore and gather the whole survey",
+      "cost": "gives up the other route"
+    },
+    "c_ch_farshore_2": {
+      "intent": "stop, thrilled, having charted the unknown coast",
+      "cost": "gives up the rest of the survey"
+    },
+    "c_ch_seal_final_1": {
+      "intent": "add the living island to the margins",
+      "cost": "a few more minutes of failing light"
+    },
+    "c_ch_seal_final_2": {
+      "intent": "hand over the clean masterwork as it is",
+      "cost": "leaves the island's living things off the map"
+    },
+    "c_mg_heron_1": {
+      "intent": "climb into the old watching blind",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_heron_2": {
+      "intent": "wade out onto the wide mud bank",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_heron_3": {
+      "intent": "count the nests in the rookery",
+      "cost": "gives up the other two routes"
+    },
+    "c_mg_blind_1": {
+      "intent": "copy the bearings and take the plank walk inland",
+      "cost": "gives up the other route"
+    },
+    "c_mg_blind_2": {
+      "intent": "copy the entire carved tide table in full",
+      "cost": "ends the day with a find instead of a chart: Alder's Tide Table"
+    },
+    "c_mg_mudbank_1": {
+      "intent": "follow the firm ribbon to the far channel",
+      "cost": "gives up the other route"
+    },
+    "c_mg_mudbank_2": {
+      "intent": "cut straight across and startle the flock",
+      "cost": "ends the day in a setback: A Storm of Wings"
+    },
+    "c_mg_farchannel_1": {
+      "intent": "cross to the lookout rise",
+      "cost": "none"
+    },
+    "c_mg_rookery_1": {
+      "intent": "sketch the rookery and cross to the mud bank",
+      "cost": "gives up the other route"
+    },
+    "c_mg_rookery_2": {
+      "intent": "stay to watch the whole colony too long",
+      "cost": "ends the day with a find instead of a chart: The Heron Rookery"
+    },
+    "c_cf_grove_1": {
+      "intent": "climb the old rope ladder into the canopy",
+      "cost": "gives up the other route"
+    },
+    "c_cf_grove_2": {
+      "intent": "kneel to the little cairn shrine",
+      "cost": "gives up the other route"
+    },
+    "c_cf_canopy_1": {
+      "intent": "climb steadily, testing every rung",
+      "cost": "gives up the other route"
+    },
+    "c_cf_canopy_2": {
+      "intent": "trust the frayed upper rungs and hurry",
+      "cost": "ends the day in a setback: The Frayed Ladder"
+    },
+    "c_cf_treetop_1": {
+      "intent": "take bearings from the platform and climb down to the trail",
+      "cost": "gives up the other route"
+    },
+    "c_cf_treetop_2": {
+      "intent": "linger in the swaying green crown too long",
+      "cost": "ends the day with a find instead of a chart: The Treetop Survey"
+    },
+    "c_cf_shrine_1": {
+      "intent": "record the shrine and climb on toward the camp",
+      "cost": "gives up the other route"
+    },
+    "c_cf_shrine_2": {
+      "intent": "sit long in the green hush before the shrine",
+      "cost": "ends the day with a find instead of a chart: The Grove Shrine"
+    },
+    "c_cv_lake_1": {
+      "intent": "pole the old raft across the black lake",
+      "cost": "gives up the other route"
+    },
+    "c_cv_lake_2": {
+      "intent": "search the pale sand beach",
+      "cost": "gives up the other route"
+    },
+    "c_cv_raft_1": {
+      "intent": "pole across slow and steady",
+      "cost": "a slow eerie crossing"
+    },
+    "c_cv_raft_2": {
+      "intent": "push off hard and pole in haste",
+      "cost": "ends the day in a setback: The Black Lake"
+    },
+    "c_cv_farcave_1": {
+      "intent": "climb the flowstone stair toward the daylight",
+      "cost": "gives up the other route"
+    },
+    "c_cv_farcave_2": {
+      "intent": "stay to study the blind white fish",
+      "cost": "ends the day with a find instead of a chart: The Fish With No Eyes"
+    },
+    "c_cv_lakebeach_1": {
+      "intent": "record the stone footprints and climb out to the ridge",
+      "cost": "gives up the other route"
+    },
+    "c_cv_lakebeach_2": {
+      "intent": "map every ancient footprint on the beach",
+      "cost": "ends the day with a find instead of a chart: Footprints in the Deep"
+    },
+    "c_tw_beacon_1": {
+      "intent": "inspect the rusted brazier",
+      "cost": "gives up the other route"
+    },
+    "c_tw_beacon_2": {
+      "intent": "read the carved bearing dial",
+      "cost": "gives up the other route"
+    },
+    "c_tw_brazier_1": {
+      "intent": "search along the headland for the fuel store",
+      "cost": "gives up the other route"
+    },
+    "c_tw_brazier_2": {
+      "intent": "give up on the dead beacon and turn back",
+      "cost": "ends the day in a setback: The Cold Beacon"
+    },
+    "c_tw_fuelstore_1": {
+      "intent": "copy Alder's last message and cross to the ridge",
+      "cost": "gives up the other route",
+      "requires": [
+        "alder_last_note"
+      ]
+    },
+    "c_tw_fuelstore_2": {
+      "intent": "sit with Alder's unanswered message",
+      "cost": "ends the day with a find instead of a chart: Back by the Storm"
+    },
+    "c_tw_viewdial_1": {
+      "intent": "copy the dial's bearings and cross to the ridge",
+      "cost": "gives up the other route"
+    },
+    "c_tw_viewdial_2": {
+      "intent": "copy every single bearing on the great dial",
+      "cost": "ends the day with a find instead of a chart: The Stone Compass"
+    },
+    "c_tf_wreck_1": {
+      "intent": "reach down into the flooded hold",
+      "cost": "gives up the other route"
+    },
+    "c_tf_wreck_2": {
+      "intent": "climb the tilted deck to the bow",
+      "cost": "gives up the other route"
+    },
+    "c_tf_hold_1": {
+      "intent": "wade in quickly for a look at the cargo",
+      "cost": "gives up the other route"
+    },
+    "c_tf_hold_2": {
+      "intent": "push your luck deep in the flooding hold",
+      "cost": "ends the day in a setback: Caught in the Wreck"
+    },
+    "c_tf_cargo_1": {
+      "intent": "note the settler ship and wade on to the cliff gap",
+      "cost": "gives up the other route",
+      "requires": [
+        "cliff_gap"
+      ]
+    },
+    "c_tf_cargo_2": {
+      "intent": "stay to read the whole story of the wreck",
+      "cost": "ends the day with a find instead of a chart: The Wreck of the Marigold"
+    },
+    "c_tf_deck_1": {
+      "intent": "sketch the flats from the high bow and climb down to the cliff gap",
+      "cost": "gives up the other route",
+      "requires": [
+        "cliff_gap"
+      ]
+    },
+    "c_tf_deck_2": {
+      "intent": "stay on the bow to draw the figurehead in loving detail",
+      "cost": "ends the day with a find instead of a chart: The Ship's Guardian"
+    },
+    "c_cove_pools_1": {
+      "intent": "explore the low sea cave",
+      "cost": "gives up the other route"
+    },
+    "c_cove_pools_2": {
+      "intent": "study the jewelled tide pools",
+      "cost": "gives up the other route"
+    },
+    "c_cove_seacave_1": {
+      "intent": "take Alder's pencil and climb the cove path",
+      "cost": "gives up the other route",
+      "establishes": [
+        "wren_took_alder_pencil"
+      ]
+    },
+    "c_cove_seacave_2": {
+      "intent": "sit with Alder's kind hidden note",
+      "cost": "ends the day with a find instead of a chart: A Friend Across the Years"
+    },
+    "c_cove_rockpool_1": {
+      "intent": "add the reef edge and climb toward the ridge",
+      "cost": "gives up the other route"
+    },
+    "c_cove_rockpool_2": {
+      "intent": "map every last pool in jewelled detail",
+      "cost": "ends the day with a find instead of a chart: The Jewelled Reef"
+    },
+    "c_cv_rift_1": {
+      "intent": "photograph the glowworms in memory and squeeze through",
+      "cost": "gives up the other route"
+    },
+    "c_cv_rift_2": {
+      "intent": "sit beneath the glowing ceiling",
+      "cost": "gives up the other route"
+    },
+    "c_cv_squeeze_1": {
+      "intent": "wriggle carefully through the squeeze",
+      "cost": "a slow tight wriggle"
+    },
+    "c_cv_squeeze_2": {
+      "intent": "force it in a panicky rush",
+      "cost": "ends the day in a setback: The Tight Squeeze"
+    },
+    "c_cv_glowworm_1": {
+      "intent": "follow the easy way to the spring",
+      "cost": "gives up the other route"
+    },
+    "c_cv_glowworm_2": {
+      "intent": "stay lost in the glowing dark too long",
+      "cost": "ends the day with a find instead of a chart: The Underground Sky"
+    },
+    "c_cf_dell_1": {
+      "intent": "follow the dell spring downhill",
+      "cost": "gives up the other two routes"
+    },
+    "c_cf_dell_2": {
+      "intent": "examine the mossy carved bench",
+      "cost": "gives up the other two routes"
+    },
+    "c_cf_dell_3": {
+      "intent": "doze in the secret green room",
+      "cost": "ends the day in a setback: The Secret Green Room"
+    },
+    "c_cf_dellspring_1": {
+      "intent": "come out at the spring",
+      "cost": "none"
+    },
+    "c_cf_dellcarve_1": {
+      "intent": "add your mark and climb to the upper ridge",
+      "cost": "gives up the other route"
+    },
+    "c_cf_dellcarve_2": {
+      "intent": "read every name carved in the old bench",
+      "cost": "ends the day with a find instead of a chart: The Mapmakers' Bench"
+    },
+    "c_tw_slab_1": {
+      "intent": "try the rusted key patiently",
+      "cost": "patience with a stubborn lock"
+    },
+    "c_tw_slab_2": {
+      "intent": "lever the seized lock by main force",
+      "cost": "ends the day in a setback: The Seized Lock"
+    },
+    "c_tw_cache_1": {
+      "intent": "take the tools and the letter and climb the stair",
+      "cost": "gives up the other route",
+      "establishes": [
+        "wren_took_brass_tools"
+      ]
+    },
+    "c_tw_cache_2": {
+      "intent": "open and read Alder's sealed letter now",
+      "cost": "ends the day with a find instead of a chart: Alder's Letter"
+    },
+    "c_tf_dune_1": {
+      "intent": "climb to the marker post for the view",
+      "cost": "gives up the other route"
+    },
+    "c_tf_dune_2": {
+      "intent": "wallow too long in the soft dunes",
+      "cost": "ends the day in a setback: The Sliding Dunes"
+    },
+    "c_tf_marker_1": {
+      "intent": "take the whole flats in one view and follow the channels in",
+      "cost": "gives up the other route"
+    },
+    "c_tf_marker_2": {
+      "intent": "stay on the breezy dune drawing every channel",
+      "cost": "ends the day with a find instead of a chart: The View From the Dunes"
+    }
+  },
+  "threads": {},
+  "endings": {
+    "e_mg_mud_trap": {
+      "gift": "the tide's speed made real: a cut-off coast teaches that the quick risky way costs the morning",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_mg_turtle_seen": {
+      "gift": "a kindness done and one honest square of coast; the reader learns what the delay cost",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_mg_shelter": {
+      "gift": "Alder's sheltered firepit, and the lesson that a snug corner can swallow the day",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_mg_lost": {
+      "gift": "the mangrove's slow circle shows why a mapmaker climbs toward a landmark",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_ascent_daunted": {
+      "gift": "freezing on a ridge and turning back is wisdom, not cowardice",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_cf_locket": {
+      "gift": "the brass locket and its girl who looks like Wren, a mystery kept for another day",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cv_flood": {
+      "gift": "the cave floods exactly as the tide line warned; respect the scratched mark",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_cv_paintings": {
+      "gift": "the ochre handprint map of the first people, a page that silences the Chart House",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cv_pup_fail": {
+      "gift": "one pair of hands is not enough; the marked sea tube points to help later",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_tw_log": {
+      "gift": "Alder's last log entry: the chart went to the ridge camp before a storm",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tw_stair_fail": {
+      "gift": "a crumbling ledge that says no, and a climber who listens",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_tw_draft": {
+      "gift": "a faithful copy of Alder's draft and the lesson that tracing is not seeing",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tf_stranded": {
+      "gift": "the turning tide cuts off the flats; a chest-deep lesson in its speed",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_tf_bottle": {
+      "gift": "Alder's bottled invitation, and the truth that a story is not a chart",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cove_rest": {
+      "gift": "the calm cove's quiet theft of the morning",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_star_map": {
+      "gift": "the first people's star map, the oldest map of all, drawn in full",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_fresh_linger": {
+      "gift": "the endless branching of the island's streams",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_fresh_cairn": {
+      "gift": "Alder's boundary mark fixed, and a nap that costs the edges",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_camp_copy": {
+      "gift": "the mate's verdict that a copied map is a story, not a survey",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_camp_journal": {
+      "gift": "Alder's whole journal and last wish, kept so the lost mapmaker is not forgotten",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_camp_scree": {
+      "gift": "the scree slide proves the cairns right: some shortcuts are the long way to a fall",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_summit_gaze": {
+      "gift": "standing where everything can be seen and drawing none of it",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_ch_rush": {
+      "gift": "a full but muddled chart: the seeing was there and only patience failed",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_ch_reef": {
+      "gift": "the safe-landing chart wins the apprenticeship: the map that keeps sailors alive",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_ch_dusk": {
+      "gift": "the loveliest unsigned map and the lesson that done beats perfect",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_ch_alder_name": {
+      "gift": "the finished masterwork named Alder's Island and the apprenticeship won",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_ch_both_name": {
+      "gift": "both mapmakers named on the banner; sharing credit earns the mate's praise",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_ch_survey": {
+      "gift": "a flawless signed survey, the banner left for the House to name",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_ch_double_win": {
+      "gift": "two charts presented show judgement rarer than skill",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_ch_spare": {
+      "gift": "one chart given, one kept: the first sheet of Wren's own library",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_rescue_pup": {
+      "gift": "three pairs of hands save the pup, and a mapmaker who saves a life is kept",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_rescue_turtle": {
+      "gift": "the turtle swims free; a map used to help wins the place though half finished",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_mg_canoe": {
+      "gift": "the swamped dugout shows the careful test the reckless rush skipped",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_mg_village": {
+      "gift": "the vanished fishing village, proof people lived here before any chart",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_mg_tunnellost": {
+      "gift": "the endless root maze: some places a mapmaker learns to leave",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_mg_stake": {
+      "gift": "Alder's survey stake held in hand, a relic of the mapmaker who came first",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cf_slip": {
+      "gift": "a soaking slide shows why wet rock needs tested holds",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_cf_gauge": {
+      "gift": "Alder's water gauge decoded: a year of the falls in patient notches",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cv_chimney": {
+      "gift": "sliding back down before a fall is the right call that stings",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_cv_lantern": {
+      "gift": "the frozen stone forest and an earlier searcher's lantern",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tw_charts": {
+      "gift": "Alder's lifetime of islands pinned to one wall",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tw_drawing": {
+      "gift": "the child's drawing For Alder and the family left waiting ashore",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tf_seals": {
+      "gift": "a tangled pup freed, paid for with the tide window",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tf_gully": {
+      "gift": "the flooding gully shows why the first rule of the flats comes first",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_ch_farshore": {
+      "gift": "the never-mapped windward coast earns Wren a place",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_ch_living": {
+      "gift": "the living chart wins the apprenticeship and the honour of naming the next island",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_ch_clean": {
+      "gift": "a clean true chart without a fault makes Wren an apprentice",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_mg_tidetable": {
+      "gift": "Alder's carved tide table copied whole, a treasure of time but not of shape",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_mg_birdstorm": {
+      "gift": "a storm of wings and a lesson about keeping to the firm line",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_mg_chick": {
+      "gift": "a saved chick and a living page of herons in place of a coastline",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cf_ladder": {
+      "gift": "a rotten rung and a safe retreat: high places punish haste",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_cf_canopy": {
+      "gift": "a rare treetop view of the whole ridge, and time lost in a beautiful place",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cf_shrine": {
+      "gift": "the first people's grove shrine drawn in stillness",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cv_raft": {
+      "gift": "a dunk in the black lake: some water demands respect",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_cv_fish": {
+      "gift": "blind white fish no chart had shown, a wonder rather than a survey",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cv_prints": {
+      "gift": "children's footprints turned to stone on a hidden beach",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tw_nofuel": {
+      "gift": "a dead end at the cold beacon, and knowing when to cut a loss",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_tw_note": {
+      "gift": "Alder's last scrawl, back by the storm, the return that never came",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tw_dial": {
+      "gift": "Alder's stone compass copied whole, the bones of a chart",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tf_hold": {
+      "gift": "a narrow escape from the wreck as the sea closes the hold",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_tf_bell": {
+      "gift": "the Marigold named and her settlers remembered",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tf_figurehead": {
+      "gift": "the ship's guardian drawn with love as the tide returns",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cove_tin": {
+      "gift": "Alder's kind note to a stranger: the way up is behind you, friend",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cove_reefmap": {
+      "gift": "a flawless reef edge and a blank island above it",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cv_squeeze": {
+      "gift": "a frightening minute stuck fast and the calm that frees you",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_cv_glow": {
+      "gift": "a page of underground sky under the glowworms",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_cf_dell_lost": {
+      "gift": "the secret green room that steals a morning",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_cf_carve": {
+      "gift": "the long company of mapmakers carved in the bench, Alder among them",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tw_slab": {
+      "gift": "the seized lock that opens only for patience",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_tw_cache": {
+      "gift": "Alder's sealed letter: love the island, finish the map, the work is yours",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_tf_dune": {
+      "gift": "the soft dune defeats a good idea held too long",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_tf_marker": {
+      "gift": "a fine map of the flats from the marker dune, perfected at the cost of the rest",
+      "valence": "neutral",
+      "kind": "discovery"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "method": "read-book",
+    "model": "claude-opus-5-5",
+    "book_file": "tmp_cleanup/blind/e3.book.json",
+    "book_sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+    "authored": "2026-11-22",
+    "authoring_minutes": 80,
+    "notes": [
+      "The book declares no variables, so threads is empty; three mark-and-send-help choices are recorded as choice establishes with an implicit_plant note.",
+      "Several passages use Alder, the ridge camp or Alder's tools as already known although some routes reach them without that setup; requires record the prose, not route coverage.",
+      "camp_summitpath, summit_signal and L_summit presuppose Wren carries Alder's tools, but the c_L_camp_3 route takes only the chart.",
+      "L_cove says no chart has ever shown the cove; camp_chart says Alder's chart fixes the cove: marked contradicts.",
+      "cv_ochre and e_star_map each call a different find the oldest map of all: marked contradicts.",
+      "The stranded turtle of mg_oyster and the reef turtle of summit_signal, and the three seal pups, are kept as separate facts; the text never says they are the same animals."
+    ]
+  }
+}

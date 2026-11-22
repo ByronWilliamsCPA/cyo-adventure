@@ -1,0 +1,1459 @@
+{
+  "decision": "D12 (as amended 2026-11-21), synthetic seeded-defect plans",
+  "generator": "scripts/build_synthetic_plans.py",
+  "items": [
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@a6b399d",
+        "revision": "git:a6b399d",
+        "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+        "unit": "the-cave-of-echoes"
+      },
+      "checker_errors": [
+        "SP-1"
+      ],
+      "defect_class": "SP-1",
+      "description": "Deletes the plan entry of choice c_left (offered at n_start), so the plan no longer covers the book's choices.",
+      "edited_paths": [
+        "/choices/c_left"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-1-1",
+      "intended_rule": "SP-1",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-1-1.plan.json",
+        "sha256": "217e47de6e28064cf0a303a58e66a998ab244c1be80e004c324872deaab8e742"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e4.plan.json",
+        "sha256": "08b6569d95534832709b0249b6f36c8d10452139a1d0d3e7ea63ac2431a385b3"
+      },
+      "source_plan_id": "PL-e4",
+      "witness": "drop a choice's plan entry"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@a6b399d",
+        "revision": "git:a6b399d",
+        "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+        "unit": "the-cave-of-echoes"
+      },
+      "checker_errors": [
+        "SP-9"
+      ],
+      "defect_class": "SP-9",
+      "description": "Forges the slot token {HERO} in fact maya_explorer.",
+      "edited_paths": [
+        "/facts/maya_explorer/text"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-9-1",
+      "intended_rule": "SP-9",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-9-1.plan.json",
+        "sha256": "53dfb5102593451715f3f91c5d343dd03dcb481b9f417c667f23aa9d345f0412"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f1.plan.json",
+        "sha256": "20642e1951248478db92d601c589e63385ca21912c78d0573c0d35fb7ee3b0fc"
+      },
+      "source_plan_id": "PL-f1",
+      "witness": "a forged slot token"
+    },
+    {
+      "baseline_repairs": [
+        "/choices/c_L_summit_2/requires",
+        "/choices/c_tf_gully_1/requires",
+        "/facts/cove_never_charted/contradicts",
+        "/nodes/camp_summitpath/requires",
+        "/nodes/cf_bench/requires",
+        "/nodes/ch_farshore/requires",
+        "/nodes/ch_ink/requires",
+        "/nodes/ch_sightings/requires",
+        "/nodes/e_tw_log/requires",
+        "/nodes/meet_boat/requires",
+        "/nodes/race_down/requires",
+        "/nodes/ship_turns/requires",
+        "/nodes/signal_aim/requires",
+        "/nodes/summit_signal/requires",
+        "/nodes/tf_cliffgap/requires",
+        "/nodes/tf_gap/requires"
+      ],
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@c085d3c",
+        "revision": "git:c085d3c",
+        "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+        "unit": "the-mapmakers-island"
+      },
+      "checker_errors": [
+        "SP-2"
+      ],
+      "defect_class": "SP-2",
+      "description": "Adds fact alder_name to the requires of node mg_creek, which some routes reach without having established it.",
+      "edited_paths": [
+        "/nodes/mg_creek/requires"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-2-1",
+      "intended_rule": "SP-2",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-2-1.plan.json",
+        "sha256": "e47419ba32b374e8f7fd253e1ee4af4c13441f6320a8439120828ac94d30b61b"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e3.plan.json",
+        "sha256": "ccf0fa2b196fed4cab30fc7944f8c0ed73c20b7113a61118abbe092996e29b18"
+      },
+      "source_plan_id": "PL-e3",
+      "witness": "a shared node presupposes a plant"
+    },
+    {
+      "baseline_repairs": [
+        "/choices/c_L_summit_2/requires",
+        "/choices/c_tf_gully_1/requires",
+        "/facts/cove_never_charted/contradicts",
+        "/nodes/camp_summitpath/requires",
+        "/nodes/cf_bench/requires",
+        "/nodes/ch_farshore/requires",
+        "/nodes/ch_ink/requires",
+        "/nodes/ch_sightings/requires",
+        "/nodes/e_tw_log/requires",
+        "/nodes/meet_boat/requires",
+        "/nodes/race_down/requires",
+        "/nodes/ship_turns/requires",
+        "/nodes/signal_aim/requires",
+        "/nodes/summit_signal/requires",
+        "/nodes/tf_cliffgap/requires",
+        "/nodes/tf_gap/requires"
+      ],
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@c085d3c",
+        "revision": "git:c085d3c",
+        "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+        "unit": "the-mapmakers-island"
+      },
+      "checker_errors": [
+        "SP-7"
+      ],
+      "defect_class": "SP-7",
+      "description": "Deletes the ending entry (and so the gift) of negative ending e_tw_stair_fail.",
+      "edited_paths": [
+        "/endings/e_tw_stair_fail"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-7-1",
+      "intended_rule": "SP-7",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-7-1.plan.json",
+        "sha256": "aed7363ae7f133e1b147a4694cd12e73aa9918b7dd46bbd869b6b9c2fe77206f"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e3.plan.json",
+        "sha256": "ccf0fa2b196fed4cab30fc7944f8c0ed73c20b7113a61118abbe092996e29b18"
+      },
+      "source_plan_id": "PL-e3",
+      "witness": "a negative ending's gift dropped"
+    },
+    {
+      "baseline_repairs": [
+        "/choices/c_L_summit_2/requires",
+        "/choices/c_tf_gully_1/requires",
+        "/facts/cove_never_charted/contradicts",
+        "/nodes/camp_summitpath/requires",
+        "/nodes/cf_bench/requires",
+        "/nodes/ch_farshore/requires",
+        "/nodes/ch_ink/requires",
+        "/nodes/ch_sightings/requires",
+        "/nodes/e_tw_log/requires",
+        "/nodes/meet_boat/requires",
+        "/nodes/race_down/requires",
+        "/nodes/ship_turns/requires",
+        "/nodes/signal_aim/requires",
+        "/nodes/summit_signal/requires",
+        "/nodes/tf_cliffgap/requires",
+        "/nodes/tf_gap/requires"
+      ],
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@c085d3c",
+        "revision": "git:c085d3c",
+        "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+        "unit": "the-mapmakers-island"
+      },
+      "checker_errors": [
+        "SP-8"
+      ],
+      "defect_class": "SP-8",
+      "description": "Sets the cost of every choice at decision node n_start to None., so no option gives anything up.",
+      "edited_paths": [
+        "/choices/c_n_start_1/cost",
+        "/choices/c_n_start_2/cost",
+        "/choices/c_n_start_3/cost",
+        "/choices/c_n_start_4/cost",
+        "/choices/c_n_start_5/cost"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-8-1",
+      "intended_rule": "SP-8",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-8-1.plan.json",
+        "sha256": "096033678825e9e5646da7acbe0143d174a69d5258a63fd7e8620cd81acf3de2"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e3.plan.json",
+        "sha256": "ccf0fa2b196fed4cab30fc7944f8c0ed73c20b7113a61118abbe092996e29b18"
+      },
+      "source_plan_id": "PL-e3",
+      "witness": "an opening decision made costless"
+    },
+    {
+      "baseline_repairs": [
+        "/facts/nobody_answered/contradicts"
+      ],
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@161e1e7",
+        "revision": "git:161e1e7",
+        "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+        "unit": "the-signal-in-the-static"
+      },
+      "checker_errors": [
+        "SP-4"
+      ],
+      "defect_class": "SP-4",
+      "description": "Establishes plant fact okafor_said_ring of thread okafor_trust at node n_shelf, which readers reach without taking the planting choice.",
+      "edited_paths": [
+        "/nodes/n_shelf/establishes"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-4-1",
+      "intended_rule": "SP-4",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-4-1.plan.json",
+        "sha256": "742286d52c2d24c1a64738023311377016805283cb1bf7e557203dd0a8bb7427"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e1.plan.json",
+        "sha256": "2334ad03239571a889d7a60c45025db96678b3617a52a3260e8520f1d86e1f46"
+      },
+      "source_plan_id": "PL-e1",
+      "witness": "the plant shown on the shared path"
+    },
+    {
+      "baseline_repairs": [
+        "/facts/nobody_answered/contradicts"
+      ],
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@161e1e7",
+        "revision": "git:161e1e7",
+        "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+        "unit": "the-signal-in-the-static"
+      },
+      "checker_errors": [
+        "SP-6"
+      ],
+      "defect_class": "SP-6",
+      "description": "Moves thread has_battery's payoff to choice c_f_he_okafor_1 out of f_he_okafor, the payoff passage of thread okafor_trust, and has e_he_okafor require okafor_key, which only f_he_okafor establishes.",
+      "edited_paths": [
+        "/threads/has_battery/payoff_sites",
+        "/nodes/e_he_okafor/requires"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-6-1",
+      "intended_rule": "SP-6",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-6-1.plan.json",
+        "sha256": "438f5b5146e09139744ab016dfdda8b58094393930c58627724da2142f9179a8"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e1.plan.json",
+        "sha256": "2334ad03239571a889d7a60c45025db96678b3617a52a3260e8520f1d86e1f46"
+      },
+      "source_plan_id": "PL-e1",
+      "witness": "a payoff leans on another's"
+    },
+    {
+      "baseline_repairs": [
+        "/facts/wren_sings/text",
+        "/nodes/e_win_secret_workshop/event"
+      ],
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@fcd389e",
+        "revision": "git:fcd389e",
+        "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+        "unit": "the-midnight-museum"
+      },
+      "checker_errors": [
+        "SP-4"
+      ],
+      "defect_class": "SP-4",
+      "description": "Establishes fact back_half_sentence at node n_desk_chalk, which readers reach without taking c_desk_map; thread read_back's payoff relies on back_half_sentence, which c_desk_map makes known to planted readers only.",
+      "edited_paths": [
+        "/nodes/n_desk_chalk/establishes"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-4-2",
+      "intended_rule": "SP-4",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-4-2.plan.json",
+        "sha256": "9c24913a455ec0db8a0b2e3e5f20a7868e4b2a9be261c9867179b0958c5b1833"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f5.plan.json",
+        "sha256": "3d029dfb7f828354553f6e317f838162b2c84b616c25f4a10807409e2128d54f"
+      },
+      "source_plan_id": "PL-f5",
+      "witness": "the plant's named half shown to all"
+    },
+    {
+      "baseline_repairs": [
+        "/facts/wren_sings/text",
+        "/nodes/e_win_secret_workshop/event"
+      ],
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@fcd389e",
+        "revision": "git:fcd389e",
+        "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+        "unit": "the-midnight-museum"
+      },
+      "checker_errors": [
+        "SP-5"
+      ],
+      "defect_class": "SP-5",
+      "description": "Moves thread read_back's payoff site to choice c_wedge_hall at node b_egypt_wedge, which readers reach only planted or only unplanted, so the payoff cannot show the difference the plant makes.",
+      "edited_paths": [
+        "/threads/read_back/payoff_sites"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-5-1",
+      "intended_rule": "SP-5",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-5-1.plan.json",
+        "sha256": "f50d08c1a194b80ac834eed7c2618bdea92c93684a9b2288c7f429aa7ce79472"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f5.plan.json",
+        "sha256": "3d029dfb7f828354553f6e317f838162b2c84b616c25f4a10807409e2128d54f"
+      },
+      "source_plan_id": "PL-f5",
+      "witness": "a payoff behind its own gate"
+    },
+    {
+      "baseline_repairs": [
+        "/nodes/e_set_nest/requires"
+      ],
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@da5c467",
+        "revision": "git:da5c467",
+        "sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "checker_errors": [
+        "SP-3"
+      ],
+      "defect_class": "SP-3",
+      "description": "Adds fact hold_holds_salt_fish, a rival answer marked as contradicting truth fact nimbus_sky_whale, and establishes it at node n_start, which one reading also crosses with the truth told.",
+      "edited_paths": [
+        "/facts/hold_holds_salt_fish",
+        "/nodes/n_start/establishes"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-3-1",
+      "intended_rule": "SP-3",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-3-1.plan.json",
+        "sha256": "04ac296acd988f579dd3f24c9173ff637350ea1c91db962f6aff8c8fe07a07ca"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e5.plan.json",
+        "sha256": "620ce5dc818c43545bc01777837d78f062efaa5ba135faafa5632d06a2354464"
+      },
+      "source_plan_id": "PL-e5",
+      "witness": "a second backstory"
+    },
+    {
+      "baseline_repairs": [
+        "/nodes/e_set_nest/requires"
+      ],
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@da5c467",
+        "revision": "git:da5c467",
+        "sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "checker_errors": [
+        "SP-9"
+      ],
+      "defect_class": "SP-9",
+      "description": "Adds the injury sense of \"wound\" beside a clock word in fact bree_dreams_sky.",
+      "edited_paths": [
+        "/facts/bree_dreams_sky/text"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "held_out",
+      "id": "SY-A-SP-9-2",
+      "intended_rule": "SP-9",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-9-2.plan.json",
+        "sha256": "4983aebe6b707c9220aea4f918a3c081a15df0ce01adf2601bfe66e39bd9c641"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e5.plan.json",
+        "sha256": "620ce5dc818c43545bc01777837d78f062efaa5ba135faafa5632d06a2354464"
+      },
+      "source_plan_id": "PL-e5",
+      "witness": "the injury sense of \"wound\""
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "key": "the-hollow-lighthouse@3e29e04",
+        "revision": "git:3e29e04",
+        "sha256": "31ed53bfd03edbe3fc2956072dde3368f3dc80407cb17cf2defbb63129aa3bbe",
+        "unit": "the-hollow-lighthouse"
+      },
+      "checker_errors": [
+        "SP-4"
+      ],
+      "defect_class": "SP-4",
+      "description": "Establishes plant fact lamp_code of thread t_code at node n_start, which readers reach without taking the planting choice.",
+      "edited_paths": [
+        "/nodes/n_start/establishes"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-4-3",
+      "intended_rule": "SP-4",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-4-3.plan.json",
+        "sha256": "3a270eb5cd5a2f7d8a44df72d3a5d7c3cf6775837b246db4082504a2ec03625f"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-hollow-lighthouse.plan.json",
+        "sha256": "0e92869d2721f423f960bd8ad92f98c88dc0bfbc405a38f161b499181690813e"
+      },
+      "source_plan_id": "PL-the-hollow-lighthouse-postfix",
+      "witness": "the plant shown on the shared path"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "key": "the-hollow-lighthouse@3e29e04",
+        "revision": "git:3e29e04",
+        "sha256": "31ed53bfd03edbe3fc2956072dde3368f3dc80407cb17cf2defbb63129aa3bbe",
+        "unit": "the-hollow-lighthouse"
+      },
+      "checker_errors": [
+        "SP-5"
+      ],
+      "defect_class": "SP-5",
+      "description": "Moves thread t_key's payoff site to choice c_cm_light_true_1 at node cm_light_true, which readers reach only planted or only unplanted, so the payoff cannot show the difference the plant makes.",
+      "edited_paths": [
+        "/threads/t_key/payoff_sites"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-5-2",
+      "intended_rule": "SP-5",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-5-2.plan.json",
+        "sha256": "e260c4941d475c4b02754e52f4531c7d5190beb39b6a68446bd512b204358140"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-hollow-lighthouse.plan.json",
+        "sha256": "0e92869d2721f423f960bd8ad92f98c88dc0bfbc405a38f161b499181690813e"
+      },
+      "source_plan_id": "PL-the-hollow-lighthouse-postfix",
+      "witness": "a payoff behind its own gate"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "key": "the-hollow-lighthouse@3e29e04",
+        "revision": "git:3e29e04",
+        "sha256": "31ed53bfd03edbe3fc2956072dde3368f3dc80407cb17cf2defbb63129aa3bbe",
+        "unit": "the-hollow-lighthouse"
+      },
+      "checker_errors": [
+        "SP-9"
+      ],
+      "defect_class": "SP-9",
+      "description": "Adds the injury sense of \"wound\" beside a clock word in fact mira_stranded.",
+      "edited_paths": [
+        "/facts/mira_stranded/text"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-9-3",
+      "intended_rule": "SP-9",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-9-3.plan.json",
+        "sha256": "bbcb12b2ba1dd9342af77c245a875519b1aa5ed731462245152edd529f2cadc6"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-hollow-lighthouse.plan.json",
+        "sha256": "0e92869d2721f423f960bd8ad92f98c88dc0bfbc405a38f161b499181690813e"
+      },
+      "source_plan_id": "PL-the-hollow-lighthouse-postfix",
+      "witness": "the injury sense of \"wound\""
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-vanishing-orchard.filled.json",
+        "key": "the-vanishing-orchard@db7fb22",
+        "revision": "git:db7fb22",
+        "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+        "unit": "the-vanishing-orchard"
+      },
+      "checker_errors": [
+        "SP-1"
+      ],
+      "defect_class": "SP-1",
+      "description": "Deletes the plan entry of choice c_n_start_1 (offered at n_start), so the plan no longer covers the book's choices.",
+      "edited_paths": [
+        "/choices/c_n_start_1"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-1-2",
+      "intended_rule": "SP-1",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-1-2.plan.json",
+        "sha256": "9fee26abae50837521c5b545c0c5f2dc5a758118d5b9af4dbcc6b47623fdb41e"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-vanishing-orchard.plan.json",
+        "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+      },
+      "source_plan_id": "PL-the-vanishing-orchard-postfix",
+      "witness": "drop a choice's plan entry"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-vanishing-orchard.filled.json",
+        "key": "the-vanishing-orchard@db7fb22",
+        "revision": "git:db7fb22",
+        "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+        "unit": "the-vanishing-orchard"
+      },
+      "checker_errors": [
+        "SP-2"
+      ],
+      "defect_class": "SP-2",
+      "description": "Adds fact clerk_frightened to the requires of node rec_conv, which some routes reach without having established it.",
+      "edited_paths": [
+        "/nodes/rec_conv/requires"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-2-2",
+      "intended_rule": "SP-2",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-2-2.plan.json",
+        "sha256": "5c3a78fcd5e5b6bb70b77587cd62068944b08b2b675909628153b7489660796d"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-vanishing-orchard.plan.json",
+        "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+      },
+      "source_plan_id": "PL-the-vanishing-orchard-postfix",
+      "witness": "a shared node presupposes a plant"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-vanishing-orchard.filled.json",
+        "key": "the-vanishing-orchard@db7fb22",
+        "revision": "git:db7fb22",
+        "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+        "unit": "the-vanishing-orchard"
+      },
+      "checker_errors": [
+        "SP-3"
+      ],
+      "defect_class": "SP-3",
+      "description": "Adds fact quiet_is_river_fog, a rival answer marked as contradicting truth fact quiet_from_oldest_tree, and establishes it at node n_start, which one reading also crosses with the truth told.",
+      "edited_paths": [
+        "/facts/quiet_is_river_fog",
+        "/nodes/n_start/establishes"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-3-2",
+      "intended_rule": "SP-3",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-3-2.plan.json",
+        "sha256": "2b06e49e1af034450c6b18da2bcb775463a950f04e49847313a5690ecec6614a"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-vanishing-orchard.plan.json",
+        "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+      },
+      "source_plan_id": "PL-the-vanishing-orchard-postfix",
+      "witness": "a second backstory"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-vanishing-orchard.filled.json",
+        "key": "the-vanishing-orchard@db7fb22",
+        "revision": "git:db7fb22",
+        "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+        "unit": "the-vanishing-orchard"
+      },
+      "checker_errors": [
+        "SP-7"
+      ],
+      "defect_class": "SP-7",
+      "description": "Deletes the ending entry (and so the gift) of negative ending e_rec_a.",
+      "edited_paths": [
+        "/endings/e_rec_a"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-7-2",
+      "intended_rule": "SP-7",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-7-2.plan.json",
+        "sha256": "3061e995149637a8e7548484e3af44bd56cd3c6d92d2a191e6bc1843333512b5"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-vanishing-orchard.plan.json",
+        "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+      },
+      "source_plan_id": "PL-the-vanishing-orchard-postfix",
+      "witness": "a negative ending's gift dropped"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-vanishing-orchard.filled.json",
+        "key": "the-vanishing-orchard@db7fb22",
+        "revision": "git:db7fb22",
+        "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+        "unit": "the-vanishing-orchard"
+      },
+      "checker_errors": [
+        "SP-8"
+      ],
+      "defect_class": "SP-8",
+      "description": "Sets the cost of every choice at decision node n_start to None., so no option gives anything up.",
+      "edited_paths": [
+        "/choices/c_n_start_1/cost",
+        "/choices/c_n_start_2/cost",
+        "/choices/c_n_start_3/cost",
+        "/choices/c_n_start_4/cost"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-8-2",
+      "intended_rule": "SP-8",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-8-2.plan.json",
+        "sha256": "431921a8b08920f80cf36053ac9c8cf52c6d979f72636cb2bb6a868bbbc54197"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-vanishing-orchard.plan.json",
+        "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+      },
+      "source_plan_id": "PL-the-vanishing-orchard-postfix",
+      "witness": "an opening decision made costless"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-vanishing-orchard.filled.json",
+        "key": "the-vanishing-orchard@db7fb22",
+        "revision": "git:db7fb22",
+        "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+        "unit": "the-vanishing-orchard"
+      },
+      "checker_errors": [
+        "SP-9"
+      ],
+      "defect_class": "SP-9",
+      "description": "Forges the slot token {HERO} in fact rowan_arrives_by_bus.",
+      "edited_paths": [
+        "/facts/rowan_arrives_by_bus/text"
+      ],
+      "expected_verdict": "reject",
+      "family": "A",
+      "half": "tuning",
+      "id": "SY-A-SP-9-4",
+      "intended_rule": "SP-9",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-9-4.plan.json",
+        "sha256": "0056c1ff0fdc32cc02b56ec4a512f28db4aca3056286b6e21c9307336fb6973d"
+      },
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-vanishing-orchard.plan.json",
+        "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+      },
+      "source_plan_id": "PL-the-vanishing-orchard-postfix",
+      "witness": "a forged slot token"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@a6b399d",
+        "revision": "git:a6b399d",
+        "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+        "unit": "the-cave-of-echoes"
+      },
+      "checker_errors": [],
+      "class_code": "B1",
+      "defect_class": "label_outcome_mismatch",
+      "description": "Rewrites choice c_lakeback so it says Maya waits on the slick shelf, while its target ra_lake_back still establishes that she retreats along the passage to daylight.",
+      "edited_paths": [
+        "/choices/c_lakeback/intent",
+        "/choices/c_lakeback/cost"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "held_out",
+      "id": "SY-B-B1-1",
+      "intended_class": "label_outcome_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B1-1.plan.json",
+        "sha256": "a9afe9d9f9ae80d1b86af4ce6370efae673266d50ee4013bc705b4602bd7383e"
+      },
+      "reviewer_should_say": "Choice c_lakeback is planned as waiting on the shelf for the tide, but its target passage ra_lake_back has Maya leave the cave at once, so the label contradicts the outcome.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e4.plan.json",
+        "sha256": "08b6569d95534832709b0249b6f36c8d10452139a1d0d3e7ea63ac2431a385b3"
+      },
+      "source_plan_id": "PL-e4"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-cave-of-echoes.filled.json",
+        "key": "the-cave-of-echoes@a6b399d",
+        "revision": "git:a6b399d",
+        "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+        "unit": "the-cave-of-echoes"
+      },
+      "checker_errors": [],
+      "class_code": "B3",
+      "defect_class": "ending_gift_mismatch",
+      "description": "Rewrites the gift of the neutral turn-back ending da_bat_back so it says turning back was dangerous, against the truth that turning back always gets Maya and Biscuit out safely.",
+      "edited_paths": [
+        "/endings/da_bat_back/gift"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "held_out",
+      "id": "SY-B-B3-1",
+      "intended_class": "ending_gift_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B3-1.plan.json",
+        "sha256": "6720120059166560c45525951cbccac95ea0994612c8eb61088ff98df2a954b5"
+      },
+      "reviewer_should_say": "The gift of da_bat_back says turning back nearly cost Maya her dog, which contradicts the truth that turning back at a risk point is always safe and the ending's own calm neutral kind.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e4.plan.json",
+        "sha256": "08b6569d95534832709b0249b6f36c8d10452139a1d0d3e7ea63ac2431a385b3"
+      },
+      "source_plan_id": "PL-e4"
+    },
+    {
+      "baseline_repairs": [
+        "/choices/c_L_summit_2/requires",
+        "/choices/c_tf_gully_1/requires",
+        "/facts/cove_never_charted/contradicts",
+        "/nodes/camp_summitpath/requires",
+        "/nodes/cf_bench/requires",
+        "/nodes/ch_farshore/requires",
+        "/nodes/ch_ink/requires",
+        "/nodes/ch_sightings/requires",
+        "/nodes/e_tw_log/requires",
+        "/nodes/meet_boat/requires",
+        "/nodes/race_down/requires",
+        "/nodes/ship_turns/requires",
+        "/nodes/signal_aim/requires",
+        "/nodes/summit_signal/requires",
+        "/nodes/tf_cliffgap/requires",
+        "/nodes/tf_gap/requires"
+      ],
+      "book": {
+        "file": "out/the-mapmakers-island.filled.json",
+        "key": "the-mapmakers-island@c085d3c",
+        "revision": "git:c085d3c",
+        "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+        "unit": "the-mapmakers-island"
+      },
+      "checker_errors": [],
+      "class_code": "B2",
+      "defect_class": "truth_contradiction",
+      "description": "Adds fact alder_sailed_home, which the truth rules out (Alder never returned), establishes it at the survey tower entrance tw_enter, and leaves its contradicts list empty so no check sees the clash.",
+      "edited_paths": [
+        "/facts/alder_sailed_home",
+        "/nodes/tw_enter/establishes"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "held_out",
+      "id": "SY-B-B2-1",
+      "intended_class": "truth_contradiction",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B2-1.plan.json",
+        "sha256": "5586b1dcd92b35917b7b5cb2db5fa7b8d614f6ce3ce406772efb6cd432541edf"
+      },
+      "reviewer_should_say": "Node tw_enter establishes that Alder sailed home safely, but the truth is that a storm took Alder's boat and Alder never returned, and the plan does not mark the two as contradicting.",
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e3.plan.json",
+        "sha256": "ccf0fa2b196fed4cab30fc7944f8c0ed73c20b7113a61118abbe092996e29b18"
+      },
+      "source_plan_id": "PL-e3"
+    },
+    {
+      "baseline_repairs": [
+        "/facts/nobody_answered/contradicts"
+      ],
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@161e1e7",
+        "revision": "git:161e1e7",
+        "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+        "unit": "the-signal-in-the-static"
+      },
+      "checker_errors": [],
+      "class_code": "B3",
+      "defect_class": "ending_gift_mismatch",
+      "description": "Rewrites the gift of the negative ending e_count_wait so it describes a happy reunion, while the ending's node still establishes that the loop is gone.",
+      "edited_paths": [
+        "/endings/e_count_wait/gift"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "held_out",
+      "id": "SY-B-B3-2",
+      "intended_class": "ending_gift_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B3-2.plan.json",
+        "sha256": "a766329767b7d30db79e8d4206281f7288b956f0828983bee7c39d3f1b735288"
+      },
+      "reviewer_should_say": "The gift of the negative ending e_count_wait describes the loop saved and a reunion, which contradicts the ending's negative valence and its own passage, where the tide kills the relay and the loop is gone.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e1.plan.json",
+        "sha256": "2334ad03239571a889d7a60c45025db96678b3617a52a3260e8520f1d86e1f46"
+      },
+      "source_plan_id": "PL-e1"
+    },
+    {
+      "baseline_repairs": [
+        "/facts/nobody_answered/contradicts"
+      ],
+      "book": {
+        "file": "out/the-signal-in-the-static.filled.json",
+        "key": "the-signal-in-the-static@161e1e7",
+        "revision": "git:161e1e7",
+        "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+        "unit": "the-signal-in-the-static"
+      },
+      "checker_errors": [],
+      "class_code": "B4",
+      "defect_class": "payoff_shows_mismatch",
+      "description": "Rewrites the shows line of the battery thread's payoff so the station is saved by the headset, which belongs to a different thread.",
+      "edited_paths": [
+        "/threads/has_battery/payoff_sites/0/shows"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "held_out",
+      "id": "SY-B-B4-1",
+      "intended_class": "payoff_shows_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B4-1.plan.json",
+        "sha256": "4ace6811f6a9ba4f2118aecfc67961e3d5496d8f8739d89997d14e1b5bf8aa33"
+      },
+      "reviewer_should_say": "The has_battery payoff says the headset saves the station, but the thread planted the spare battery at c_n_shelf_1; the payoff does not show what the planting choice set up.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e1.plan.json",
+        "sha256": "2334ad03239571a889d7a60c45025db96678b3617a52a3260e8520f1d86e1f46"
+      },
+      "source_plan_id": "PL-e1"
+    },
+    {
+      "baseline_repairs": [
+        "/facts/wren_sings/text",
+        "/nodes/e_win_secret_workshop/event"
+      ],
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@fcd389e",
+        "revision": "git:fcd389e",
+        "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+        "unit": "the-midnight-museum"
+      },
+      "checker_errors": [],
+      "class_code": "B1",
+      "defect_class": "label_outcome_mismatch",
+      "description": "Rewrites choice c_alarm_hide so Nadia steps out to question the guard, while the target a_gems_hide still establishes that she stays hidden and only overhears him.",
+      "edited_paths": [
+        "/choices/c_alarm_hide/intent",
+        "/choices/c_alarm_hide/cost"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "held_out",
+      "id": "SY-B-B1-2",
+      "intended_class": "label_outcome_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B1-2.plan.json",
+        "sha256": "e35695bb540011025fdb216f628af5e5ea570ce6f65b07571ac92d056745737c"
+      },
+      "reviewer_should_say": "Choice c_alarm_hide is planned as stepping out to speak to the guard, but its target a_gems_hide has her stay hidden behind the plinth and overhear him, so the intent and cost contradict the outcome.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f5.plan.json",
+        "sha256": "3d029dfb7f828354553f6e317f838162b2c84b616c25f4a10807409e2128d54f"
+      },
+      "source_plan_id": "PL-f5"
+    },
+    {
+      "baseline_repairs": [
+        "/facts/wren_sings/text",
+        "/nodes/e_win_secret_workshop/event"
+      ],
+      "book": {
+        "file": "out/the-midnight-museum.filled.json",
+        "key": "the-midnight-museum@fcd389e",
+        "revision": "git:fcd389e",
+        "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+        "unit": "the-midnight-museum"
+      },
+      "checker_errors": [],
+      "class_code": "B4",
+      "defect_class": "payoff_shows_mismatch",
+      "description": "Rewrites the shows line of the chalk thread's first payoff so a lantern, not the kept chalk, lights the way.",
+      "edited_paths": [
+        "/threads/has_chalk/payoff_sites/0/shows"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "held_out",
+      "id": "SY-B-B4-2",
+      "intended_class": "payoff_shows_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B4-2.plan.json",
+        "sha256": "abc1604794ec0670b565514f268149711ea4ad8180670fa19a0a93fc94cbe313"
+      },
+      "reviewer_should_say": "The has_chalk payoff credits a lantern, but the thread planted the chalk stub she kept; the payoff does not match what c_desk_chalk set up.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f5.plan.json",
+        "sha256": "3d029dfb7f828354553f6e317f838162b2c84b616c25f4a10807409e2128d54f"
+      },
+      "source_plan_id": "PL-f5"
+    },
+    {
+      "baseline_repairs": [
+        "/nodes/e_set_nest/requires"
+      ],
+      "book": {
+        "file": "out/the-sky-ship-stowaway.filled.json",
+        "key": "the-sky-ship-stowaway@da5c467",
+        "revision": "git:da5c467",
+        "sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
+        "unit": "the-sky-ship-stowaway"
+      },
+      "checker_errors": [],
+      "class_code": "B2",
+      "defect_class": "truth_contradiction",
+      "description": "Adds fact quill_sells_calf, which the truth rules out (the captain carries the calf to a haven), establishes it in the cargo hold at b_hold_deep, and leaves contradicts empty.",
+      "edited_paths": [
+        "/facts/quill_sells_calf",
+        "/nodes/b_hold_deep/establishes"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "held_out",
+      "id": "SY-B-B2-2",
+      "intended_class": "truth_contradiction",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B2-2.plan.json",
+        "sha256": "d3376091226fc6f7fdc050bd6f0725ef28898c41c5b8968a5d1a18ea8d4c6b1f"
+      },
+      "reviewer_should_say": "Node b_hold_deep establishes that Captain Quill means to sell the calf to hunters, but the truth is that he is secretly carrying it to a haven, and the plan does not mark the two as contradicting.",
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e5.plan.json",
+        "sha256": "620ce5dc818c43545bc01777837d78f062efaa5ba135faafa5632d06a2354464"
+      },
+      "source_plan_id": "PL-e5"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "key": "the-hollow-lighthouse@3e29e04",
+        "revision": "git:3e29e04",
+        "sha256": "31ed53bfd03edbe3fc2956072dde3368f3dc80407cb17cf2defbb63129aa3bbe",
+        "unit": "the-hollow-lighthouse"
+      },
+      "checker_errors": [],
+      "class_code": "B1",
+      "defect_class": "label_outcome_mismatch",
+      "description": "Rewrites choice c_a_hearth_1 so Mira leaves the ash alone, while its target a_hearth_ash still establishes that she sifts it and finds a photograph.",
+      "edited_paths": [
+        "/choices/c_a_hearth_1/intent",
+        "/choices/c_a_hearth_1/cost"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "tuning",
+      "id": "SY-B-B1-3",
+      "intended_class": "label_outcome_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B1-3.plan.json",
+        "sha256": "75caae1f351c4227285824cc62e54ea578395c6fcecc6852c5f71582441a2714"
+      },
+      "reviewer_should_say": "Choice c_a_hearth_1 is planned as leaving the ash undisturbed and giving up the photograph, but its target a_hearth_ash has Mira find the scorched photograph in the ash.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "out/the-hollow-lighthouse.plan.json",
+        "sha256": "0e92869d2721f423f960bd8ad92f98c88dc0bfbc405a38f161b499181690813e"
+      },
+      "source_plan_id": "PL-the-hollow-lighthouse-postfix"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "key": "the-hollow-lighthouse@3e29e04",
+        "revision": "git:3e29e04",
+        "sha256": "31ed53bfd03edbe3fc2956072dde3368f3dc80407cb17cf2defbb63129aa3bbe",
+        "unit": "the-hollow-lighthouse"
+      },
+      "checker_errors": [],
+      "class_code": "B4",
+      "defect_class": "payoff_shows_mismatch",
+      "description": "Rewrites the shows line of the key thread's first payoff so the lamp is worked with the keeper's code, which belongs to the code thread.",
+      "edited_paths": [
+        "/threads/t_key/payoff_sites/0/shows"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "tuning",
+      "id": "SY-B-B4-3",
+      "intended_class": "payoff_shows_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B4-3.plan.json",
+        "sha256": "64f862eb9e2e207bf2320609341a5d8a37280319f10c9bab4583aba172691f51"
+      },
+      "reviewer_should_say": "The t_key payoff shows the signal code working the lamp, but the thread planted the brass key; the payoff does not show what the planting choices set up.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "out/the-hollow-lighthouse.plan.json",
+        "sha256": "0e92869d2721f423f960bd8ad92f98c88dc0bfbc405a38f161b499181690813e"
+      },
+      "source_plan_id": "PL-the-hollow-lighthouse-postfix"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-vanishing-orchard.filled.json",
+        "key": "the-vanishing-orchard@db7fb22",
+        "revision": "git:db7fb22",
+        "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+        "unit": "the-vanishing-orchard"
+      },
+      "checker_errors": [],
+      "class_code": "B2",
+      "defect_class": "truth_contradiction",
+      "description": "Adds fact grandmother_writes_postcards, which the truth rules out (the grandmother went into the spring and is held there), establishes it in Teo's attic at pho_entry, and leaves contradicts empty.",
+      "edited_paths": [
+        "/facts/grandmother_writes_postcards",
+        "/nodes/pho_entry/establishes"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "tuning",
+      "id": "SY-B-B2-3",
+      "intended_class": "truth_contradiction",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B2-3.plan.json",
+        "sha256": "5f61f014cdae2a452f0850dd31a1e437d4a28778fe5854dfdc30408af8e103d5"
+      },
+      "reviewer_should_say": "Node pho_entry establishes that Rowan's grandmother lives in a far city, but the truth is that she went into the spring forty years ago and is held there, and the plan does not mark the two as contradicting.",
+      "scored_for": "D12-synthetic",
+      "severity": "blocker",
+      "source_plan": {
+        "file": "out/the-vanishing-orchard.plan.json",
+        "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+      },
+      "source_plan_id": "PL-the-vanishing-orchard-postfix"
+    },
+    {
+      "baseline_repairs": [],
+      "book": {
+        "file": "out/the-vanishing-orchard.filled.json",
+        "key": "the-vanishing-orchard@db7fb22",
+        "revision": "git:db7fb22",
+        "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+        "unit": "the-vanishing-orchard"
+      },
+      "checker_errors": [],
+      "class_code": "B3",
+      "defect_class": "ending_gift_mismatch",
+      "description": "Rewrites the gift of the negative ending e_pho_a as a triumph over the Quiet, while the ending's node still has Rowan burn the prints and finish the Quiet's work.",
+      "edited_paths": [
+        "/endings/e_pho_a/gift"
+      ],
+      "expected_verdict": "reject",
+      "family": "B",
+      "half": "tuning",
+      "id": "SY-B-B3-3",
+      "intended_class": "ending_gift_mismatch",
+      "kind": "plan",
+      "label_strength": "synthetic",
+      "plan": {
+        "file": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B3-3.plan.json",
+        "sha256": "97340d2b39a0b48b8b9f54f68abe1683be58219748eb673c77069bffbe6732fe"
+      },
+      "reviewer_should_say": "The gift of the negative ending e_pho_a describes the Quiet beaten and a cheering town, which contradicts its negative valence, its own passage where she burns the evidence, and the truth that the Quiet cannot be ended that way.",
+      "scored_for": "D12-synthetic",
+      "severity": "should-fix",
+      "source_plan": {
+        "file": "out/the-vanishing-orchard.plan.json",
+        "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+      },
+      "source_plan_id": "PL-the-vanishing-orchard-postfix"
+    }
+  ],
+  "never_merged": "These items are synthetic. They are never merged into docs/planning/evidence/continuity-reader/validation-set.json or into any recall or flag-rate figure computed from it; family A and family B are reported separately from each other and from the real set.",
+  "readme": "docs/planning/evidence/plan-reviewer/synthetic/README.md",
+  "schema": "validation-set-synthetic/v1",
+  "source_set": "docs/planning/evidence/continuity-reader/validation-set.json",
+  "sources": {
+    "PL-e1": {
+      "baseline_repairs": [
+        "/facts/nobody_answered/contradicts"
+      ],
+      "book_unit": "the-signal-in-the-static",
+      "half": "held_out",
+      "plan": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e1.plan.json",
+      "sha256": "2334ad03239571a889d7a60c45025db96678b3617a52a3260e8520f1d86e1f46"
+    },
+    "PL-e3": {
+      "baseline_repairs": [
+        "/choices/c_L_summit_2/requires",
+        "/choices/c_tf_gully_1/requires",
+        "/facts/cove_never_charted/contradicts",
+        "/nodes/camp_summitpath/requires",
+        "/nodes/cf_bench/requires",
+        "/nodes/ch_farshore/requires",
+        "/nodes/ch_ink/requires",
+        "/nodes/ch_sightings/requires",
+        "/nodes/e_tw_log/requires",
+        "/nodes/meet_boat/requires",
+        "/nodes/race_down/requires",
+        "/nodes/ship_turns/requires",
+        "/nodes/signal_aim/requires",
+        "/nodes/summit_signal/requires",
+        "/nodes/tf_cliffgap/requires",
+        "/nodes/tf_gap/requires"
+      ],
+      "book_unit": "the-mapmakers-island",
+      "half": "held_out",
+      "plan": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e3.plan.json",
+      "sha256": "ccf0fa2b196fed4cab30fc7944f8c0ed73c20b7113a61118abbe092996e29b18"
+    },
+    "PL-e4": {
+      "baseline_repairs": [],
+      "book_unit": "the-cave-of-echoes",
+      "half": "held_out",
+      "plan": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e4.plan.json",
+      "sha256": "08b6569d95534832709b0249b6f36c8d10452139a1d0d3e7ea63ac2431a385b3"
+    },
+    "PL-e5": {
+      "baseline_repairs": [
+        "/nodes/e_set_nest/requires"
+      ],
+      "book_unit": "the-sky-ship-stowaway",
+      "half": "held_out",
+      "plan": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/e5.plan.json",
+      "sha256": "620ce5dc818c43545bc01777837d78f062efaa5ba135faafa5632d06a2354464"
+    },
+    "PL-f1": {
+      "baseline_repairs": [],
+      "book_unit": "the-cave-of-echoes",
+      "half": "held_out",
+      "plan": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f1.plan.json",
+      "sha256": "20642e1951248478db92d601c589e63385ca21912c78d0573c0d35fb7ee3b0fc"
+    },
+    "PL-f5": {
+      "baseline_repairs": [
+        "/facts/wren_sings/text",
+        "/nodes/e_win_secret_workshop/event"
+      ],
+      "book_unit": "the-midnight-museum",
+      "half": "held_out",
+      "plan": "docs/planning/evidence/continuity-reader/clean-plans-fixed/plans/f5.plan.json",
+      "sha256": "3d029dfb7f828354553f6e317f838162b2c84b616c25f4a10807409e2128d54f"
+    },
+    "PL-the-hollow-lighthouse-postfix": {
+      "baseline_repairs": [],
+      "book_unit": "the-hollow-lighthouse",
+      "half": "tuning",
+      "plan": "out/the-hollow-lighthouse.plan.json",
+      "sha256": "0e92869d2721f423f960bd8ad92f98c88dc0bfbc405a38f161b499181690813e"
+    },
+    "PL-the-vanishing-orchard-postfix": {
+      "baseline_repairs": [],
+      "book_unit": "the-vanishing-orchard",
+      "half": "tuning",
+      "plan": "out/the-vanishing-orchard.plan.json",
+      "sha256": "f9de5dd2e8fd8c15138ed4fb189d259384156f084083f7e8a626e7dee553b630"
+    }
+  },
+  "split_seed": "990054da2cc73d8b2b4c6b5744dc197288c40213",
+  "summary": {
+    "family_a": {
+      "by_rule_or_class": {
+        "SP-1": 2,
+        "SP-2": 2,
+        "SP-3": 2,
+        "SP-4": 3,
+        "SP-5": 2,
+        "SP-6": 1,
+        "SP-7": 2,
+        "SP-8": 2,
+        "SP-9": 4
+      },
+      "held_out": {
+        "by_rule_or_class": {
+          "SP-1": 1,
+          "SP-2": 1,
+          "SP-3": 1,
+          "SP-4": 2,
+          "SP-5": 1,
+          "SP-6": 1,
+          "SP-7": 1,
+          "SP-8": 1,
+          "SP-9": 2
+        },
+        "total": 11
+      },
+      "total": 20,
+      "tuning": {
+        "by_rule_or_class": {
+          "SP-1": 1,
+          "SP-2": 1,
+          "SP-3": 1,
+          "SP-4": 1,
+          "SP-5": 1,
+          "SP-7": 1,
+          "SP-8": 1,
+          "SP-9": 2
+        },
+        "total": 9
+      }
+    },
+    "family_b": {
+      "by_rule_or_class": {
+        "ending_gift_mismatch": 3,
+        "label_outcome_mismatch": 3,
+        "payoff_shows_mismatch": 3,
+        "truth_contradiction": 3
+      },
+      "held_out": {
+        "by_rule_or_class": {
+          "ending_gift_mismatch": 2,
+          "label_outcome_mismatch": 2,
+          "payoff_shows_mismatch": 2,
+          "truth_contradiction": 2
+        },
+        "total": 8
+      },
+      "total": 12,
+      "tuning": {
+        "by_rule_or_class": {
+          "ending_gift_mismatch": 1,
+          "label_outcome_mismatch": 1,
+          "payoff_shows_mismatch": 1,
+          "truth_contradiction": 1
+        },
+        "total": 4
+      }
+    },
+    "held_out_by_unit": {
+      "the-cave-of-echoes A": 2,
+      "the-cave-of-echoes B": 2,
+      "the-mapmakers-island A": 3,
+      "the-mapmakers-island B": 1,
+      "the-midnight-museum A": 2,
+      "the-midnight-museum B": 2,
+      "the-signal-in-the-static A": 2,
+      "the-signal-in-the-static B": 2,
+      "the-sky-ship-stowaway A": 2,
+      "the-sky-ship-stowaway B": 1
+    },
+    "items": 32
+  },
+  "work_package": "WP-3.7"
+}
