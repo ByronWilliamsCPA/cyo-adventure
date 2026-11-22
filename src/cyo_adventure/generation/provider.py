@@ -519,7 +519,7 @@ def build_openrouter_leg(
 
 
 def build_openrouter_cost_reporting_leg(
-    settings: Settings, model: str
+    settings: Settings, model: str, *, temperature: float | None = None
 ) -> GenerationProvider:
     """Construct an OpenRouter leg that asks the vendor for its own charge.
 
@@ -539,6 +539,11 @@ def build_openrouter_cost_reporting_leg(
     Args:
         settings: The application settings instance.
         model: The OpenRouter model id this leg targets.
+        temperature: Optional sampling temperature, passed straight through.
+            ``None`` (the default, and what every spend-measurement harness
+            passes) sends no ``temperature`` field. The plan reviewer
+            (``moderation/plan_reviewer.py``) passes a low value so two runs of
+            one plan differ as little as sampling allows.
 
     Returns:
         An OpenRouter ``GenerationProvider`` adapter that reports vendor cost.
@@ -555,6 +560,7 @@ def build_openrouter_cost_reporting_leg(
         timeout_seconds=settings.llm_timeout_seconds,
         effort=settings.llm_effort,
         provider_order=resolved_order,
+        temperature=temperature,
         report_vendor_cost=True,
         reasoning_capable_models=frozenset(settings.llm_reasoning_capable_models),
     )

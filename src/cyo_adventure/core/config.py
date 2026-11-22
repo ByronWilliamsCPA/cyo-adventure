@@ -551,6 +551,45 @@ class Settings(BaseSettings):
     # "chunked" forces the spine and scene calls.
     story_plan_write_mode: Literal["auto", "single", "chunked"] = "auto"
 
+    # WP-3.7 (owner decisions D11, D12): the plan reviewer, a model that reads a
+    # Story Plan and answers pass, reject or unsure before prose is written.
+    # It is OFF until the owner turns it on AND a validation run has recorded
+    # the pairing below; nothing in the worker reads these settings yet (that
+    # wiring is WP-2.4).
+    #
+    # The model that writes plans. The independence rule
+    # (storyplan/review.py::assert_independent) refuses a reviewer of the same
+    # model id or the same vendor and family. Sonnet 5.5 is the writer measured
+    # in the WP-2.3 paid smoke.
+    story_plan_writer_model: str = "anthropic/claude-sonnet-5.5"
+    # The reviewer. A different vendor from the writer is the strongest form of
+    # independence the project can enforce. Not yet validated: this default is a
+    # proposal for the owner, not a measured choice.
+    story_plan_reviewer_model: str = "google/gemini-3.1-pro-preview"
+    # Reasoning for the reviewer, as an OpenRouter effort. The effort form is
+    # the one that works on OpenRouter (the token-budget form is not honored
+    # there, AL-856). With effort the provider may spend most of max_tokens on
+    # reasoning (AL-823, AL-847), so the max_tokens below sits well above it.
+    story_plan_reviewer_reasoning_effort: Literal[
+        "none", "minimal", "low", "medium", "high"
+    ] = "medium"
+    story_plan_reviewer_max_tokens: int = Field(default=24_000, ge=4_000)
+    story_plan_reviewer_temperature: float = Field(default=0.2, ge=0.0, le=2.0)
+    # Exception sample (D12): the share of reviewer PASSES the owner still reads,
+    # drawn by a seeded function of the plan's content hash. 0.1 is the steady
+    # state; the pilot (WP-4.2, WP-4.3) overrides it to 1.0.
+    story_plan_reviewer_sample_rate: float = Field(default=0.1, ge=0.0, le=1.0)
+    story_plan_reviewer_enabled: bool = False
+    # Set True by the owner (or the suspension rule, once WP-2.4 records sampled
+    # passes) to send every plan back to the owner until revalidation.
+    story_plan_reviewer_suspended: bool = False
+    # The pairing the last passing held-out validation recorded, as
+    # "<writer model>|<reviewer model>|<prompt hash>", or "unvalidated".
+    # scripts/validate_plan_reviewer.py prints the value to set; a change of
+    # writer, reviewer or prompt voids it (storyplan/review.py refuses a
+    # pairing that does not match).
+    story_plan_reviewer_validated_pairing: str = "unvalidated"
+
     # OpenRouter model ids that reason by default. A leg for one of them never
     # omits `reasoning`: with llm_effort="off" and no explicit control it
     # sends the documented disable {"effort": "none"}. Empty by default, so no

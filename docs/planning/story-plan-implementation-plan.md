@@ -738,8 +738,23 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   with the reviewer path disabled, and on-demand generation in the pilot runs with the owner reading every plan.
 - **Voiding.** A change of writer model, reviewer model or prompt voids the validation until `validate_plan_reviewer.py`
   passes again for the new pairing; the worker refuses an unvalidated pairing.
-- **Depends on.** WP-1.4, WP-1.5, WP-3.1, D12; part (b) also WP-2.3. **Size.** M. **Spend.** 5 to 10 USD (two models,
-  two runs, the validation set and the smoke plans).
+- **Depends on.** WP-1.4, WP-1.5, WP-3.1, D12; part (b) also WP-2.3. **Size.** M. **Spend.** Re-estimated 2026-11-22 from the real prompts (about 40,000 input tokens and
+  14,000 mostly-reasoning output tokens per call, two runs per plan): about 4 USD per tuning pass and about 15 USD for the
+  held-out pass over the plans the checker lets through, so roughly 20 to 40 USD with one prompt revision (the earlier
+  5 to 10 USD predated the plan sizes).
+- **Built, 2026-11-22 (part (a) machinery; no paid run yet).** `src/cyo_adventure/storyplan/review.py` (pure core),
+  `storyplan/review_figures.py` (figures, thresholds, G3b, the held-out rule), `moderation/plan_reviewer.py` (the call),
+  `generation/templates/plan_review.md` (the prompt, with a calibration section), the `story_plan_reviewer_*` settings
+  (enabled `False`, validated pairing `unvalidated`), `scripts/review_story_plan.py` and `scripts/validate_plan_reviewer.py`.
+  Not wired into the worker (WP-2.4); `settings_refusal` is the function it will call. The harness reads the real set,
+  the synthetic seeds and the checker-repaired baselines, applies checker authority (an SP ERROR rejects with no model
+  call), reports every figure with counts and intervals, enforces the pre-registered tuning rule through
+  `held-out-runs.json`, and writes the validated-pairing record only on a live, complete, held-out G3b pass. Measured
+  without any model: 13 of the 17 real defective held-out plans and all 12 real defective tuning plans are rejected by the
+  checker alone, so the reviewer's own recall rests on 4 held-out plans, and the tuning half offers 6 plans the reviewer can
+  be tuned on. Projected spend at 3 and 15 USD per million tokens is about 4 USD per tuning pass and 15 USD for the
+  held-out pass (about 52 USD if every plan were sent regardless of the checker), above this package's 5 to 10 USD estimate.
+  See `docs/planning/evidence/plan-reviewer/README.md`.
 
 ## 7. Phase 4: pilot
 

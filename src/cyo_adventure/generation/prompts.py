@@ -26,6 +26,7 @@ differs every call and is never cached.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from dataclasses import dataclass
@@ -64,6 +65,7 @@ __all__ = [
     "build_plan_chunk_repair_prompt",
     "build_plan_prompt",
     "build_plan_repair_prompt",
+    "build_plan_review_prompt",
     "build_plan_spine_prompt",
     "build_plan_spine_repair_prompt",
     "build_prose_prompt",
@@ -71,6 +73,7 @@ __all__ = [
     "build_repair_prompt",
     "build_structure_prompt",
     "neutralize_prompt_payload",
+    "plan_review_prompt_hash",
 ]
 
 # ---------------------------------------------------------------------------
@@ -1845,3 +1848,85 @@ def build_plan_chunk_repair_prompt(  # noqa: PLR0913, PLR0917 - scene payloads p
             **_repair_values(previous, findings),
         },
     )
+
+
+# ---------------------------------------------------------------------------
+# Plan reviewer prompt (ADR-033 Decision 3 as amended, WP-3.7)
+# ---------------------------------------------------------------------------
+
+# The placeholders plan_review.md owns. A separate pattern from the Story Plan
+# writer's: the reviewer template shares no placeholder with it except
+# ``{request}``, and a shared regex would let a change to one template's names
+# silently alter the other's substitution.
+_PLAN_REVIEW_PLACEHOLDER_RE = re.compile(r"\{(band|request|findings|graph|plan)\}")
+
+
+def plan_review_prompt_hash() -> str:
+    """Return the hash of the plan reviewer's prompt template.
+
+    The hash covers the whole ``plan_review.md`` text (system region and user
+    framing), so any edit to the prompt, including the calibration section,
+    changes it. It is what a validated pairing is recorded against: a changed
+    prompt voids the validation.
+
+    Returns:
+        str: ``sha256:<hex>`` of the template's UTF-8 bytes.
+    """
+    text = _load_template("plan_review.md")
+    return "sha256:" + hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def build_plan_review_prompt(  # noqa: PLR0913 - five keyword-only payloads
+    *,
+    plan_json: str,
+    request_json: str,
+    graph_text: str,
+    checker_findings: Sequence[str],
+    band: str,
+) -> StagePrompt:
+    """Build the plan reviewer's prompt for one plan.
+
+    The system block is static (the plan's vocabulary, the semantics the pilot's
+    reviewer got wrong, what the checker already covers, the verdict rules, a
+    calibration section and the output contract) so an adapter may cache it. The
+    user block carries the age band, the fenced untrusted request, the
+    checker's findings, the book graph (no prose) and the plan, each fenced and
+    defanged.
+
+    Args:
+        plan_json: The plan body as JSON text, already without ``request`` and
+            ``provenance.notes`` (:func:`cyo_adventure.storyplan.review.plan_for_review`).
+        request_json: The plan's request object as JSON text (UNTRUSTED).
+        graph_text: The book graph without prose
+            (:func:`cyo_adventure.storyplan.review.render_book_graph`).
+        checker_findings: One line per checker finding; empty for none.
+        band: The age band, from the validated ``AgeBand`` enum.
+
+    Returns:
+        StagePrompt: The prompt, with no unfilled placeholder.
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->``
+            marker.
+    """
+    # #CRITICAL: security: the request text is the guardian's or child's own
+    # words (OWASP LLM01), and the plan, the checker lines and the graph carry
+    # model-written text or ids a book author chose. Every payload sits inside
+    # an UNTRUSTED_USER_INPUT fence with both prompt delimiters defanged, so
+    # none can close a fence or forge the stage marker.
+    # #VERIFY: test_plan_review.py::TestPrompt plants a fence terminator and a
+    # stage marker in the request, a fact and a node id and asserts neither
+    # survives, and that no node body text reaches the prompt.
+    values = {
+        "band": _neutralize_fence(band),
+        "request": _neutralize_fence(request_json),
+        "findings": _neutralize_fence(
+            "\n".join(checker_findings) if checker_findings else "(none)"
+        ),
+        "graph": _neutralize_fence(graph_text),
+        "plan": _neutralize_fence(plan_json),
+    }
+    text = _PLAN_REVIEW_PLACEHOLDER_RE.sub(
+        lambda m: values[m.group(1)], _load_template("plan_review.md")
+    )
+    return _split_stage_prompt(text)
