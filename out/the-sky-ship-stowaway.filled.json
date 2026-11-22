@@ -830,7 +830,7 @@
     },
     {
       "id": "f_rig_a",
-      "body": "The catwalk gave Bree a grand view of the gasbags, which hung overhead like a ceiling of silver moons. Pip trotted along the rail like a tiny rope-dancer. Far above, two riggers were shouting to each other through the ropes. \"The glass is dropping, so double-lash the aft bag,\" called one, and the other called back, \"Which seam, the old one, the one that always goes?\" Bree looked up, but she could not tell one seam from another. Then the whole ship leaned hard to one side, as the first gust of the storm shoved against the hull. Bree grabbed the rail with both hands.",
+      "body": "The catwalk gave Bree a grand view of the gasbags, which hung overhead like a ceiling of silver moons. Pip trotted along the rail like a tiny rope-dancer. Far above, two riggers were shouting to each other through the ropes. \"The glass is dropping, so double-lash the aft bag,\" called one, and the other called back, \"Which seam, the old one, the one that always goes?\" Bree looked up, but from this far below, with nothing but her own eyes, she could not tell one seam from another. Then the whole ship leaned hard to one side, as the first gust of the storm shoved against the hull. Bree grabbed the rail with both hands.",
       "is_ending": false,
       "choices": [
         {
@@ -1628,7 +1628,7 @@
     },
     {
       "id": "b_free1",
-      "body": "Bree went below with the captain, back to Nimbus, who was bumping the hull again so that each bump shook the lamps. \"He is not only frightened,\" said Captain Quill. \"He is big enough to fly, he knows it, and he wants out.\" At the far end of the hold, the storm had torn the great cargo door half open. Rain blew through the gap, and beyond it lay nothing but dark, racing sky. \"If he goes, he goes as he is, because I have not been able to get near that harness since the first thunder,\" the captain added. On the other side of the hold, a smaller door led to the inner bay, padded and windowless and still.",
+      "body": "Bree went below with the captain, back to Nimbus, who was bumping the hull again so that each bump shook the lamps. \"He is not only frightened,\" said Captain Quill. \"He is big enough to fly, he knows it, and he wants out.\" At the far end of the hold, the storm had torn the great cargo door half open. Rain blew through the gap, and beyond it lay nothing but dark, racing sky. \"He wears a leather harness around his middle,\" the captain added. \"If he goes, he goes in it. I have not been able to get near the buckles since the first thunder.\" On the other side of the hold, a smaller door led to the inner bay, padded and windowless and still.",
       "is_ending": false,
       "choices": [
         {
@@ -1864,7 +1864,7 @@
     },
     {
       "id": "e_win_discovery",
-      "body": "The whole crew hummed Nimbus through the storm, forty voices, most of them flat, and he did not seem to mind. The officers flew the ship, and the Cirrus came out the far side of the weather at sunrise. The secret was not a secret anymore, but a wonder that belonged to everyone aboard. The cook brought the mash himself. \"So THIS is where my forty buckets go,\" he said, and Nimbus blew a happy gust of fish breath in his face. Captain Quill found Bree at the rail. \"I was afraid to trust them, and you were not,\" she said, \"so sail with us, Stowaway.\" Bree said yes before the captain had finished asking.",
+      "body": "The whole crew hummed Nimbus through the storm, forty voices, most of them flat, and he did not seem to mind. The officers flew the ship, and the Cirrus came out the far side of the weather at sunrise. The secret was not a secret anymore, but a wonder that belonged to everyone aboard. The cook brought the mash himself. \"Forty buckets of it, every day,\" he said, \"and so THIS is where they go,\" and Nimbus blew a happy gust of fish breath in his face. Captain Quill found Bree at the rail. \"I was afraid to trust them, and you were not,\" she said, \"so sail with us, Stowaway.\" Bree said yes before the captain had finished asking.",
       "is_ending": true,
       "ending": {
         "id": "e_win_discovery",

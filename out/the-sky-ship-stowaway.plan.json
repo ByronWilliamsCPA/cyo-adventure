@@ -104,6 +104,9 @@
   "tired_seam": {
    "text": "One seam near the stern of the balloon looks puckered and tired."
   },
+  "seams_alike_from_below": {
+   "text": "From the inner catwalk, far below the gasbags and with only her own eyes, Bree cannot tell one seam from another."
+  },
   "hidden_deck": {
    "text": "The cut-away model of the Cirrus has its lowest deck painted over."
   },
@@ -112,6 +115,9 @@
   },
   "fish_mash": {
    "text": "The cook makes forty buckets of fish mash a day for the cargo, on the captain's order."
+  },
+  "mash_for_nimbus": {
+   "text": "The cook's forty buckets of mash a day go to Nimbus."
   },
   "he_in_hold": {
    "text": "The captain keeps a \"he\" in the sealed hold who has stopped eating, hates thunder and loud noise, and could kick the ship apart in a storm."
@@ -160,6 +166,9 @@
   },
   "fin_strapped": {
    "text": "A twisted harness strap pins Nimbus's left fin flat."
+  },
+  "nimbus_harness": {
+   "text": "Nimbus wears a leather harness around his middle, and since the first thunder the captain has not been able to get near its buckles."
   },
   "our_song": {
    "text": "Bree made up a three-note song, and Nimbus hums it back."
@@ -566,10 +575,11 @@
   },
   "f_rig_a": {
    "function": "continue",
-   "event": "Riggers shout about the glass dropping and the old seam that always goes; the first gust hits.",
+   "event": "Riggers shout about the glass dropping and the old seam that always goes; from far below, with only her own eyes, Bree cannot tell the seams apart; the first gust hits.",
    "requires": [],
    "establishes": [
-    "storm_ahead"
+    "storm_ahead",
+    "seams_alike_from_below"
    ]
   },
   "f_rig_b": {
@@ -980,19 +990,21 @@
   },
   "b_free1": {
    "function": "decision",
-   "event": "In the hold the cargo door is torn open; Nimbus wants out; the captain cannot reach his harness.",
+   "event": "In the hold the cargo door is torn open; Nimbus wants out; he wears a leather harness the captain has not been able to get near since the first thunder.",
    "requires": [
     "nimbus"
    ],
    "establishes": [
-    "cargo_door_torn"
+    "cargo_door_torn",
+    "nimbus_harness"
    ]
   },
   "b_free_ok": {
    "function": "payoff",
    "event": "\"His fin is free, because I untangled the strap myself\"; Nimbus rises on both fins.",
    "requires": [
-    "fin_free"
+    "fin_free",
+    "nimbus_harness"
    ],
    "establishes": []
   },
@@ -1025,7 +1037,9 @@
   "e_neu_kite": {
    "function": "ending",
    "event": "One fin is pinned flat by a twisted harness strap, so Nimbus flies behind the ship like a kite.",
-   "requires": [],
+   "requires": [
+    "nimbus_harness"
+   ],
    "establishes": [
     "fin_strapped"
    ]
@@ -1088,9 +1102,11 @@
   },
   "e_win_discovery": {
    "function": "ending",
-   "event": "The whole crew hums Nimbus through; the cook learns where his forty buckets go.",
+   "event": "The whole crew hums Nimbus through; the cook brings the mash himself and says forty buckets of it go out every day, and this is where.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "mash_for_nimbus"
+   ]
   }
  },
  "choices": {
@@ -1683,7 +1699,7 @@
   },
   "c_tell_crew": {
    "intent": "tell the crew, with the bosun's trust",
-   "cost": "none",
+   "cost": "stakes her own word before the whole crew",
    "requires": [
     "told_bosun"
    ]
@@ -1694,11 +1710,11 @@
   },
   "c_tell_captain": {
    "intent": "ask the captain to tell them",
-   "cost": "none"
+   "cost": "leaves the choice to the captain, who may keep the secret"
   },
   "c_tell_reveal": {
    "intent": "take the crew to see him",
-   "cost": "none"
+   "cost": "pulls the crew off the lines and down three ladders mid-storm"
   },
   "c_tell_crew_win": {
    "intent": "continue",
@@ -1854,13 +1870,14 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-sky-ship-stowaway.filled.json",
-  "book_sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
+  "book_sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
   "authored": "2026-11-21",
   "authoring_minutes": 4,
   "checks": null,
   "approver": null,
   "notes": [
-   "revisions: {\"date\": \"2026-11-21\", \"work_package\": \"WP-0.4\", \"method\": \"second-reader continuity pass: every reachable (node, state) configuration played with StoryEngine; book prose fixed and plan updated to match\", \"findings\": \"docs/planning/evidence/story-plan-retro/findings-the-sky-ship-stowaway.md\"}"
+   "revisions: {\"date\": \"2026-11-21\", \"work_package\": \"WP-0.4\", \"method\": \"second-reader continuity pass: every reachable (node, state) configuration played with StoryEngine; book prose fixed and plan updated to match\", \"findings\": \"docs/planning/evidence/story-plan-retro/findings-the-sky-ship-stowaway.md\"}",
+   "residual fixes 2026-11-22: SS-1, SS-2, SS-3 (docs/planning/evidence/continuity-reader/fixes-2026-11-22-the-sky-ship-stowaway.md); SS-4 not a defect, unchanged; costs added to c_tell_crew, c_tell_captain, c_tell_reveal to clear a pre-existing SP-8 error at b_tell1"
   ]
  }
 }
