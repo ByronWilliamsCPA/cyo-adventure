@@ -9987,6 +9987,13 @@
         "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
         "unit": "the-hollow-lighthouse"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -10129,6 +10136,11 @@
         "sha256": "acd8740b1ee7b42da44131c7bab2a4ad745eb40e93b2af2e5409a17a59d44430",
         "unit": "the-hollow-lighthouse"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "two_backstories"
@@ -10170,6 +10182,13 @@
         "sha256": "4874b76254b5e21f5f859717c800cbf5387a4f4e90265f994b93bbb972f6fe50",
         "unit": "the-lantern-keepers-list"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-6",
+        "SP-8"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -10203,6 +10222,14 @@
         "sha256": "904b126589216729e132cd2a4b0d4325e004bbef651538c4a0beb1d99c6159ab",
         "unit": "the-lantern-keepers-list"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6",
+        "SP-8"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "cross_payoff_reference",
@@ -10250,6 +10277,14 @@
         "sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
         "unit": "the-orchard-signal"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6",
+        "SP-8"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "plant_leak_unplanted_route",
@@ -10302,6 +10337,13 @@
         "sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
         "unit": "the-orchard-signal"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "plant_leak_unplanted_route",
@@ -10354,6 +10396,14 @@
         "sha256": "d014a9e2c42bfb7de19beb7c38d18e8e32b31584bbf753b396f8cf97b644df09",
         "unit": "the-orchard-signal"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6",
+        "SP-8"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "public_plant"
@@ -10400,6 +10450,13 @@
         "sha256": "bb215b407e972124f4f646c194916059bd96b0c76f00fb51006ea21d2b765d24",
         "unit": "the-sky-ship-stowaway"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-1",
+        "SP-2",
+        "SP-6",
+        "SP-8"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "state_contradiction",
@@ -10478,6 +10535,11 @@
         "sha256": "f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db",
         "unit": "the-signal-in-the-static"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "location_or_physical_state",
@@ -10613,6 +10675,12 @@
         "sha256": "39ee5a8c474b157f214a80497e63e47ff55405930996061bc33af7f75c556cd4",
         "unit": "the-midnight-museum"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-8"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "location_or_physical_state",
@@ -10748,6 +10816,13 @@
         "sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
         "unit": "the-orchard-signal"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "plant_leak_unplanted_route",
@@ -10800,6 +10875,13 @@
         "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
         "unit": "the-hollow-lighthouse"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -10942,6 +11024,13 @@
         "sha256": "d014a9e2c42bfb7de19beb7c38d18e8e32b31584bbf753b396f8cf97b644df09",
         "unit": "the-orchard-signal"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "public_plant"
@@ -10988,6 +11077,11 @@
         "sha256": "acd8740b1ee7b42da44131c7bab2a4ad745eb40e93b2af2e5409a17a59d44430",
         "unit": "the-hollow-lighthouse"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "two_backstories"
@@ -11029,6 +11123,13 @@
         "sha256": "904b126589216729e132cd2a4b0d4325e004bbef651538c4a0beb1d99c6159ab",
         "unit": "the-lantern-keepers-list"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-6",
+        "SP-9"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "cross_payoff_reference",
@@ -11076,6 +11177,11 @@
         "sha256": "cd3f45ad0d3d8075e57fdd203612a66ce59d65f1b2613c5ba7419caaf165476d",
         "unit": "the-thornwood-trial"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -11241,6 +11347,12 @@
         "sha256": "f69e13d99a242a3478066522deb123f564cc556c1661ff14f824a8482274204e",
         "unit": "the-clockwork-menagerie"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-9"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "cross_payoff_reference",
@@ -11524,6 +11636,11 @@
         "sha256": "2d476787f5e61104d2e8f87765820496488f2780d3c08cd19cfcc7516b305bb5",
         "unit": "the-clocktower-cipher"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -11706,6 +11823,11 @@
         "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
         "unit": "the-midnight-museum"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-6"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -11753,6 +11875,10 @@
         "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
         "unit": "the-cave-of-echoes"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -11805,6 +11931,11 @@
         "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
         "unit": "the-signal-in-the-static"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "two_backstories",
@@ -11867,6 +11998,11 @@
         "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
         "unit": "the-mapmakers-island"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -11945,6 +12081,11 @@
         "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
         "unit": "the-sky-ship-stowaway"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "state_contradiction",
@@ -11997,6 +12138,10 @@
         "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
         "unit": "the-sky-ship-stowaway"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "state_contradiction",
@@ -12049,6 +12194,11 @@
         "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
         "unit": "the-mapmakers-island"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -12127,6 +12277,12 @@
         "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
         "unit": "the-midnight-museum"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-6",
+        "SP-9"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12174,6 +12330,10 @@
         "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
         "unit": "the-signal-in-the-static"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "two_backstories",
@@ -12236,6 +12396,8 @@
         "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
         "unit": "the-cave-of-echoes"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -12288,6 +12450,10 @@
         "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
         "unit": "the-signal-in-the-static"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12345,6 +12511,12 @@
         "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
         "unit": "the-midnight-museum"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-6",
+        "SP-9"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12390,6 +12562,11 @@
         "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
         "unit": "the-mapmakers-island"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12490,6 +12667,8 @@
         "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
         "unit": "the-cave-of-echoes"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12523,6 +12702,10 @@
         "sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
         "unit": "the-sky-ship-stowaway"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12556,6 +12739,8 @@
         "sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
         "unit": "the-cave-of-echoes"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12589,6 +12774,11 @@
         "sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
         "unit": "the-sky-ship-stowaway"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12622,6 +12812,11 @@
         "sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
         "unit": "the-signal-in-the-static"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12679,6 +12874,10 @@
         "sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
         "unit": "the-mapmakers-island"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-2"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12779,6 +12978,10 @@
         "sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
         "unit": "the-midnight-museum"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-9"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [],
       "defects": [],
@@ -12824,6 +13027,10 @@
         "sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
         "unit": "the-sky-ship-stowaway"
       },
+      "checker_clean": false,
+      "checker_error_rules": [
+        "SP-8"
+      ],
       "class_source": "the book's reader items",
       "defect_class": [
         "state_contradiction",
@@ -12876,6 +13083,8 @@
         "sha256": "31ed53bfd03edbe3fc2956072dde3368f3dc80407cb17cf2defbb63129aa3bbe",
         "unit": "the-hollow-lighthouse"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -12909,6 +13118,8 @@
         "sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
         "unit": "the-midnight-museum"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -12956,6 +13167,8 @@
         "sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
         "unit": "the-signal-in-the-static"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": "the book's reader items",
       "defect_class": [
         "two_backstories",
@@ -13018,6 +13231,8 @@
         "sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
         "unit": "the-cave-of-echoes"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -13070,6 +13285,8 @@
         "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
         "unit": "the-mapmakers-island"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": "the book's reader items",
       "defect_class": [
         "label_outcome_mismatch",
@@ -13148,6 +13365,8 @@
         "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
         "unit": "the-vanishing-orchard"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -13193,6 +13412,8 @@
         "shape_hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
         "unit": "the-locked-carousel"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -13225,6 +13446,8 @@
         "shape_hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628",
         "unit": "the-cave-of-echoes"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -13257,6 +13480,8 @@
         "shape_hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
         "unit": "the-locked-carousel"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -13289,6 +13514,8 @@
         "shape_hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
         "unit": "the-locked-carousel"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -13321,6 +13548,8 @@
         "shape_hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628",
         "unit": "the-cave-of-echoes"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -13353,6 +13582,8 @@
         "shape_hash": "sha256:11bb80d9d3a5f2ad3c57ce42b8430f4f98e30e2a2d1c473f97a424ae05474b51",
         "unit": "the-lantern-keepers-list"
       },
+      "checker_clean": true,
+      "checker_error_rules": [],
       "class_source": null,
       "defect_class": [],
       "defects": [],
@@ -13495,6 +13726,21 @@
           "reject/strong": 4
         }
       },
+      "d12_plans_checker_clean_by_unit": {
+        "the-cave-of-echoes": {
+          "pass/strong": 2,
+          "reject/strong": 2
+        },
+        "the-mapmakers-island": {
+          "reject/strong": 1
+        },
+        "the-midnight-museum": {
+          "pass/strong": 1
+        },
+        "the-signal-in-the-static": {
+          "reject/strong": 1
+        }
+      },
       "items_by_kind": {
         "clean_book": 5,
         "merge_count": 13,
@@ -13553,6 +13799,14 @@
         },
         "the-thornwood-trial": {
           "reject/strong": 1
+        },
+        "the-vanishing-orchard": {
+          "pass/strong": 1
+        }
+      },
+      "d12_plans_checker_clean_by_unit": {
+        "the-hollow-lighthouse": {
+          "pass/strong": 1
         },
         "the-vanishing-orchard": {
           "pass/strong": 1

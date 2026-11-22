@@ -373,8 +373,27 @@ def error_rules(report: ValidationReport) -> set[str]:
 #: first brought to zero ERRORs by the mechanical repairs below, recorded per
 #: item as ``baseline_repairs``. SP-2 and SP-6 findings drop the unguaranteed
 #: fact from the offending ``requires``; an SP-3 ERROR drops the contradiction
-#: mark between the pair; an SP-9 finding is reworded by the table below.
+#: mark between the pair; an SP-9 finding is reworded by the table below
+#: (which also covers the clean-baseline builder's plans that are not seed sources).
 SP9_REWORDINGS: Final[dict[tuple[str, str], str]] = {
+    (
+        "PL-e2",
+        "/facts/brass_wren/text",
+    ): "A thumb-sized brass wren in the workshop sings and bows when wound up.",
+    (
+        "PL-e2",
+        "/nodes/ro_workshop/event",
+    ): (
+        "At stop 39 Ellery welcomes Nadia to the workshop where he hid from his "
+        "museum; a brass wren waits to be wound up."
+    ),
+    (
+        "PL-e2",
+        "/nodes/e_win_owl_witness/event",
+    ): (
+        "At eight the curator doubts the room under the rotunda until the owl, "
+        "wound up, speaks in Ellery's voice."
+    ),
     (
         "PL-f5",
         "/facts/wren_sings/text",

@@ -1,0 +1,3285 @@
+{
+  "plan_version": "0.1",
+  "request": {
+    "band": "13-16",
+    "length": "medium",
+    "style": "prose"
+  },
+  "pitch": {
+    "hero": "Wren Callahan, a sleepless teen who inherits her late grandfather's attic shortwave radio",
+    "want": "to learn who is sending a nightly number loop from the dead headland relay, and why",
+    "obstacle": "a countdown ending tonight, a gale and spring tide, and an old man who has stopped hoping",
+    "stake": "a father's last words to his estranged daughter and thirty years of tape about to be erased",
+    "ending_kind": "Marin reached over the air or by phone, the tapes saved, or the channel closing unanswered"
+  },
+  "cast": {
+    "wren": {
+      "name": "Wren Callahan",
+      "role": "protagonist",
+      "want": "to find who is sending the number loop and why, before it ends",
+      "voice": "close third present; sleepless, methodical like her grandfather, brave in a frightened way",
+      "knows": [
+        "wren_callahan",
+        "loop_week",
+        "grandpa_dead"
+      ]
+    },
+    "kell": {
+      "name": "Kell Alder",
+      "role": "last operator of Relay KX; the loop's sender",
+      "want": "to reach his daughter once more before the station dies",
+      "voice": "old, tired, formal; KX clear; has stopped hoping",
+      "knows": [
+        "kell_alder",
+        "alder_vow",
+        "cell_failing",
+        "final_send_scheduled",
+        "deadline_2340",
+        "voice_is_marin",
+        "erase_after_last_send"
+      ]
+    },
+    "marin": {
+      "name": "Marin Alder",
+      "role": "Kell's estranged daughter; the young voice on the loop",
+      "want": "to hear from her father without being the one to call",
+      "voice": "careful vowels; wary, then laughing and crying",
+      "knows": [
+        "marin_listening",
+        "voice_is_marin",
+        "quarrel_bus"
+      ]
+    },
+    "grandpa": {
+      "name": "Wren's grandfather (Callahan)",
+      "role": "late radio operator; absent mentor",
+      "want": "for somebody to answer the poor man on the headland",
+      "voice": "square capitals; terse notes and unposted letters",
+      "knows": [
+        "grandpa_marked_freq",
+        "logbook_tracks_kx",
+        "grandpa_knew_kell",
+        "grandpa_answered_two_dots",
+        "grandpa_told_no_one"
+      ]
+    },
+    "okafor": {
+      "name": "Mrs. Okafor",
+      "role": "old net-mender at the marina; Alder's quiet keeper",
+      "want": "for somebody finally to listen to Kell's loop",
+      "voice": "sharp as fishhooks; few words, firm instructions",
+      "knows": [
+        "okafor_pins_card",
+        "quarrel_bus",
+        "alder_vow",
+        "okafor_key_soup",
+        "number_six_years"
+      ]
+    },
+    "pell": {
+      "name": "Mr. Pell",
+      "role": "harbormaster",
+      "want": "to stay out of another man's business",
+      "voice": "salty, curious; well, I'll be salted",
+      "knows": [
+        "loop_from_relay_pell",
+        "pell_knows_operator"
+      ]
+    },
+    "ruiz": {
+      "name": "Ruiz",
+      "role": "former relay man across the bay",
+      "want": "to end thirty years of not talking to Kell",
+      "voice": "gravel in a bucket; blunt, protective",
+      "knows": [
+        "ruiz_keys",
+        "ruiz_watches_lamp"
+      ]
+    },
+    "sister": {
+      "name": "Alder's sister",
+      "role": "Marin's aunt, three streets from the harbor",
+      "want": "for Marin to be reached soon",
+      "voice": "cracked, ashamed, urgent",
+      "knows": [
+        "m_named_marin",
+        "marin_two_ridges_west",
+        "sister_stopped_listening"
+      ]
+    },
+    "officer": {
+      "name": "the coast guard auxiliary duty officer",
+      "role": "emergency dispatcher",
+      "want": "a location and a hazard, in that order",
+      "voice": "procedural, then quick",
+      "knows": [
+        "spring_tide"
+      ]
+    },
+    "controller": {
+      "name": "the county radio net duty controller",
+      "role": "net controller",
+      "want": "to spread the message and log every reply",
+      "voice": "groggy, then flat and official",
+      "knows": [
+        "woman_two_ridges"
+      ]
+    }
+  },
+  "truth": {
+    "question": "Who is sending the number loop, to whom, and what is it counting down to?",
+    "statement": "Kell Alder, the last operator of the decommissioned Relay KX, has kept a loop on the air for thirty years since his daughter Marin left after a quarrel, vowing to hold the channel open until she answers. The young voice reading the numbers is Marin's own, the two opening tones are Morse M, and the falling count measures his failing power cell: tonight at 23:40 the station sends a last message and erases its tapes. Marin has been listening all along, and Wren's grandfather heard the loop for years and kept the secret.",
+    "facts": [
+      "kell_alder",
+      "relay_kx_name",
+      "alder_vow",
+      "quarrel_bus",
+      "m_named_marin",
+      "marin_is_alder_daughter",
+      "voice_is_marin",
+      "two_tones_m",
+      "cell_failing",
+      "deadline_2340",
+      "erase_after_last_send",
+      "marin_listening",
+      "grandpa_knew_station_alive"
+    ]
+  },
+  "facts": {
+    "wren_callahan": {
+      "text": "The hero is Wren Callahan, a girl who cannot sleep."
+    },
+    "grandpa_dead": {
+      "text": "Wren's grandfather is dead; the radio and attic things were his."
+    },
+    "grandpa_dead_a_year": {
+      "text": "Wren's grandfather died about a year ago."
+    },
+    "attic_shortwave": {
+      "text": "Her late grandfather's shortwave radio sits in the attic under a dust sheet."
+    },
+    "loop_week": {
+      "text": "Wren has switched the radio on every night for a week and heard the same loop."
+    },
+    "loop_voice_woman": {
+      "text": "The loop is a young woman's flat, careful voice reading a string of numbers."
+    },
+    "loop_falling_tone": {
+      "text": "After the numbers a slow tone counts downward and the cycle starts again."
+    },
+    "spare_battery_shelf": {
+      "text": "Grandpa's spare battery, wrapped in a rag and labeled JUST IN CASE, sits on the shelf above the radio."
+    },
+    "headset_hook": {
+      "text": "Grandpa's heavy operator headset, cracked leather pads and Callahan inked in the band, hangs on a hook."
+    },
+    "headset_hears_room": {
+      "text": "Grandpa swore the headset could let you hear the room behind a voice."
+    },
+    "wren_only_attic_visitor": {
+      "text": "Wren is the only one who still comes up to the attic."
+    },
+    "never_touched_things": {
+      "text": "Before tonight Wren had never touched the battery or the headset."
+    },
+    "one_thing_bargain": {
+      "text": "Wren allows herself to take down one of his things, and only one."
+    },
+    "battery_taken": {
+      "text": "Wren took Grandpa's spare battery and carries it in the bottom of her pack."
+    },
+    "headset_taken": {
+      "text": "Wren took Grandpa's headset off its hook and wears it to listen."
+    },
+    "battery_terminals_bright": {
+      "text": "The spare battery's terminals are still bright under the dust."
+    },
+    "headset_deepens_signal": {
+      "text": "Through the headset the hiss deepens and the woman's voice sounds very close."
+    },
+    "loop_maybe_coordinates": {
+      "text": "The numbers might be coordinates, plotted the way Grandpa taught her."
+    },
+    "relay_station_headland": {
+      "text": "An old relay station stands on the headland, dark for as long as Wren remembers."
+    },
+    "grandpa_logbook": {
+      "text": "Grandpa kept a logbook of everything he heard on the radio, every night for forty years."
+    },
+    "coords_harbor_tower": {
+      "text": "Two number pairs plot to the working harbor and the ridge water tower, a mile and a half apart."
+    },
+    "handheld_battery_amber": {
+      "text": "The battery light on Wren's handheld radio is already amber."
+    },
+    "harbor_sites": {
+      "text": "At the harbor cross stand the harbormaster's hut, the shut-down tide-gauge shed and the pier notice-board."
+    },
+    "loop_on_handheld": {
+      "text": "The loop comes through Wren's handheld radio away from the attic."
+    },
+    "notice_card": {
+      "text": "A fresh index card on the pier board gives a frequency and says: if you hear the loop, it is real."
+    },
+    "card_freq_matches": {
+      "text": "The card's frequency matches the loop exactly and its ink is still damp; it is less than a day old."
+    },
+    "signal_north_headland": {
+      "text": "On the card's frequency the loop is loudest to the north, toward the headland."
+    },
+    "wren_has_pier_card": {
+      "text": "Wren unpinned the pier card and carries it in her back pocket."
+    },
+    "card_replaced_always": {
+      "text": "Someone in town replaces the pier card every time it blows away, and has for years."
+    },
+    "loop_stopped": {
+      "text": "The loop stops for good while Wren is not there to answer it."
+    },
+    "mr_pell": {
+      "text": "Mr. Pell is the harbormaster, in a hut at the harbor."
+    },
+    "loop_from_relay_pell": {
+      "text": "Pell says the loop used to come off the old headland relay before the county pulled its money."
+    },
+    "pell_knows_operator": {
+      "text": "Pell could name the stubborn man who keeps the loop going but will not."
+    },
+    "county_closed_relay": {
+      "text": "The county shut the relay station down."
+    },
+    "shed_receiver": {
+      "text": "In the dead tide-gauge shed a switched-on receiver blinks in time with the loop, its frequency on tape."
+    },
+    "relay_kx_name": {
+      "text": "The headland station is called Relay KX."
+    },
+    "shed_is_ear": {
+      "text": "The shed receiver is only an ear for a signal sent from further out on the headland."
+    },
+    "grandpa_marked_freq": {
+      "text": "Grandpa marked the loop's spot on the attic dial with a pencil tick worn dark by years."
+    },
+    "grandpa_told_no_one": {
+      "text": "Grandpa listened to the loop for years and never told anyone about it."
+    },
+    "tower_repeats": {
+      "text": "Something on the ridge water tower catches the signal and throws it on."
+    },
+    "cable_to_relay": {
+      "text": "A cable runs from the tower antenna along the ridge toward the relay station on the point."
+    },
+    "stenciled_arrows": {
+      "text": "Faded stenciled arrows on the tower pad point along the ridge toward the headland."
+    },
+    "kx_cable_tag": {
+      "text": "A tag on the tower cable reads KX RELAY, HEADLAND, DO NOT DISCONNECT; the tower is only a repeater."
+    },
+    "arrows_reflective": {
+      "text": "The arrows have reflective tips, painted to be followed in the dark."
+    },
+    "numbers_point_to_relay": {
+      "text": "The numbers were never a map of the town; they point to the relay station on the point."
+    },
+    "relay_lit": {
+      "text": "The relay station is not dark: a red lamp burns on the mast and one window of the low building is lit."
+    },
+    "headland_gate": {
+      "text": "The road to the relay station ends at a chained gate."
+    },
+    "fence_gap": {
+      "text": "The relay fence has peeled back from a post, leaving a gap."
+    },
+    "relay_tended": {
+      "text": "Inside the compound nothing is abandoned: weeds cut, new cable stored, a generator running."
+    },
+    "town_thinks_relay_dead": {
+      "text": "Every kid in town believes the relay station is dead."
+    },
+    "man_in_window": {
+      "text": "A man holding a mug stands in the station's lit window."
+    },
+    "lane_sites": {
+      "text": "Behind the station are a lit gatehouse with a log board, a humming transformer hut and flooded cellar steps."
+    },
+    "cellar_note_sleeve": {
+      "text": "A plastic sleeve holding a note beginning LOOP is taped above the tide line in the flooding cellar."
+    },
+    "kx_promise_note": {
+      "text": "A note signed KX reads LOOP STAYS UP WHILE I DRAW BREATH."
+    },
+    "wren_has_kx_note": {
+      "text": "Wren salvaged the KX note from the cellar and carries it."
+    },
+    "wren_fever": {
+      "text": "Soaked in the cellar, Wren runs a fever and spends three days in bed."
+    },
+    "log_board": {
+      "text": "The gatehouse log board, in one careful hand, runs back years; the last entry is hours old."
+    },
+    "loop_holding_no_answer": {
+      "text": "The log's last forty lines read LOOP HOLDING, STILL NO ANSWER."
+    },
+    "person_tends_signal": {
+      "text": "A person tends the signal night after night, waiting for a reply."
+    },
+    "log_for_m": {
+      "text": "The newest log line reads FOR M, STILL HOLDING: the loop is a message for someone called M."
+    },
+    "wren_has_log_page": {
+      "text": "Wren took the newest page of the station log."
+    },
+    "alder_surname": {
+      "text": "The man keeping the station alive is named Alder."
+    },
+    "k_alder_services": {
+      "text": "K. Alder has serviced the transformer hut every month for years, most recently last month."
+    },
+    "step_swept": {
+      "text": "The step under the lit window has been swept."
+    },
+    "red_lamp_keeps_time": {
+      "text": "A small red lamp by the lit window blinks in time with the loop's count."
+    },
+    "station_lived_in": {
+      "text": "The station building has boots on the step and a rain barrel: someone lives there."
+    },
+    "trunk_and_shed": {
+      "text": "Grandpa kept valued things in the attic cedar trunk and work in progress in his radio shed."
+    },
+    "trunk_contents": {
+      "text": "The cedar trunk holds a water-stained logbook, a bundle of QSL cards and unstamped envelopes in a ribbon."
+    },
+    "letters_to_kx": {
+      "text": "Grandpa's envelopes are all addressed to Relay KX on the headland and none was stamped."
+    },
+    "kell_first_name": {
+      "text": "The man at the relay is called Kell."
+    },
+    "letter_keep_channel": {
+      "text": "A letter says: Kell, she may still be out there, so keep the channel open."
+    },
+    "grandpa_knew_kell": {
+      "text": "Grandpa knew the man at the station well enough to write to him by first name for years."
+    },
+    "kell_alder": {
+      "text": "The man at the relay is Kell Alder, operator of Station KX."
+    },
+    "alder_daughter_estranged": {
+      "text": "Kell Alder has a daughter who is gone from him."
+    },
+    "thirty_letters": {
+      "text": "The ribboned bundle holds about thirty unposted letters."
+    },
+    "grandpa_never_posted": {
+      "text": "Grandpa wrote to Kell for years and never posted a word."
+    },
+    "wren_keeps_letter": {
+      "text": "Wren keeps one of Grandpa's letters to Kell."
+    },
+    "letters_take_by_hand": {
+      "text": "On the last envelope Grandpa asked that the letters be taken to KX by hand."
+    },
+    "logbook_tracks_kx": {
+      "text": "Grandpa's logbook tracks the KX loop for years: ALDER STILL TRANSMITTING, WHY."
+    },
+    "club_silent": {
+      "text": "Nobody at the radio club will talk about Alder."
+    },
+    "logbook_last_question": {
+      "text": "The logbook's last page, from the week he died, asks whether anybody will ever answer the poor man."
+    },
+    "wren_has_logbook": {
+      "text": "Wren has Grandpa's logbook in hand, taken from the cedar trunk."
+    },
+    "kx_alder_callsign": {
+      "text": "A QSL card names a frequency and the call sign KX ALDER, underlined by Grandpa."
+    },
+    "m_card_eleven_years": {
+      "text": "An eleven-year-old card signed M reads: Heard KX again tonight, please do not tell him."
+    },
+    "kx_freq_matches_loop": {
+      "text": "Grandpa's KX cards give a frequency that matches the loop to the last decimal."
+    },
+    "grandpa_logged_thousands": {
+      "text": "Grandpa logged the KX signal on more than a thousand nights."
+    },
+    "no_listener_answered": {
+      "text": "No listener ever answered Alder's loop in all those years.",
+      "contradicts": []
+    },
+    "shed_cabinet": {
+      "text": "In the radio shed a padlocked filing cabinet holds Grandpa's letters."
+    },
+    "tuning_note": {
+      "text": "A pinned note reads KX LOOP, HEADLAND RELAY, OPERATOR ALDER, DO NOT GIVE UP ON HIM."
+    },
+    "grandpa_tried_reach": {
+      "text": "Grandpa tried for years to reach Alder, who never answered him."
+    },
+    "two_dots_card": {
+      "text": "A hidden card reads KX, EVERY MIDNIGHT, TWO DOTS, NO REPLY YET: Grandpa sent Alder two dots nightly."
+    },
+    "cabinet_fell": {
+      "text": "The forced cabinet crashed over and Wren's mother found her in the shed."
+    },
+    "grandpa_knew_station_alive": {
+      "text": "Grandpa knew someone was keeping the headland station alive after it should have died."
+    },
+    "alder_thirty_years": {
+      "text": "Kell Alder has sat at the station desk every night for thirty years."
+    },
+    "thirty_logbooks": {
+      "text": "A shelf in the station holds thirty logbooks, one per year."
+    },
+    "alder_is_person": {
+      "text": "The loop is kept going by a living person, not a machine left running."
+    },
+    "pencil_and_scrap": {
+      "text": "At the window Wren has only a pencil stub and a scrap of paper."
+    },
+    "note_left": {
+      "text": "Wren wedged a note reading I HEAR YOU, signed W, in the station door frame."
+    },
+    "note_flashlight_stopped": {
+      "text": "The flashlight stopped at the door where the note was and stayed there a long time."
+    },
+    "alder_never_knew_visit": {
+      "text": "Alder never knew that Wren had been at his window.",
+      "contradicts": [
+        "note_left"
+      ]
+    },
+    "alder_tall_stooped": {
+      "text": "Alder is a tall, stooped figure."
+    },
+    "county_decommissioned": {
+      "text": "The county lists the relay as decommissioned thirty years ago, with no staff."
+    },
+    "station_register": {
+      "text": "The club's printed station register is tucked inside the logbook's back cover."
+    },
+    "beat_unsteady": {
+      "text": "The number groups arrive on a beat that is not quite steady; it might be time."
+    },
+    "cipher_fragments": {
+      "text": "Read against the register the numbers give HOLDING, ANSWER and a recurring M."
+    },
+    "underlined_book": {
+      "text": "One other heavily underlined book of Grandpa's sits on the shelf above the desk."
+    },
+    "message_for_m": {
+      "text": "The numbers decode to STILL HOLDING THE CHANNEL OPEN FOR M."
+    },
+    "count_going_down": {
+      "text": "Part of the broadcast is a count, and the count is going down."
+    },
+    "tide_table_key": {
+      "text": "The underlined book is a tide table; it decodes one cluster into a date and an hour."
+    },
+    "deadline_2340": {
+      "text": "The countdown ends tonight at twenty minutes to midnight, 23:40."
+    },
+    "count_ends_tonight": {
+      "text": "The loop is a countdown that ends tonight."
+    },
+    "gaps_shrinking": {
+      "text": "Each cycle of the loop comes round a little sooner; the gaps are shrinking."
+    },
+    "figures_point_today": {
+      "text": "Wren's rough timing figures point to today on the calendar."
+    },
+    "static_gives_date": {
+      "text": "Wren's timing method finds a date in plain static too."
+    },
+    "final_name_spoken": {
+      "text": "When the loop ends, an old man's voice says a single name, and then nothing."
+    },
+    "okafor_intro": {
+      "text": "Old Mrs. Okafor has mended nets at the marina in sight of the headland since before the relay was built."
+    },
+    "library_microfilm": {
+      "text": "The county library keeps the local paper on microfilm."
+    },
+    "closure_article": {
+      "text": "A newspaper story with photos covers the county closing the relay station."
+    },
+    "alder_refused_leave": {
+      "text": "Of ten staff, Alder alone refused to leave: eight transferred inland and one resigned."
+    },
+    "keep_channel_quote": {
+      "text": "Alder told the paper: somebody has to keep the channel open."
+    },
+    "closed_thirty_years": {
+      "text": "The relay was closed thirty years ago."
+    },
+    "neighbor_letter": {
+      "text": "Eleven years after the closure a neighbor wrote that the relay still hums and nobody is listening."
+    },
+    "okafor_told_truth": {
+      "text": "Wren told Mrs. Okafor the truth about the attic radio."
+    },
+    "okafor_pins_card": {
+      "text": "Mrs. Okafor has pinned a card to the pier board every month for thirty years saying the loop is real."
+    },
+    "quarrel_bus": {
+      "text": "After a quarrel one winter, Alder's daughter took the morning bus and never wrote."
+    },
+    "alder_vow": {
+      "text": "Alder swore to keep a channel open until his daughter answered."
+    },
+    "okafor_ring_marina": {
+      "text": "Mrs. Okafor told Wren to ring the marina, day or night, if the loop looks like stopping."
+    },
+    "voice_kept_thirty_years": {
+      "text": "Alder has kept a girl's voice on the air for thirty years."
+    },
+    "two_tones_m": {
+      "text": "The loop opens with two long tones, dash dash, the Morse letter M."
+    },
+    "morse_chart": {
+      "text": "Grandpa taped a Morse chart inside the radio's lid."
+    },
+    "four_second_gap": {
+      "text": "After the falling tone comes a four-second gap: the sender is listening for an answer."
+    },
+    "voice_is_daughter": {
+      "text": "The girl reading the numbers called the man at the station Dad."
+    },
+    "week_logs": {
+      "text": "Wren's logs show the falling tone starts lower and the gap shortens every night."
+    },
+    "loop_on_air_years": {
+      "text": "The loop has been on the air for years."
+    },
+    "grandpa_chart": {
+      "text": "Grandpa's marine chart of the headland has margins full of single letters."
+    },
+    "m_named_marin": {
+      "text": "The M stands for someone named Marin."
+    },
+    "marin_is_alder_daughter": {
+      "text": "Marin is Kell Alder's only child, his daughter."
+    },
+    "marin_vanished": {
+      "text": "Marin vanished from every local record thirty years ago."
+    },
+    "alder_sister": {
+      "text": "Alder's sister still lives three streets from the harbor."
+    },
+    "voice_is_marin": {
+      "text": "The young voice reading the numbers is Marin's own, recorded when she was young."
+    },
+    "loop_is_apology": {
+      "text": "The loop is Alder's apology, calling Marin home."
+    },
+    "marin_wedding_two_counties": {
+      "text": "A wedding notice places Marin two counties away."
+    },
+    "marin_two_ridges_west": {
+      "text": "Marin's last known address is a town two ridges west."
+    },
+    "sister_stopped_listening": {
+      "text": "Alder's sister stopped being able to listen to the loop years ago."
+    },
+    "chart_m_mooring": {
+      "text": "Grandpa ringed an M beside a mooring inside the breakwater, dated thirty years back."
+    },
+    "marin_mooring_kept": {
+      "text": "A brass plate on the old buoy reads Marin, a date, and HER MOORING IS KEPT."
+    },
+    "gale_forecast": {
+      "text": "The forecast warns of a gale on the headland tonight."
+    },
+    "archive_docs": {
+      "text": "Wren has the relay's maintenance sheet and operating schedule from the county archive."
+    },
+    "cell_failing": {
+      "text": "The station runs on a failing power cell that cannot carry another schedule."
+    },
+    "cell_eleven_years_over": {
+      "text": "The relay's single sealed cell passed its rated life eleven years ago."
+    },
+    "count_is_cell_life": {
+      "text": "The count measures how long the station's cell has left to live."
+    },
+    "no_timer": {
+      "text": "Alder has put no timer on his broadcast.",
+      "contradicts": [
+        "final_send_scheduled"
+      ]
+    },
+    "final_send_scheduled": {
+      "text": "The schedule's FINAL entry, PLAY TAPE 2 THEN ERASE ALL, was moved later three times and is set for 23:40 today."
+    },
+    "erase_after_last_send": {
+      "text": "After its last send the station will erase all its tapes."
+    },
+    "spring_tide": {
+      "text": "Tonight's high water is a spring tide topping out at 23:42."
+    },
+    "tide_floods_station": {
+      "text": "The tide will flood the station yard at the minute the count reaches zero."
+    },
+    "tide_cut_power": {
+      "text": "The tide knocked out the power at the relay station."
+    },
+    "final_tape": {
+      "text": "A recording of Alder tells Marin this is the last schedule, with one hour left, and then he will let her be."
+    },
+    "alder_kept_note": {
+      "text": "Alder found Wren's note, looked for her, and has carried it in his shirt pocket since."
+    },
+    "gale_now": {
+      "text": "A gale is already blowing as the last hour begins."
+    },
+    "grandpa_transmitter": {
+      "text": "Grandpa's transmitter sits under a dust sheet in the house."
+    },
+    "nobody_else_knows": {
+      "text": "Nobody but Wren knows the station ends tonight."
+    },
+    "yard_flooded": {
+      "text": "The station yard is a sheet of black water."
+    },
+    "control_room_empty": {
+      "text": "The control room is warm and empty, a mug still steaming by the microphone."
+    },
+    "alder_at_mast": {
+      "text": "Alder is out at the foot of the mast fighting a loose cable."
+    },
+    "hold_switch": {
+      "text": "A guarded HOLD switch on the console would stop the count."
+    },
+    "circled_number": {
+      "text": "An address book by the phone has one number circled until the paper shines."
+    },
+    "phone_patch": {
+      "text": "A patch cord would play the last message down the telephone line."
+    },
+    "circled_is_marin": {
+      "text": "The circled number belongs to the person the message was always meant for."
+    },
+    "alder_message_text": {
+      "text": "Alder's message says he kept her voice on air so she would always know the way home, and he is sorry."
+    },
+    "marin_reached": {
+      "text": "Marin is reached tonight and hears from her father."
+    },
+    "tapes_saved": {
+      "text": "The thirty years of tapes are saved from erasure."
+    },
+    "tapes_erased": {
+      "text": "The tapes wipe themselves clean at the end of the count."
+    },
+    "second_cell_terminals": {
+      "text": "Two bare terminals under the desk wait for a second cell that never came."
+    },
+    "station_powered_hours": {
+      "text": "Grandpa's spare battery carries the station for hours."
+    },
+    "club_night_number": {
+      "text": "The radio club's night number is taped to the station telephone."
+    },
+    "rescue_crowd": {
+      "text": "Trucks, a generator and people arrive at the station by the end of the gale."
+    },
+    "battery_left_on_shelf": {
+      "text": "Grandpa's spare battery is still wrapped in its rag on the attic shelf.",
+      "contradicts": [
+        "battery_taken"
+      ]
+    },
+    "phone_saved_word": {
+      "text": "Wren's phone recorded Alder's one word, Marin."
+    },
+    "alder_inside_headset": {
+      "text": "Alder sits at the console in a heavy headset with his back to the window."
+    },
+    "door_bolted": {
+      "text": "The steel back door is bolted from inside."
+    },
+    "alder_believes_unheard": {
+      "text": "Alder believes Marin is not listening and has stopped pretending she is."
+    },
+    "marin_listening": {
+      "text": "Marin has been listening to the loop all along."
+    },
+    "alder_live": {
+      "text": "Alder speaks to Marin live, not on tape, for the first time in thirty years."
+    },
+    "others_promised": {
+      "text": "For ten years people promised Alder that Marin was listening."
+    },
+    "grandpa_answered_two_dots": {
+      "text": "Grandpa answered Alder with two dots every midnight for twenty years; Alder took it for a fault."
+    },
+    "never_keyed": {
+      "text": "Grandpa never let Wren key the transmitter."
+    },
+    "net_emergency_line": {
+      "text": "Grandpa's club card gives the county radio net's emergency line."
+    },
+    "pencil_mark_power": {
+      "text": "Grandpa always kept the transmitter needle at a pencil mark, below the red band."
+    },
+    "silent_carrier": {
+      "text": "Someone keys a silent carrier in reply to Wren's call."
+    },
+    "net_relays_message": {
+      "text": "Operators along the coast pass the message for Marin from set to set."
+    },
+    "transmitter_blown": {
+      "text": "Pushed into the red band, Grandpa's transmitter burns out."
+    },
+    "net_recording": {
+      "text": "The net line's recording offers the duty controller only for danger to life or property."
+    },
+    "woman_two_ridges": {
+      "text": "A woman two ridges west without a call sign keeps asking what the message says."
+    },
+    "listener_eleven_winters": {
+      "text": "A listener two ridges west has asked after KX every winter for eleven years without leaving a name."
+    },
+    "coast_guard_number": {
+      "text": "The coast guard auxiliary's number is printed on the tide table."
+    },
+    "grandpa_address_book": {
+      "text": "Grandpa's address book holds forty years of radio friends."
+    },
+    "okafor_key_soup": {
+      "text": "Mrs. Okafor has left soup on Alder's step for thirty years and has his key."
+    },
+    "number_six_years": {
+      "text": "Alder has had the circled number for six years and never dialed it."
+    },
+    "cg_rescue_crew": {
+      "text": "A coast guard crew reaches the station and finds Alder unhurt."
+    },
+    "missing_relative_file": {
+      "text": "The auxiliary opens a missing-relative file for Marin Alder."
+    },
+    "story_logged_curiosity": {
+      "text": "The auxiliary logs Wren's call as a curiosity and sends no one."
+    },
+    "eight_transferred": {
+      "text": "Grandpa's address book brackets eight relay men TRANSFERRED INLAND."
+    },
+    "ruiz_stayed": {
+      "text": "A relay man named Ruiz stayed, across the bay, and will not talk."
+    },
+    "ruiz_keys": {
+      "text": "Ruiz still has keys to the station."
+    },
+    "ruiz_watches_lamp": {
+      "text": "Ruiz bought a house where he could watch the mast lamp every night."
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "Sleepless Wren switches on her late grandfather's attic shortwave and hears the same number loop as every night this week.",
+      "requires": [],
+      "establishes": [
+        "wren_callahan",
+        "grandpa_dead",
+        "attic_shortwave",
+        "loop_week",
+        "loop_voice_woman",
+        "loop_falling_tone"
+      ]
+    },
+    "n_shelf": {
+      "function": "decision",
+      "event": "Wren eyes his untouched spare battery and headset and lets herself take only one.",
+      "requires": [
+        "attic_shortwave",
+        "loop_voice_woman"
+      ],
+      "establishes": [
+        "spare_battery_shelf",
+        "headset_hook",
+        "headset_hears_room",
+        "grandpa_dead_a_year",
+        "wren_only_attic_visitor",
+        "never_touched_things",
+        "one_thing_bargain"
+      ]
+    },
+    "n_shelf_battery": {
+      "function": "continue",
+      "event": "She checks the battery's bright terminals and packs it.",
+      "requires": [
+        "spare_battery_shelf"
+      ],
+      "establishes": [
+        "battery_terminals_bright"
+      ]
+    },
+    "n_shelf_headset": {
+      "function": "continue",
+      "event": "She puts on the headset, which smells of him, and the voice comes very close.",
+      "requires": [
+        "headset_hook"
+      ],
+      "establishes": [
+        "headset_deepens_signal"
+      ]
+    },
+    "n_start": {
+      "function": "decision",
+      "event": "Three leads pull at her: plot the numbers, ride to the relay station, or find Grandpa's logbook.",
+      "requires": [
+        "loop_voice_woman"
+      ],
+      "establishes": [
+        "loop_maybe_coordinates",
+        "relay_station_headland",
+        "grandpa_logbook"
+      ]
+    },
+    "r_coord_1": {
+      "function": "decision",
+      "event": "Plotted, two pairs fall on the harbor and the ridge water tower; she must pick one.",
+      "requires": [
+        "loop_maybe_coordinates"
+      ],
+      "establishes": [
+        "coords_harbor_tower",
+        "handheld_battery_amber"
+      ]
+    },
+    "r_coord_harbor": {
+      "function": "decision",
+      "event": "At the sleeping harbor she can try the harbormaster's hut, the tide-gauge shed or the notice-board.",
+      "requires": [
+        "coords_harbor_tower"
+      ],
+      "establishes": [
+        "harbor_sites",
+        "loop_on_handheld"
+      ]
+    },
+    "r_coord_notice": {
+      "function": "continue",
+      "event": "A fresh card on the board gives a frequency and says the loop is real.",
+      "requires": [
+        "harbor_sites"
+      ],
+      "establishes": [
+        "notice_card"
+      ]
+    },
+    "r_coord_notice2": {
+      "function": "decision",
+      "event": "The card matches the loop and is hours old; take it or leave it for whoever it was meant for.",
+      "requires": [
+        "notice_card"
+      ],
+      "establishes": [
+        "card_freq_matches"
+      ]
+    },
+    "r_coord_notice3": {
+      "function": "continue",
+      "event": "Tuned to the card, the loop is loudest toward the headland.",
+      "requires": [
+        "notice_card",
+        "card_freq_matches"
+      ],
+      "establishes": [
+        "signal_north_headland",
+        "wren_has_pier_card"
+      ]
+    },
+    "e_coord_notice": {
+      "function": "ending",
+      "event": "She leaves the card, learns it is always replaced, and the loop ends before she acts.",
+      "requires": [
+        "notice_card"
+      ],
+      "establishes": [
+        "card_replaced_always",
+        "loop_stopped"
+      ]
+    },
+    "r_coord_harbor_ask": {
+      "function": "continue",
+      "event": "Harbormaster Pell recognises the loop as the old headland relay's and hints at its keeper.",
+      "requires": [
+        "harbor_sites",
+        "loop_on_handheld"
+      ],
+      "establishes": [
+        "mr_pell",
+        "loop_from_relay_pell",
+        "pell_knows_operator",
+        "county_closed_relay",
+        "loop_on_air_years"
+      ]
+    },
+    "r_coord_harbor_shed": {
+      "function": "decision",
+      "event": "Through the shed window a live receiver blinks with the loop; shove the door or copy the frequency.",
+      "requires": [
+        "harbor_sites"
+      ],
+      "establishes": [
+        "shed_receiver"
+      ]
+    },
+    "r_coord_shed_in": {
+      "function": "continue",
+      "event": "Inside, a RELAY KX card shows the shed is only an ear for a signal from the headland.",
+      "requires": [
+        "shed_receiver"
+      ],
+      "establishes": [
+        "relay_kx_name",
+        "shed_is_ear"
+      ]
+    },
+    "e_coord_shed_leave": {
+      "function": "ending",
+      "event": "At home she finds Grandpa marked that frequency on the dial and never told anyone; the loop ends.",
+      "requires": [
+        "shed_receiver"
+      ],
+      "establishes": [
+        "grandpa_marked_freq",
+        "grandpa_told_no_one",
+        "loop_stopped"
+      ]
+    },
+    "r_coord_tower": {
+      "function": "decision",
+      "event": "The tower is relaying the signal; climb the ladder or check the service box.",
+      "requires": [
+        "coords_harbor_tower"
+      ],
+      "establishes": [
+        "tower_repeats",
+        "loop_on_handheld"
+      ]
+    },
+    "r_coord_climb": {
+      "function": "continue",
+      "event": "Frozen on the eighth rung, she sees a cable running to the relay station.",
+      "requires": [
+        "tower_repeats"
+      ],
+      "establishes": [
+        "cable_to_relay"
+      ]
+    },
+    "r_coord_base": {
+      "function": "decision",
+      "event": "The rusted box might explain things; faded arrows point toward the headland.",
+      "requires": [
+        "tower_repeats"
+      ],
+      "establishes": [
+        "stenciled_arrows"
+      ]
+    },
+    "r_coord_base_in": {
+      "function": "continue",
+      "event": "A sealed tag reads KX RELAY, HEADLAND; the tower is only a repeater.",
+      "requires": [],
+      "establishes": [
+        "relay_kx_name",
+        "kx_cable_tag"
+      ]
+    },
+    "r_coord_base_out": {
+      "function": "continue",
+      "event": "Reflective arrows lay a road along the ridge to the headland.",
+      "requires": [
+        "stenciled_arrows"
+      ],
+      "establishes": [
+        "arrows_reflective"
+      ]
+    },
+    "r_coord_beat": {
+      "function": "continue",
+      "event": "Walking the headland track, she realises the numbers point to the relay on the point.",
+      "requires": [
+        "relay_station_headland",
+        "coords_harbor_tower"
+      ],
+      "establishes": [
+        "numbers_point_to_relay"
+      ]
+    },
+    "r_coord_close": {
+      "function": "continue",
+      "event": "The relay is lit; she creeps down to the lit window.",
+      "requires": [
+        "relay_station_headland"
+      ],
+      "establishes": [
+        "relay_lit"
+      ]
+    },
+    "r_relay_1": {
+      "function": "decision",
+      "event": "She bikes to the relay's chained gate; coast path or service lane.",
+      "requires": [
+        "relay_station_headland"
+      ],
+      "establishes": [
+        "headland_gate"
+      ]
+    },
+    "r_re_path": {
+      "function": "decision",
+      "event": "On the windy cliff path she finds a fence gap and a clear view of the mast.",
+      "requires": [
+        "headland_gate"
+      ],
+      "establishes": [
+        "fence_gap"
+      ]
+    },
+    "r_re_gap": {
+      "function": "continue",
+      "event": "Inside the compound a RELAY KX sign and fresh upkeep prove the station is tended.",
+      "requires": [
+        "fence_gap"
+      ],
+      "establishes": [
+        "relay_kx_name",
+        "relay_tended",
+        "town_thinks_relay_dead"
+      ]
+    },
+    "e_re_photo": {
+      "function": "ending",
+      "event": "She photographs the mast and leaves; a blurred man with a mug is the only answer before the loop stops.",
+      "requires": [],
+      "establishes": [
+        "man_in_window",
+        "loop_stopped"
+      ]
+    },
+    "r_re_lane": {
+      "function": "decision",
+      "event": "Down the flooded lane: gatehouse log board, transformer hut, or cellar steps.",
+      "requires": [
+        "headland_gate"
+      ],
+      "establishes": [
+        "lane_sites"
+      ]
+    },
+    "r_re_cellar": {
+      "function": "continue",
+      "event": "In the rising cellar water a taped sleeve holds a note beginning LOOP.",
+      "requires": [
+        "lane_sites"
+      ],
+      "establishes": [
+        "cellar_note_sleeve"
+      ]
+    },
+    "r_re_cellar2": {
+      "function": "decision",
+      "event": "The note is a KX promise to keep the loop up while he breathes; the water is rising.",
+      "requires": [
+        "cellar_note_sleeve"
+      ],
+      "establishes": [
+        "kx_promise_note"
+      ]
+    },
+    "r_re_cellar3": {
+      "function": "continue",
+      "event": "She salvages the note and barely escapes the surge.",
+      "requires": [
+        "kx_promise_note"
+      ],
+      "establishes": [
+        "wren_has_kx_note"
+      ]
+    },
+    "e_re_cellar": {
+      "function": "ending",
+      "event": "She escapes without the note, falls ill for three days, and the loop is gone.",
+      "requires": [
+        "kx_promise_note"
+      ],
+      "establishes": [
+        "wren_fever",
+        "loop_stopped"
+      ]
+    },
+    "r_re_gatehouse": {
+      "function": "decision",
+      "event": "In the warm gatehouse the log board's last entry is hours old and a dog is coming.",
+      "requires": [
+        "lane_sites"
+      ],
+      "establishes": [
+        "log_board"
+      ]
+    },
+    "r_re_log": {
+      "function": "continue",
+      "event": "The log reads LOOP HOLDING, STILL NO ANSWER: a person tends the signal and waits.",
+      "requires": [
+        "log_board"
+      ],
+      "establishes": [
+        "loop_holding_no_answer",
+        "person_tends_signal",
+        "loop_on_air_years"
+      ]
+    },
+    "r_re_scrap": {
+      "function": "continue",
+      "event": "She steals the newest page, which reads FOR M, STILL HOLDING.",
+      "requires": [
+        "log_board"
+      ],
+      "establishes": [
+        "log_for_m",
+        "wren_has_log_page",
+        "person_tends_signal"
+      ]
+    },
+    "r_re_hut": {
+      "function": "continue",
+      "event": "The transformer sticker shows K. Alder services it monthly.",
+      "requires": [
+        "lane_sites"
+      ],
+      "establishes": [
+        "k_alder_services",
+        "alder_surname"
+      ]
+    },
+    "r_relay_beat": {
+      "function": "continue",
+      "event": "In the rain, the one lit window, swept step and blinking lamp show someone is there.",
+      "requires": [
+        "relay_station_headland"
+      ],
+      "establishes": [
+        "relay_lit",
+        "step_swept",
+        "red_lamp_keeps_time"
+      ]
+    },
+    "r_relay_close": {
+      "function": "continue",
+      "event": "She crosses the yard to the lit window of a lived-in cabin.",
+      "requires": [
+        "relay_lit",
+        "red_lamp_keeps_time"
+      ],
+      "establishes": [
+        "station_lived_in"
+      ]
+    },
+    "r_notes_1": {
+      "function": "decision",
+      "event": "She hunts for Grandpa's logbook: the cedar trunk or the radio shed.",
+      "requires": [
+        "grandpa_logbook"
+      ],
+      "establishes": [
+        "trunk_and_shed"
+      ]
+    },
+    "r_no_trunk": {
+      "function": "decision",
+      "event": "The trunk holds the logbook, QSL cards and a ribbon of unstamped envelopes.",
+      "requires": [
+        "trunk_and_shed"
+      ],
+      "establishes": [
+        "trunk_contents"
+      ]
+    },
+    "r_no_letters": {
+      "function": "continue",
+      "event": "The envelopes are unposted letters to Kell at Relay KX: keep the channel open.",
+      "requires": [
+        "trunk_contents"
+      ],
+      "establishes": [
+        "letters_to_kx",
+        "relay_kx_name",
+        "kell_first_name",
+        "letter_keep_channel",
+        "grandpa_knew_kell"
+      ]
+    },
+    "r_no_letters2": {
+      "function": "decision",
+      "event": "The letter names Kell Alder and pleads with him not to give up on his daughter.",
+      "requires": [
+        "kell_first_name"
+      ],
+      "establishes": [
+        "kell_alder",
+        "alder_surname",
+        "alder_daughter_estranged",
+        "thirty_letters"
+      ]
+    },
+    "r_no_letters3": {
+      "function": "continue",
+      "event": "She reads on; Grandpa wrote to Kell for years and never posted a word.",
+      "requires": [
+        "kell_first_name"
+      ],
+      "establishes": [
+        "grandpa_never_posted",
+        "wren_keeps_letter"
+      ]
+    },
+    "e_no_letters": {
+      "function": "ending",
+      "event": "She leaves the letters unread, later finds his plea to deliver them, and the loop is gone.",
+      "requires": [
+        "thirty_letters"
+      ],
+      "establishes": [
+        "letters_take_by_hand",
+        "loop_stopped"
+      ]
+    },
+    "r_no_book": {
+      "function": "continue",
+      "event": "The logbook tracks the KX loop and an operator named Alder, ending with an unanswered question.",
+      "requires": [
+        "trunk_contents"
+      ],
+      "establishes": [
+        "logbook_tracks_kx",
+        "alder_surname",
+        "club_silent",
+        "logbook_last_question",
+        "wren_has_logbook",
+        "relay_kx_name",
+        "loop_on_air_years"
+      ]
+    },
+    "r_no_cards": {
+      "function": "decision",
+      "event": "Among the QSL cards one names KX ALDER.",
+      "requires": [
+        "trunk_contents"
+      ],
+      "establishes": [
+        "kx_alder_callsign",
+        "alder_surname"
+      ]
+    },
+    "r_no_freq": {
+      "function": "continue",
+      "event": "Three cards confirm Relay KX, operator Alder and the loop's frequency; nobody ever answered him.",
+      "requires": [
+        "kx_alder_callsign"
+      ],
+      "establishes": [
+        "relay_kx_name",
+        "kx_freq_matches_loop",
+        "grandpa_logged_thousands",
+        "no_listener_answered",
+        "loop_on_air_years"
+      ]
+    },
+    "e_no_cards_end": {
+      "function": "ending",
+      "event": "Sorting all night, she finds a card from M asking him not to tell; the loop goes quiet.",
+      "requires": [
+        "kx_alder_callsign"
+      ],
+      "establishes": [
+        "m_card_eleven_years",
+        "loop_stopped"
+      ]
+    },
+    "r_no_shed": {
+      "function": "decision",
+      "event": "In the radio shed: a wall of tuning notes and a padlocked cabinet.",
+      "requires": [
+        "trunk_and_shed"
+      ],
+      "establishes": [
+        "shed_cabinet"
+      ]
+    },
+    "r_no_tuning": {
+      "function": "continue",
+      "event": "A circled note: KX LOOP, OPERATOR ALDER, DO NOT GIVE UP ON HIM.",
+      "requires": [],
+      "establishes": [
+        "tuning_note",
+        "grandpa_tried_reach",
+        "alder_surname"
+      ]
+    },
+    "e_no_locked": {
+      "function": "ending",
+      "event": "The forced cabinet crashes; a card reveals Grandpa sent two dots to KX every midnight.",
+      "requires": [
+        "shed_cabinet"
+      ],
+      "establishes": [
+        "cabinet_fell",
+        "two_dots_card"
+      ]
+    },
+    "r_notes_beat": {
+      "function": "continue",
+      "event": "Reading the name Alder again, she sees Grandpa knew the station was alive and told no one.",
+      "requires": [
+        "alder_surname"
+      ],
+      "establishes": [
+        "grandpa_knew_station_alive",
+        "grandpa_told_no_one"
+      ]
+    },
+    "r_notes_close": {
+      "function": "continue",
+      "event": "She rides out, slips through the fence and reaches the lit window.",
+      "requires": [
+        "relay_station_headland"
+      ],
+      "establishes": [
+        "headland_gate",
+        "relay_lit"
+      ]
+    },
+    "n_b1": {
+      "function": "bottleneck",
+      "event": "Through the window: Kell Alder's license, thirty logbooks, a warm mug; a flashlight comes.",
+      "requires": [
+        "relay_lit"
+      ],
+      "establishes": [
+        "kell_alder",
+        "relay_kx_name",
+        "alder_thirty_years",
+        "thirty_logbooks",
+        "alder_is_person",
+        "pencil_and_scrap",
+        "alder_surname",
+        "loop_on_air_years"
+      ]
+    },
+    "n_b1_note": {
+      "function": "continue",
+      "event": "She writes I HEAR YOU, W, wedges it in the door and runs; the flashlight stops at the door.",
+      "requires": [
+        "pencil_and_scrap"
+      ],
+      "establishes": [
+        "note_flashlight_stopped"
+      ]
+    },
+    "n_b1_slip": {
+      "function": "continue",
+      "event": "She slips away unseen; a tall stooped man sits at the desk, never knowing she came.",
+      "requires": [],
+      "establishes": [
+        "alder_never_knew_visit",
+        "alder_tall_stooped"
+      ]
+    },
+    "n_b1_echo": {
+      "function": "continue",
+      "event": "Next day the county lists the relay as decommissioned and unstaffed; she pins up his name.",
+      "requires": [
+        "kell_alder"
+      ],
+      "establishes": [
+        "county_decommissioned",
+        "county_closed_relay",
+        "closed_thirty_years"
+      ]
+    },
+    "n_b1_choice": {
+      "function": "decision",
+      "event": "Crack the numbers or ask the town about Kell Alder.",
+      "requires": [
+        "kell_alder"
+      ],
+      "establishes": []
+    },
+    "m_numbers_1": {
+      "function": "decision",
+      "event": "With Grandpa's logbook and the station register beside her, she can try a cipher or time the beat.",
+      "requires": [
+        "grandpa_logbook"
+      ],
+      "establishes": [
+        "station_register",
+        "beat_unsteady"
+      ]
+    },
+    "m_num_cipher": {
+      "function": "decision",
+      "event": "The register cipher gives HOLDING, ANSWER and M, then stalls.",
+      "requires": [
+        "station_register"
+      ],
+      "establishes": [
+        "cipher_fragments",
+        "underlined_book"
+      ]
+    },
+    "m_num_cracked": {
+      "function": "continue",
+      "event": "One page off: the numbers read STILL HOLDING THE CHANNEL OPEN FOR M, plus a falling count.",
+      "requires": [
+        "station_register"
+      ],
+      "establishes": [
+        "message_for_m",
+        "count_going_down"
+      ]
+    },
+    "m_num_book2": {
+      "function": "decision",
+      "event": "The tide table decodes one cluster to a date and hour; the rest is rubbish.",
+      "requires": [
+        "underlined_book"
+      ],
+      "establishes": [
+        "tide_table_key"
+      ]
+    },
+    "m_num_cracked2": {
+      "function": "continue",
+      "event": "She trusts the fragment: today, 23:40, a clock set for tonight.",
+      "requires": [
+        "tide_table_key"
+      ],
+      "establishes": [
+        "deadline_2340",
+        "count_ends_tonight"
+      ]
+    },
+    "e_num_gibberish": {
+      "function": "ending",
+      "event": "She grinds the tide table against everything past 1 a.m.; the loop is gone and the fragment was the message.",
+      "requires": [
+        "tide_table_key"
+      ],
+      "establishes": [
+        "deadline_2340",
+        "loop_stopped"
+      ]
+    },
+    "m_num_time": {
+      "function": "decision",
+      "event": "Timing shows the gaps between cycles shrinking.",
+      "requires": [
+        "beat_unsteady"
+      ],
+      "establishes": [
+        "gaps_shrinking"
+      ]
+    },
+    "m_num_intervals": {
+      "function": "continue",
+      "event": "Her curve hits zero tonight, a little before midnight.",
+      "requires": [
+        "gaps_shrinking"
+      ],
+      "establishes": [
+        "count_ends_tonight",
+        "count_going_down"
+      ]
+    },
+    "m_num_pattern": {
+      "function": "decision",
+      "event": "Rough figures point to today, and she doubts her own method.",
+      "requires": [
+        "gaps_shrinking"
+      ],
+      "establishes": [
+        "figures_point_today"
+      ]
+    },
+    "m_num_countdown": {
+      "function": "continue",
+      "event": "She circles today: the loop is a countdown ending tonight.",
+      "requires": [
+        "figures_point_today"
+      ],
+      "establishes": [
+        "count_ends_tonight",
+        "count_going_down"
+      ]
+    },
+    "e_num_giveup": {
+      "function": "ending",
+      "event": "Static also gives a date, she bins the calendar, and at 23:40 the loop ends on a name.",
+      "requires": [
+        "figures_point_today"
+      ],
+      "establishes": [
+        "static_gives_date",
+        "final_name_spoken",
+        "loop_stopped",
+        "count_ends_tonight"
+      ]
+    },
+    "m_who_1": {
+      "function": "decision",
+      "event": "Library microfilm or Mrs. Okafor at the marina.",
+      "requires": [
+        "kell_alder"
+      ],
+      "establishes": [
+        "okafor_intro",
+        "library_microfilm"
+      ]
+    },
+    "m_who_film": {
+      "function": "decision",
+      "event": "A closure story shows one man apart; ten minutes left before closing.",
+      "requires": [
+        "library_microfilm"
+      ],
+      "establishes": [
+        "closure_article",
+        "county_closed_relay"
+      ]
+    },
+    "m_who_article": {
+      "function": "continue",
+      "event": "Kell Alder, senior operator, alone refused to leave: somebody has to keep the channel open.",
+      "requires": [
+        "closure_article"
+      ],
+      "establishes": [
+        "kell_alder",
+        "alder_refused_leave",
+        "keep_channel_quote",
+        "closed_thirty_years"
+      ]
+    },
+    "m_who_photo": {
+      "function": "continue",
+      "event": "Photos give the caption on K. Alder and a later neighbor's letter.",
+      "requires": [
+        "closure_article"
+      ],
+      "establishes": [
+        "alder_surname",
+        "neighbor_letter",
+        "loop_on_air_years"
+      ]
+    },
+    "m_who_okafor": {
+      "function": "decision",
+      "event": "Mrs. Okafor demands to know why Wren asks about Kell before she says a word.",
+      "requires": [
+        "okafor_intro",
+        "alder_surname"
+      ],
+      "establishes": [
+        "kell_first_name"
+      ]
+    },
+    "m_who_story": {
+      "function": "continue",
+      "event": "Trusted, Okafor reveals the pier card, the quarrel, the daughter's leaving and Alder's vow.",
+      "requires": [
+        "okafor_told_truth"
+      ],
+      "establishes": [
+        "okafor_pins_card",
+        "alder_daughter_estranged",
+        "quarrel_bus",
+        "alder_vow",
+        "okafor_ring_marina",
+        "notice_card"
+      ]
+    },
+    "e_who_warn": {
+      "function": "ending",
+      "event": "Lying, Wren is sent home with a worse question: why keep a girl's voice on air thirty years?",
+      "requires": [
+        "okafor_intro"
+      ],
+      "establishes": [
+        "voice_kept_thirty_years",
+        "loop_on_air_years"
+      ]
+    },
+    "n_b2": {
+      "function": "bottleneck",
+      "event": "She hears the opening tones as Morse M and the four-second gap: he is waiting for an answer.",
+      "requires": [
+        "attic_shortwave",
+        "loop_voice_woman",
+        "loop_falling_tone",
+        "kell_alder"
+      ],
+      "establishes": [
+        "two_tones_m",
+        "morse_chart",
+        "four_second_gap"
+      ]
+    },
+    "n_b2_under": {
+      "function": "continue",
+      "event": "Under the voice an older tape bleeds through: the reader called the station man Dad.",
+      "requires": [
+        "headset_taken"
+      ],
+      "establishes": [
+        "voice_is_daughter"
+      ]
+    },
+    "n_b2_echo": {
+      "function": "continue",
+      "event": "Her logs show the tone starting lower each night: the loop is running out.",
+      "requires": [
+        "loop_on_air_years"
+      ],
+      "establishes": [
+        "week_logs"
+      ]
+    },
+    "n_b2_choice": {
+      "function": "decision",
+      "event": "Two questions: who is M, and what is the count running down to.",
+      "requires": [
+        "two_tones_m",
+        "week_logs"
+      ],
+      "establishes": []
+    },
+    "mm_listener_1": {
+      "function": "decision",
+      "event": "M could be a person in family records or a place on Grandpa's chart.",
+      "requires": [
+        "two_tones_m"
+      ],
+      "establishes": [
+        "grandpa_chart"
+      ]
+    },
+    "mm_list_family": {
+      "function": "decision",
+      "event": "Records give Alder's daughter Marin, gone thirty years, and a sister nearby.",
+      "requires": [
+        "kell_alder"
+      ],
+      "establishes": [
+        "m_named_marin",
+        "marin_is_alder_daughter",
+        "marin_vanished",
+        "alder_sister"
+      ]
+    },
+    "mm_list_daughter": {
+      "function": "continue",
+      "event": "A forum post: Kell's girl read the station numbers, left after a row, and he calls her home.",
+      "requires": [
+        "m_named_marin"
+      ],
+      "establishes": [
+        "voice_is_marin",
+        "loop_is_apology",
+        "marin_wedding_two_counties"
+      ]
+    },
+    "mm_list_sister": {
+      "function": "continue",
+      "event": "The sister confirms M is Marin after a quarrel and gives her last address two ridges west.",
+      "requires": [
+        "alder_sister"
+      ],
+      "establishes": [
+        "marin_two_ridges_west",
+        "sister_stopped_listening"
+      ]
+    },
+    "mm_list_place": {
+      "function": "decision",
+      "event": "Grandpa ringed an M by a breakwater mooring; ride out or study the rest of the chart.",
+      "requires": [
+        "grandpa_chart"
+      ],
+      "establishes": [
+        "chart_m_mooring"
+      ]
+    },
+    "mm_list_map": {
+      "function": "continue",
+      "event": "The buoy's brass plate reads Marin, HER MOORING IS KEPT: M is a person expected back.",
+      "requires": [
+        "chart_m_mooring"
+      ],
+      "establishes": [
+        "marin_mooring_kept",
+        "m_named_marin"
+      ]
+    },
+    "e_list_deadend": {
+      "function": "ending",
+      "event": "She laps the chart all night; the loop ends on a spoken name.",
+      "requires": [
+        "chart_m_mooring"
+      ],
+      "establishes": [
+        "final_name_spoken",
+        "loop_stopped"
+      ]
+    },
+    "mm_count_1": {
+      "function": "decision",
+      "event": "Read the clock by arithmetic or by the tide and forecast.",
+      "requires": [
+        "week_logs"
+      ],
+      "establishes": [
+        "gale_forecast"
+      ]
+    },
+    "mm_count_time": {
+      "function": "decision",
+      "event": "The line hits zero at 23:40; the maintenance sheet or the operating schedule may say why.",
+      "requires": [
+        "week_logs"
+      ],
+      "establishes": [
+        "deadline_2340",
+        "archive_docs"
+      ]
+    },
+    "mm_count_extrap": {
+      "function": "continue",
+      "event": "The cell is eleven years past its life; the count is the station's death, measured.",
+      "requires": [
+        "archive_docs"
+      ],
+      "establishes": [
+        "cell_failing",
+        "cell_eleven_years_over",
+        "count_is_cell_life",
+        "no_timer"
+      ]
+    },
+    "mm_count_clock": {
+      "function": "continue",
+      "event": "The schedule's FINAL entry, moved three times: play tape 2, then erase all, today at 23:40.",
+      "requires": [
+        "archive_docs"
+      ],
+      "establishes": [
+        "final_send_scheduled",
+        "erase_after_last_send",
+        "deadline_2340"
+      ]
+    },
+    "mm_count_tide": {
+      "function": "decision",
+      "event": "A spring tide peaks at 23:42 with a gale warning; act tonight or check in daylight.",
+      "requires": [
+        "week_logs"
+      ],
+      "establishes": [
+        "spring_tide",
+        "gale_forecast"
+      ]
+    },
+    "mm_count_warn": {
+      "function": "continue",
+      "event": "She trusts the tide: the yard floods at the minute the count hits zero.",
+      "requires": [
+        "spring_tide"
+      ],
+      "establishes": [
+        "tide_floods_station",
+        "deadline_2340"
+      ]
+    },
+    "e_count_wait": {
+      "function": "ending",
+      "event": "She waits for daylight; the tide cut the relay's power and the loop is gone.",
+      "requires": [
+        "spring_tide"
+      ],
+      "establishes": [
+        "tide_cut_power",
+        "loop_stopped"
+      ]
+    },
+    "n_b3": {
+      "function": "bottleneck",
+      "event": "The loop breaks for a recorded message: Alder tells Marin this is the last hour.",
+      "requires": [
+        "two_tones_m"
+      ],
+      "establishes": [
+        "final_tape",
+        "m_named_marin",
+        "marin_is_alder_daughter",
+        "cell_failing",
+        "deadline_2340"
+      ]
+    },
+    "n_b3_note": {
+      "function": "continue",
+      "event": "An added message thanks the W who left three words in his door.",
+      "requires": [
+        "note_left"
+      ],
+      "establishes": [
+        "alder_kept_note"
+      ]
+    },
+    "n_b3_echo": {
+      "function": "continue",
+      "event": "A gale rises; one hour is barely the ride out.",
+      "requires": [
+        "cell_failing",
+        "thirty_logbooks"
+      ],
+      "establishes": [
+        "gale_now"
+      ]
+    },
+    "n_b3_choice": {
+      "function": "decision",
+      "event": "Fifty-nine minutes: bicycle, Grandpa's transmitter, or the telephone, and nobody else knows.",
+      "requires": [
+        "deadline_2340"
+      ],
+      "establishes": [
+        "grandpa_transmitter",
+        "nobody_else_knows"
+      ]
+    },
+    "f_station_1": {
+      "function": "decision",
+      "event": "At the flooded, chained station with nine minutes: climb the fence or take the service road.",
+      "requires": [
+        "relay_station_headland"
+      ],
+      "establishes": [
+        "headland_gate",
+        "yard_flooded"
+      ]
+    },
+    "f_st_fence": {
+      "function": "decision",
+      "event": "In the yard: run the open gale or work round behind the sheds.",
+      "requires": [
+        "yard_flooded"
+      ],
+      "establishes": []
+    },
+    "f_st_control": {
+      "function": "decision",
+      "event": "The empty control room: countdown, ERASE tape, HOLD switch, circled number, dying cell.",
+      "requires": [
+        "cell_failing"
+      ],
+      "establishes": [
+        "control_room_empty",
+        "alder_at_mast",
+        "erase_after_last_send",
+        "hold_switch",
+        "circled_number"
+      ]
+    },
+    "f_st_answer": {
+      "function": "decision",
+      "event": "Dial the circled number to play his message, or throw HOLD to save the tapes.",
+      "requires": [
+        "hold_switch",
+        "circled_number",
+        "erase_after_last_send"
+      ],
+      "establishes": [
+        "phone_patch",
+        "circled_is_marin"
+      ]
+    },
+    "e_st_reunite": {
+      "function": "ending",
+      "event": "His message plays down the line to Marin, the tape erases, and Wren hands Alder the phone.",
+      "requires": [
+        "circled_number",
+        "phone_patch"
+      ],
+      "establishes": [
+        "alder_message_text",
+        "marin_reached",
+        "tapes_erased",
+        "m_named_marin"
+      ]
+    },
+    "e_st_archive": {
+      "function": "ending",
+      "event": "She throws HOLD; nothing is sent or erased, and Alder decides to stay.",
+      "requires": [
+        "hold_switch"
+      ],
+      "establishes": [
+        "tapes_saved"
+      ]
+    },
+    "f_st_power": {
+      "function": "decision",
+      "event": "The cell is dying beside two empty terminals; splice, nurse it, or go back to the microphone.",
+      "requires": [
+        "cell_failing"
+      ],
+      "establishes": [
+        "second_cell_terminals"
+      ]
+    },
+    "f_st_spliced": {
+      "function": "decision",
+      "event": "Grandpa's JUST IN CASE battery steadies the station for hours.",
+      "requires": [
+        "battery_taken",
+        "spare_battery_shelf"
+      ],
+      "establishes": [
+        "station_powered_hours",
+        "club_night_number"
+      ]
+    },
+    "e_st_stabilize": {
+      "function": "ending",
+      "event": "The radio club brings trucks and people; the count stops and the waiting is shared.",
+      "requires": [
+        "club_night_number",
+        "station_powered_hours"
+      ],
+      "establishes": [
+        "rescue_crowd",
+        "tapes_saved"
+      ]
+    },
+    "e_st_both": {
+      "function": "ending",
+      "event": "HOLD saves the tapes and she dials Marin, who calls out to her father.",
+      "requires": [
+        "hold_switch",
+        "circled_number"
+      ],
+      "establishes": [
+        "tapes_saved",
+        "marin_reached",
+        "m_named_marin",
+        "marin_is_alder_daughter"
+      ]
+    },
+    "e_st_record": {
+      "function": "ending",
+      "event": "The cell dies on the word Marin, saved on her phone; the battery was at home.",
+      "requires": [
+        "second_cell_terminals"
+      ],
+      "establishes": [
+        "battery_left_on_shelf",
+        "phone_saved_word",
+        "m_named_marin"
+      ]
+    },
+    "e_st_hesitate": {
+      "function": "ending",
+      "event": "Going round the sheds, she arrives as the tapes erase, one minute too late to dial.",
+      "requires": [],
+      "establishes": [
+        "tapes_erased",
+        "circled_number"
+      ]
+    },
+    "f_st_road": {
+      "function": "decision",
+      "event": "At the back window Alder sits in a headset, door bolted: rap on the glass or hammer the door.",
+      "requires": [],
+      "establishes": [
+        "alder_inside_headset",
+        "door_bolted"
+      ]
+    },
+    "f_st_alder": {
+      "function": "decision",
+      "event": "Alder lets her in but says Marin is not listening; tonight is goodbye.",
+      "requires": [
+        "kell_alder",
+        "m_named_marin"
+      ],
+      "establishes": [
+        "alder_believes_unheard"
+      ]
+    },
+    "e_st_alder_send": {
+      "function": "ending",
+      "event": "Admitting no one can promise, she moves him to speak live; Marin answers.",
+      "requires": [
+        "kell_alder"
+      ],
+      "establishes": [
+        "alder_live",
+        "marin_reached",
+        "marin_listening"
+      ]
+    },
+    "e_st_alder_refuse": {
+      "function": "ending",
+      "event": "Her false promise closes him; the tape plays and erases, and they sit in the hiss.",
+      "requires": [
+        "kell_alder"
+      ],
+      "establishes": [
+        "others_promised",
+        "tapes_erased"
+      ]
+    },
+    "e_st_note": {
+      "function": "ending",
+      "event": "The note was hers; Alder learns Grandpa answered him, goes live, and Marin answers.",
+      "requires": [
+        "note_left",
+        "kell_alder"
+      ],
+      "establishes": [
+        "alder_kept_note",
+        "grandpa_answered_two_dots",
+        "alder_live",
+        "marin_reached",
+        "marin_listening"
+      ]
+    },
+    "e_st_wait": {
+      "function": "ending",
+      "event": "He never hears her at the door; his goodbye plays and the lamp goes out.",
+      "requires": [
+        "alder_inside_headset"
+      ],
+      "establishes": [
+        "alder_message_text",
+        "loop_stopped"
+      ]
+    },
+    "f_relay_1": {
+      "function": "decision",
+      "event": "Grandpa's transmitter, which she was never allowed to key, or the radio net's emergency line.",
+      "requires": [
+        "grandpa_transmitter"
+      ],
+      "establishes": [
+        "never_keyed",
+        "net_emergency_line"
+      ]
+    },
+    "f_re_rig": {
+      "function": "decision",
+      "event": "She brings up the set; send at his pencil mark or push into the red band.",
+      "requires": [
+        "grandpa_transmitter"
+      ],
+      "establishes": [
+        "pencil_mark_power"
+      ]
+    },
+    "f_re_boost": {
+      "function": "decision",
+      "event": "A silent carrier answers; speak to it or answer the ringing phone.",
+      "requires": [
+        "pencil_mark_power"
+      ],
+      "establishes": [
+        "silent_carrier"
+      ]
+    },
+    "e_re_answer": {
+      "function": "ending",
+      "event": "Marin keys twice, speaks, and Wren hands the channel to father and daughter.",
+      "requires": [
+        "silent_carrier"
+      ],
+      "establishes": [
+        "marin_listening",
+        "voice_is_marin",
+        "marin_reached"
+      ]
+    },
+    "e_re_neighbor": {
+      "function": "ending",
+      "event": "A neighbor's brother spreads the call across the county net; strangers keep saying Marin's name.",
+      "requires": [],
+      "establishes": [
+        "net_relays_message"
+      ]
+    },
+    "e_re_fuse": {
+      "function": "ending",
+      "event": "Ten seconds at full power, then the transmitter burns out.",
+      "requires": [
+        "pencil_mark_power"
+      ],
+      "establishes": [
+        "transmitter_blown"
+      ]
+    },
+    "f_re_club": {
+      "function": "decision",
+      "event": "The net's recording asks whether life or property is in danger.",
+      "requires": [
+        "net_emergency_line"
+      ],
+      "establishes": [
+        "net_recording"
+      ]
+    },
+    "f_re_net": {
+      "function": "decision",
+      "event": "The controller spreads the message; a woman two ridges west asks what it says.",
+      "requires": [
+        "net_recording"
+      ],
+      "establishes": [
+        "woman_two_ridges",
+        "net_relays_message"
+      ]
+    },
+    "e_re_found": {
+      "function": "ending",
+      "event": "Patched through, Marin reveals she read those numbers at seventeen; Alder answers live.",
+      "requires": [
+        "woman_two_ridges"
+      ],
+      "establishes": [
+        "voice_is_marin",
+        "marin_listening",
+        "marin_reached"
+      ]
+    },
+    "e_re_log": {
+      "function": "ending",
+      "event": "They log twenty-three stations who will keep calling Marin after the loop stops.",
+      "requires": [
+        "net_relays_message"
+      ],
+      "establishes": [
+        "loop_stopped"
+      ]
+    },
+    "e_re_message": {
+      "function": "ending",
+      "event": "She leaves a message; at six the controller says a nameless listener had asked for years.",
+      "requires": [
+        "net_recording"
+      ],
+      "establishes": [
+        "listener_eleven_winters"
+      ]
+    },
+    "f_help_1": {
+      "function": "decision",
+      "event": "Whom to wake: the coast guard, a relay man in Grandpa's address book, or Mrs. Okafor.",
+      "requires": [],
+      "establishes": [
+        "coast_guard_number",
+        "grandpa_address_book"
+      ]
+    },
+    "f_he_okafor": {
+      "function": "continue",
+      "event": "Okafor drives her out and opens the back door with the key Alder gave her.",
+      "requires": [
+        "okafor_ring_marina",
+        "okafor_intro"
+      ],
+      "establishes": [
+        "okafor_key_soup"
+      ]
+    },
+    "e_he_okafor": {
+      "function": "ending",
+      "event": "Okafor makes Alder dial the circled number; he speaks to Marin.",
+      "requires": [
+        "kell_alder"
+      ],
+      "establishes": [
+        "circled_number",
+        "number_six_years",
+        "marin_reached",
+        "m_named_marin"
+      ]
+    },
+    "f_he_cg": {
+      "function": "decision",
+      "event": "The auxiliary officer demands location and nature of emergency.",
+      "requires": [
+        "coast_guard_number"
+      ],
+      "establishes": []
+    },
+    "f_he_act": {
+      "function": "decision",
+      "event": "A crew reaches Alder; she must pick one job: find Marin or save the building.",
+      "requires": [
+        "deadline_2340"
+      ],
+      "establishes": [
+        "spring_tide",
+        "cg_rescue_crew",
+        "headland_gate"
+      ]
+    },
+    "e_he_escort": {
+      "function": "ending",
+      "event": "The clerk finds Marin's number; Alder speaks with her as the sea fills the yard.",
+      "requires": [
+        "cg_rescue_crew"
+      ],
+      "establishes": [
+        "marin_reached",
+        "marin_two_ridges_west",
+        "tapes_saved"
+      ]
+    },
+    "e_he_safe": {
+      "function": "ending",
+      "event": "The crew sandbags and runs a generator; HOLD stops the count and a file opens for Marin.",
+      "requires": [
+        "cg_rescue_crew"
+      ],
+      "establishes": [
+        "tapes_saved",
+        "missing_relative_file",
+        "marin_two_ridges_west"
+      ]
+    },
+    "e_he_dismiss": {
+      "function": "ending",
+      "event": "Her whole story gets logged as a curiosity; the tide ruins thirty years of tape.",
+      "requires": [],
+      "establishes": [
+        "story_logged_curiosity",
+        "loop_stopped"
+      ]
+    },
+    "f_he_colleague": {
+      "function": "decision",
+      "event": "Eight inland numbers, or Ruiz across the bay: STAYED, WON'T TALK.",
+      "requires": [
+        "grandpa_address_book"
+      ],
+      "establishes": [
+        "eight_transferred",
+        "ruiz_stayed"
+      ]
+    },
+    "f_he_join": {
+      "function": "decision",
+      "event": "Ruiz drives her to the station with his keys; go in or stay in the truck.",
+      "requires": [
+        "ruiz_stayed"
+      ],
+      "establishes": [
+        "ruiz_keys"
+      ]
+    },
+    "e_he_complete": {
+      "function": "ending",
+      "event": "With Ruiz and Alder she holds the station and dials Marin.",
+      "requires": [
+        "ruiz_keys"
+      ],
+      "establishes": [
+        "marin_reached",
+        "circled_number"
+      ]
+    },
+    "e_he_takeover": {
+      "function": "ending",
+      "event": "She waits in the truck and never learns whether Marin answered.",
+      "requires": [
+        "ruiz_keys"
+      ],
+      "establishes": []
+    },
+    "e_he_dead": {
+      "function": "ending",
+      "event": "The inland numbers lead to Ruiz too late; the mast lamp is already out.",
+      "requires": [
+        "eight_transferred"
+      ],
+      "establishes": [
+        "ruiz_watches_lamp",
+        "ruiz_keys",
+        "loop_stopped"
+      ]
+    }
+  },
+  "choices": {
+    "c_open": {
+      "intent": "listen to the loop once more",
+      "cost": "none"
+    },
+    "c_n_shelf_1": {
+      "intent": "take the spare battery",
+      "cost": "gives up the headset",
+      "plants": "battery"
+    },
+    "c_n_shelf_2": {
+      "intent": "take the operator headset",
+      "cost": "gives up the battery",
+      "plants": "headset"
+    },
+    "c_n_shelf_battery_1": {
+      "intent": "return to the radio",
+      "cost": "none"
+    },
+    "c_n_shelf_headset_1": {
+      "intent": "return to the radio",
+      "cost": "none"
+    },
+    "c_n_start_1": {
+      "intent": "treat the numbers as a map",
+      "cost": "gives up the relay and logbook leads"
+    },
+    "c_n_start_2": {
+      "intent": "go to the signal's likely source",
+      "cost": "gives up the map and logbook leads"
+    },
+    "c_n_start_3": {
+      "intent": "learn what Grandpa knew",
+      "cost": "gives up the map and relay leads"
+    },
+    "c_r_coord_1_1": {
+      "intent": "follow the harbor coordinate",
+      "cost": "gives up the water tower"
+    },
+    "c_r_coord_1_2": {
+      "intent": "follow the ridge coordinate",
+      "cost": "gives up the harbor"
+    },
+    "c_r_coord_harbor_1": {
+      "intent": "ask the harbormaster",
+      "cost": "gives up the shed and the notice-board"
+    },
+    "c_r_coord_harbor_2": {
+      "intent": "inspect the dead shed",
+      "cost": "gives up the hut and the notice-board"
+    },
+    "c_r_coord_harbor_3": {
+      "intent": "read the notice-board",
+      "cost": "gives up the hut and the shed"
+    },
+    "c_r_coord_notice_1": {
+      "intent": "examine the odd card",
+      "cost": "none"
+    },
+    "c_r_coord_notice2_1": {
+      "intent": "take the card and follow its frequency",
+      "cost": "takes a message meant for someone else"
+    },
+    "c_r_coord_notice2_2": {
+      "intent": "leave the card in place",
+      "cost": "gives up the card's lead tonight"
+    },
+    "c_r_coord_notice3_1": {
+      "intent": "follow the signal north",
+      "cost": "a long walk out to the headland"
+    },
+    "c_r_coord_harbor_ask_1": {
+      "intent": "take Pell's hint to the headland",
+      "cost": "a long walk out to the headland"
+    },
+    "c_r_coord_harbor_shed_1": {
+      "intent": "force the shed door",
+      "cost": "a noise the whole harbor could hear"
+    },
+    "c_r_coord_harbor_shed_2": {
+      "intent": "note the frequency and leave",
+      "cost": "gives up the night's search"
+    },
+    "c_r_coord_shed_in_1": {
+      "intent": "follow the signal toward the headland",
+      "cost": "a long walk out to the headland"
+    },
+    "c_r_coord_tower_1": {
+      "intent": "climb toward the antenna",
+      "cost": "a rotten ladder over concrete"
+    },
+    "c_r_coord_tower_2": {
+      "intent": "inspect the service box",
+      "cost": "gives up the view from the ladder"
+    },
+    "c_r_coord_climb_1": {
+      "intent": "follow the cable to the relay",
+      "cost": "shaking legs and a long walk"
+    },
+    "c_r_coord_base_1": {
+      "intent": "open the rusted panel",
+      "cost": "time and skinned knuckles"
+    },
+    "c_r_coord_base_2": {
+      "intent": "follow the arrows",
+      "cost": "leaves the box unopened"
+    },
+    "c_r_coord_base_in_1": {
+      "intent": "go to the headland relay",
+      "cost": "a long walk out to the headland"
+    },
+    "c_r_coord_base_out_1": {
+      "intent": "keep to the marked path",
+      "cost": "none"
+    },
+    "c_r_coord_beat_1": {
+      "intent": "press on to the point",
+      "cost": "none"
+    },
+    "c_r_coord_close_1": {
+      "intent": "look into the lit window",
+      "cost": "risks being seen"
+    },
+    "c_r_relay_1_1": {
+      "intent": "take the exposed coast path",
+      "cost": "a cliff edge in a strong wind"
+    },
+    "c_r_relay_1_2": {
+      "intent": "take the sheltered service lane",
+      "cost": "gives up the coast path"
+    },
+    "c_r_re_path_1": {
+      "intent": "get inside the fence",
+      "cost": "a scraped elbow"
+    },
+    "c_r_re_path_2": {
+      "intent": "take a photo and retreat",
+      "cost": "gives up getting inside tonight"
+    },
+    "c_r_re_gap_1": {
+      "intent": "go deeper into the compound",
+      "cost": "none"
+    },
+    "c_r_re_lane_1": {
+      "intent": "read the gatehouse log",
+      "cost": "gives up the hut and the cellar"
+    },
+    "c_r_re_lane_2": {
+      "intent": "check the transformer hut",
+      "cost": "gives up the gatehouse and the cellar"
+    },
+    "c_r_re_lane_3": {
+      "intent": "go down to the cellar",
+      "cost": "gives up the gatehouse and the hut"
+    },
+    "c_r_re_cellar_1": {
+      "intent": "get close enough to read",
+      "cost": "rising cold water"
+    },
+    "c_r_re_cellar2_1": {
+      "intent": "save the note",
+      "cost": "being caught by the surge"
+    },
+    "c_r_re_cellar2_2": {
+      "intent": "get out safely",
+      "cost": "loses the note"
+    },
+    "c_r_re_cellar3_1": {
+      "intent": "get out of the wind",
+      "cost": "none"
+    },
+    "c_r_re_gatehouse_1": {
+      "intent": "read the log in place",
+      "cost": "risks the dog finding her"
+    },
+    "c_r_re_gatehouse_2": {
+      "intent": "steal the newest page",
+      "cost": "takes something not hers"
+    },
+    "c_r_re_log_1": {
+      "intent": "slip back out",
+      "cost": "none"
+    },
+    "c_r_re_scrap_1": {
+      "intent": "return toward the yard",
+      "cost": "none"
+    },
+    "c_r_re_hut_1": {
+      "intent": "follow the cable to the mast",
+      "cost": "none"
+    },
+    "c_r_relay_beat_1": {
+      "intent": "approach the lit window",
+      "cost": "none"
+    },
+    "c_r_relay_close_1": {
+      "intent": "look into the lit window",
+      "cost": "risks being seen"
+    },
+    "c_r_notes_1_1": {
+      "intent": "search the cedar trunk",
+      "cost": "gives up the radio shed"
+    },
+    "c_r_notes_1_2": {
+      "intent": "search the radio shed",
+      "cost": "gives up the cedar trunk"
+    },
+    "c_r_no_trunk_1": {
+      "intent": "read the logbook",
+      "cost": "gives up the cards and the letters"
+    },
+    "c_r_no_trunk_2": {
+      "intent": "go through the QSL cards",
+      "cost": "gives up the logbook and the letters"
+    },
+    "c_r_no_trunk_3": {
+      "intent": "open the letters",
+      "cost": "gives up the logbook and the cards"
+    },
+    "c_r_no_letters_1": {
+      "intent": "keep reading the letter",
+      "cost": "none"
+    },
+    "c_r_no_letters2_1": {
+      "intent": "read the whole bundle",
+      "cost": "intrudes on private grief"
+    },
+    "c_r_no_letters2_2": {
+      "intent": "leave the letters unread",
+      "cost": "gives up what they say"
+    },
+    "c_r_no_letters3_1": {
+      "intent": "close the trunk and move on",
+      "cost": "none"
+    },
+    "c_r_no_book_1": {
+      "intent": "take up Grandpa's question",
+      "cost": "none"
+    },
+    "c_r_no_cards_1": {
+      "intent": "chase the KX Alder card",
+      "cost": "leaves the stack unsorted"
+    },
+    "c_r_no_cards_2": {
+      "intent": "sort every card by date",
+      "cost": "the whole night"
+    },
+    "c_r_no_freq_1": {
+      "intent": "put the cards together",
+      "cost": "none"
+    },
+    "c_r_no_shed_1": {
+      "intent": "read the tuning notes",
+      "cost": "hours of reading"
+    },
+    "c_r_no_shed_2": {
+      "intent": "force the padlocked cabinet",
+      "cost": "risks breaking his things"
+    },
+    "c_r_no_tuning_1": {
+      "intent": "take the note down",
+      "cost": "none"
+    },
+    "c_r_notes_beat_1": {
+      "intent": "go to the station by bicycle",
+      "cost": "a night ride to the headland"
+    },
+    "c_r_notes_close_1": {
+      "intent": "look into the lit window",
+      "cost": "risks being seen"
+    },
+    "c_n_b1_1": {
+      "intent": "leave him a message",
+      "cost": "risks the flashlight finding her",
+      "plants": "note"
+    },
+    "c_n_b1_2": {
+      "intent": "slip away unseen",
+      "cost": "leaves without a word to him"
+    },
+    "c_n_b1_note_1": {
+      "intent": "go home",
+      "cost": "none"
+    },
+    "c_n_b1_slip_1": {
+      "intent": "go home",
+      "cost": "none"
+    },
+    "c_n_b1_echo_1": {
+      "intent": "start working on it",
+      "cost": "none"
+    },
+    "c_n_b1_choice_1": {
+      "intent": "decode the numbers",
+      "cost": "gives up asking the town"
+    },
+    "c_n_b1_choice_2": {
+      "intent": "learn about the man",
+      "cost": "gives up the code work"
+    },
+    "c_m_numbers_1_1": {
+      "intent": "try a book cipher",
+      "cost": "gives up timing the beat"
+    },
+    "c_m_numbers_1_2": {
+      "intent": "time the number groups",
+      "cost": "gives up the cipher"
+    },
+    "c_m_num_cipher_1": {
+      "intent": "recheck the register key",
+      "cost": "a slow page-by-page pass"
+    },
+    "c_m_num_cipher_2": {
+      "intent": "try the other underlined book",
+      "cost": "abandons the register key"
+    },
+    "c_m_num_cracked_1": {
+      "intent": "bring the message to the radio",
+      "cost": "none"
+    },
+    "c_m_num_book2_1": {
+      "intent": "trust the single fragment",
+      "cost": "acts on one unconfirmed fact"
+    },
+    "c_m_num_book2_2": {
+      "intent": "test the key on everything",
+      "cost": "hours of decoding"
+    },
+    "c_m_num_cracked2_1": {
+      "intent": "listen for the clock",
+      "cost": "none"
+    },
+    "c_m_num_time_1": {
+      "intent": "keep timing for a precise curve",
+      "cost": "more cycles of waiting"
+    },
+    "c_m_num_time_2": {
+      "intent": "map rough figures to the calendar",
+      "cost": "accepts being a little wrong"
+    },
+    "c_m_num_intervals_1": {
+      "intent": "bring the graph to the radio",
+      "cost": "none"
+    },
+    "c_m_num_pattern_1": {
+      "intent": "commit to today",
+      "cost": "trusts a method she invented"
+    },
+    "c_m_num_pattern_2": {
+      "intent": "test the method on static",
+      "cost": "spends the evening doubting"
+    },
+    "c_m_num_countdown_1": {
+      "intent": "go up to the radio",
+      "cost": "none"
+    },
+    "c_m_who_1_1": {
+      "intent": "search the newspaper archive",
+      "cost": "gives up Mrs. Okafor"
+    },
+    "c_m_who_1_2": {
+      "intent": "ask Mrs. Okafor",
+      "cost": "gives up the library"
+    },
+    "c_m_who_film_1": {
+      "intent": "read the article carefully",
+      "cost": "leaves the other reels unopened"
+    },
+    "c_m_who_film_2": {
+      "intent": "photograph everything",
+      "cost": "reads nothing closely"
+    },
+    "c_m_who_article_1": {
+      "intent": "ride home",
+      "cost": "none"
+    },
+    "c_m_who_photo_1": {
+      "intent": "go to the attic",
+      "cost": "none"
+    },
+    "c_m_who_okafor_1": {
+      "intent": "tell the truth",
+      "cost": "risks sounding insane",
+      "plants": "okafor"
+    },
+    "c_m_who_okafor_2": {
+      "intent": "give a safe cover story",
+      "cost": "closes Okafor to her"
+    },
+    "c_m_who_story_1": {
+      "intent": "ride home with the story",
+      "cost": "none"
+    },
+    "c_n_b2_1": {
+      "intent": "study the silent gap",
+      "cost": "none",
+      "requires": [
+        "four_second_gap"
+      ]
+    },
+    "c_n_b2_2": {
+      "intent": "listen under the voice with the headset",
+      "cost": "none",
+      "requires": [
+        "headset_taken"
+      ]
+    },
+    "c_n_b2_under_1": {
+      "intent": "log what she heard",
+      "cost": "none"
+    },
+    "c_n_b2_echo_1": {
+      "intent": "mark the finding",
+      "cost": "none"
+    },
+    "c_n_b2_choice_1": {
+      "intent": "find out who M is",
+      "cost": "gives up the clock question"
+    },
+    "c_n_b2_choice_2": {
+      "intent": "find out what the count ends in",
+      "cost": "gives up the name question"
+    },
+    "c_mm_listener_1_1": {
+      "intent": "treat M as a person",
+      "cost": "gives up the chart"
+    },
+    "c_mm_listener_1_2": {
+      "intent": "treat M as a place",
+      "cost": "gives up the family records"
+    },
+    "c_mm_list_family_1": {
+      "intent": "search for Marin online",
+      "cost": "gives up calling the sister",
+      "requires": [
+        "m_named_marin"
+      ]
+    },
+    "c_mm_list_family_2": {
+      "intent": "call Alder's sister",
+      "cost": "a late call to a stranger"
+    },
+    "c_mm_list_daughter_1": {
+      "intent": "stop searching",
+      "cost": "none"
+    },
+    "c_mm_list_sister_1": {
+      "intent": "take down the address",
+      "cost": "none"
+    },
+    "c_mm_list_place_1": {
+      "intent": "go to the ringed mooring",
+      "cost": "a ride out in the rain"
+    },
+    "c_mm_list_place_2": {
+      "intent": "study the rest of the chart",
+      "cost": "the rest of the night"
+    },
+    "c_mm_list_map_1": {
+      "intent": "ride home",
+      "cost": "none"
+    },
+    "c_mm_count_1_1": {
+      "intent": "extrapolate the logged line",
+      "cost": "gives up the tide check"
+    },
+    "c_mm_count_1_2": {
+      "intent": "compare with tide and weather",
+      "cost": "gives up the arithmetic"
+    },
+    "c_mm_count_time_1": {
+      "intent": "read the maintenance sheet",
+      "cost": "gives up the schedule"
+    },
+    "c_mm_count_time_2": {
+      "intent": "read the operating schedule",
+      "cost": "gives up the maintenance sheet"
+    },
+    "c_mm_count_extrap_1": {
+      "intent": "check the time",
+      "cost": "none"
+    },
+    "c_mm_count_clock_1": {
+      "intent": "check the time",
+      "cost": "none"
+    },
+    "c_mm_count_tide_1": {
+      "intent": "act on the tide tonight",
+      "cost": "might be wrong"
+    },
+    "c_mm_count_tide_2": {
+      "intent": "wait to recheck in daylight",
+      "cost": "loses tonight"
+    },
+    "c_mm_count_warn_1": {
+      "intent": "check the time",
+      "cost": "none"
+    },
+    "c_n_b3_1": {
+      "intent": "keep listening",
+      "cost": "none"
+    },
+    "c_n_b3_2": {
+      "intent": "keep listening past the click",
+      "cost": "none",
+      "requires": [
+        "note_left"
+      ]
+    },
+    "c_n_b3_note_1": {
+      "intent": "get up from the radio",
+      "cost": "none"
+    },
+    "c_n_b3_echo_1": {
+      "intent": "check the time",
+      "cost": "none"
+    },
+    "c_n_b3_choice_1": {
+      "intent": "go to the station herself",
+      "cost": "gives up the transmitter and the phone"
+    },
+    "c_n_b3_choice_2": {
+      "intent": "broadcast from home",
+      "cost": "gives up going and calling"
+    },
+    "c_n_b3_choice_3": {
+      "intent": "call for help",
+      "cost": "gives up going and broadcasting"
+    },
+    "c_f_station_1_1": {
+      "intent": "go over the fence",
+      "cost": "a climb in the gale"
+    },
+    "c_f_station_1_2": {
+      "intent": "go round by the service road",
+      "cost": "the long way round"
+    },
+    "c_f_st_fence_1": {
+      "intent": "cross the open yard fast",
+      "cost": "the full force of the gale"
+    },
+    "c_f_st_fence_2": {
+      "intent": "go the sheltered way",
+      "cost": "three times as far"
+    },
+    "c_f_st_control_1": {
+      "intent": "answer at the microphone",
+      "cost": "leaves the cell alone"
+    },
+    "c_f_st_control_2": {
+      "intent": "save the power first",
+      "cost": "spends minutes on the cell"
+    },
+    "c_f_st_answer_1": {
+      "intent": "send his message to Marin",
+      "cost": "the tapes erase afterward"
+    },
+    "c_f_st_answer_2": {
+      "intent": "save the tapes",
+      "cost": "nothing reaches Marin tonight"
+    },
+    "c_f_st_power_1": {
+      "intent": "power the station with the spare battery",
+      "cost": "uses up Grandpa's keepsake",
+      "requires": [
+        "battery_taken"
+      ]
+    },
+    "c_f_st_power_2": {
+      "intent": "hold the cell together by hand",
+      "cost": "ties her hands to the cell"
+    },
+    "c_f_st_power_3": {
+      "intent": "return to the microphone",
+      "cost": "leaves the cell dying"
+    },
+    "c_f_st_spliced_1": {
+      "intent": "hand the problem to the radio club",
+      "cost": "gives up doing it herself"
+    },
+    "c_f_st_spliced_2": {
+      "intent": "save the tapes and call Marin",
+      "cost": "a call to a stranger at night"
+    },
+    "c_f_st_road_1": {
+      "intent": "get his attention at the window",
+      "cost": "none"
+    },
+    "c_f_st_road_2": {
+      "intent": "pound on the door",
+      "cost": "the gale swallows the noise"
+    },
+    "c_f_st_alder_1": {
+      "intent": "tell him the honest truth",
+      "cost": "offers no promise"
+    },
+    "c_f_st_alder_2": {
+      "intent": "promise Marin is listening",
+      "cost": "a promise she cannot keep"
+    },
+    "c_f_st_alder_3": {
+      "intent": "reveal she wrote the note",
+      "cost": "none",
+      "requires": [
+        "note_left"
+      ]
+    },
+    "c_f_relay_1_1": {
+      "intent": "transmit herself",
+      "cost": "she has no license"
+    },
+    "c_f_relay_1_2": {
+      "intent": "call the radio net",
+      "cost": "gives up sending herself"
+    },
+    "c_f_re_rig_1": {
+      "intent": "transmit at the safe setting",
+      "cost": "limited range"
+    },
+    "c_f_re_rig_2": {
+      "intent": "transmit at full power",
+      "cost": "risks the set"
+    },
+    "c_f_re_boost_1": {
+      "intent": "answer the carrier",
+      "cost": "lets the phone ring"
+    },
+    "c_f_re_boost_2": {
+      "intent": "answer the phone",
+      "cost": "leaves the carrier unanswered"
+    },
+    "c_f_re_club_1": {
+      "intent": "reach the duty controller",
+      "cost": "calls it an emergency"
+    },
+    "c_f_re_club_2": {
+      "intent": "leave a recorded message",
+      "cost": "waits until six"
+    },
+    "c_f_re_net_1": {
+      "intent": "reach the woman directly",
+      "cost": "the other replies go unlogged"
+    },
+    "c_f_re_net_2": {
+      "intent": "log every reply",
+      "cost": "gives up the woman two ridges west"
+    },
+    "c_f_help_1_1": {
+      "intent": "call the coast guard auxiliary",
+      "cost": "gives up the other calls"
+    },
+    "c_f_help_1_2": {
+      "intent": "find a former relay man",
+      "cost": "gives up the other calls"
+    },
+    "c_f_help_1_3": {
+      "intent": "call Mrs. Okafor as she asked",
+      "cost": "gives up the other calls",
+      "requires": [
+        "okafor_ring_marina"
+      ]
+    },
+    "c_f_he_okafor_1": {
+      "intent": "go in with Okafor",
+      "cost": "none"
+    },
+    "c_f_he_cg_1": {
+      "intent": "report it as an emergency",
+      "cost": "leaves out the story"
+    },
+    "c_f_he_cg_2": {
+      "intent": "tell the whole story",
+      "cost": "buries the emergency"
+    },
+    "c_f_he_act_1": {
+      "intent": "have the crew find Marin",
+      "cost": "leaves the building unsandbagged"
+    },
+    "c_f_he_act_2": {
+      "intent": "have the crew save the station",
+      "cost": "puts off finding Marin"
+    },
+    "c_f_he_colleague_1": {
+      "intent": "call Ruiz",
+      "cost": "gives up the eight inland men"
+    },
+    "c_f_he_colleague_2": {
+      "intent": "call the eight inland men",
+      "cost": "gives up Ruiz"
+    },
+    "c_f_he_join_1": {
+      "intent": "go in with Ruiz",
+      "cost": "leaves the dry truck"
+    },
+    "c_f_he_join_2": {
+      "intent": "stay in the truck",
+      "cost": "misses the end of the story"
+    }
+  },
+  "threads": {
+    "battery": {
+      "variable": "has_battery",
+      "plant": "battery_taken",
+      "planting_choices": [
+        "c_n_shelf_1"
+      ],
+      "payoff_sites": [
+        {
+          "node": "f_st_power",
+          "choice": "c_f_st_power_1",
+          "shows": "the JUST IN CASE battery keeps the dying station alive for hours"
+        },
+        {
+          "node": "f_st_power",
+          "choice": "c_f_st_power_2",
+          "shows": "without the battery the cell dies by hand on the single word Marin"
+        }
+      ]
+    },
+    "headset": {
+      "variable": "has_headset",
+      "plant": "headset_taken",
+      "planting_choices": [
+        "c_n_shelf_2"
+      ],
+      "payoff_sites": [
+        {
+          "node": "n_b2",
+          "choice": "c_n_b2_2",
+          "shows": "under the voice an old tape reveals the reader called the station man Dad"
+        }
+      ]
+    },
+    "note": {
+      "variable": "left_note",
+      "plant": "note_left",
+      "planting_choices": [
+        "c_n_b1_1"
+      ],
+      "payoff_sites": [
+        {
+          "node": "n_b3",
+          "choice": "c_n_b3_2",
+          "shows": "Alder records thanks to the W who left three words in his door"
+        },
+        {
+          "node": "f_st_alder",
+          "choice": "c_f_st_alder_3",
+          "shows": "the note opens Alder up, reveals Grandpa's two dots and brings Marin back live"
+        }
+      ]
+    },
+    "okafor": {
+      "variable": "okafor_trust",
+      "plant": "okafor_told_truth",
+      "planting_choices": [
+        "c_m_who_okafor_1"
+      ],
+      "payoff_sites": [
+        {
+          "node": "f_help_1",
+          "choice": "c_f_help_1_3",
+          "shows": "Mrs. Okafor drives Wren out and opens the station with Alder's key"
+        }
+      ]
+    }
+  },
+  "endings": {
+    "e_coord_notice": {
+      "gift": "the card was real and replaced for years; guarding a message is not the same as following it",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_coord_shed_leave": {
+      "gift": "Grandpa marked that frequency and kept silent; a sensible delay can cost the whole story",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_re_photo": {
+      "gift": "a blurred man with a mug proves someone lives there, and the loop does not wait for daylight",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_re_cellar": {
+      "gift": "the KX promise to keep the loop up while he breathes, paid for with a fever",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_no_letters": {
+      "gift": "Grandpa's pencilled plea to deliver the letters by hand, found too late",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_no_cards_end": {
+      "gift": "a card from M proves someone was listening and asked him not to be told",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_no_locked": {
+      "gift": "Grandpa sent two dots to KX every midnight, the answer hidden behind the cabinet",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_num_gibberish": {
+      "gift": "the single date and hour was the whole message; thoroughness spent the night",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_num_giveup": {
+      "gift": "doubt is healthy, but the square she would not circle was today",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_who_warn": {
+      "gift": "a lie closes Okafor's door and leaves the question of why a girl's voice stays on air",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_list_deadend": {
+      "gift": "every mark on the chart led back to the ringed M while the channel closed",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_count_wait": {
+      "gift": "the sea kept its appointment; a careful night cost the station",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_st_reunite": {
+      "gift": "Alder's apology reaches Marin by phone and Wren hands him the line",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_st_archive": {
+      "gift": "thirty years of tape saved for Marin to hear in full, and Alder decides to stay",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_st_stabilize": {
+      "gift": "a whole radio club takes up the vigil; the waiting is shared",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_st_both": {
+      "gift": "the tapes saved and Marin on the line calling for her father",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_st_record": {
+      "gift": "one saved word, Marin, and the lesson of the battery left at home",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_st_hesitate": {
+      "gift": "the straight way was thirty yards; caution arrived one minute late",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_st_alder_send": {
+      "gift": "honest uncertainty moves Alder to speak live, and Marin answers",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_st_alder_refuse": {
+      "gift": "a promise she could not keep closes him; the channel ends in shared quiet",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_st_note": {
+      "gift": "Wren's note and Grandpa's two dots prove people listened all along, and Marin answers",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_st_wait": {
+      "gift": "the window was glass and six steps away; noise was not the way in",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_re_answer": {
+      "gift": "Marin's voice comes back over the air and father and daughter share the channel",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_re_neighbor": {
+      "gift": "the call for Marin spreads down the coast from set to set",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_re_fuse": {
+      "gift": "Grandpa's pencil mark was wisdom, not timidity; ten seconds and blue smoke",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_re_found": {
+      "gift": "Marin reveals she read the numbers at seventeen and hears her father live",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_re_log": {
+      "gift": "a hundred hands keep calling Marin after the loop falls silent",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_re_message": {
+      "gift": "a nameless listener had asked for years; property was in danger after all",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_he_okafor": {
+      "gift": "Okafor makes Alder dial the number he kept six years, and Marin answers",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_he_escort": {
+      "gift": "a clerk finds Marin and Alder speaks with her as the sea fills the yard",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_he_safe": {
+      "gift": "the station and tapes saved, and a search opened for Marin",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_he_dismiss": {
+      "gift": "start with the tide: the story buried the emergency and the tapes were ruined",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_he_complete": {
+      "gift": "it takes Ruiz, Alder and Wren together to hold the station and reach Marin",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_he_takeover": {
+      "gift": "Ruiz reaches Alder, but some things she must hear from the man himself",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_he_dead": {
+      "gift": "eight inland men led back to Ruiz, who watched the lamp go out",
+      "valence": "negative",
+      "kind": "setback"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "method": "read-book",
+    "book_file": "tmp_cleanup/blind/f3.book.json",
+    "book_sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+    "authored": "2026-11-22",
+    "authoring_minutes": 75,
+    "notes": [
+      "m_numbers_1 presupposes the logbook was fetched from the cedar trunk; only r_no_book establishes that.",
+      "r_relay_beat presupposes the county shut the station; relay-route readers are not told so before it.",
+      "no_listener_answered (r_no_freq) is contradicted by grandpa_answered_two_dots (e_st_note, also implied by e_no_locked).",
+      "no_timer (mm_count_extrap) is contradicted by final_send_scheduled (mm_count_clock)."
+    ]
+  }
+}

@@ -25,6 +25,9 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
+from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.storyplan.models import book_sha256
+
 if TYPE_CHECKING:
     from types import ModuleType
 
@@ -389,3 +392,108 @@ def test_a_split_that_would_move_a_unit_is_refused() -> None:
 def test_no_em_dash_in_the_set() -> None:
     """The repository bans U+2014; the generated JSON must not carry one."""
     assert chr(0x2014) not in _SET.read_text("utf-8")
+
+
+def _plan_items(doc: JsonObj) -> list[JsonObj]:
+    return [i for i in _items(doc) if i["kind"] == "plan"]
+
+
+def test_every_plan_item_carries_the_checker_status(doc: JsonObj) -> None:
+    """Plans have a boolean checker_clean and a sorted error-rule list (D11)."""
+    for item in _plan_items(doc):
+        assert isinstance(item["checker_clean"], bool), item["id"]
+        rules = cast("list[str]", item["checker_error_rules"])
+        assert rules == sorted(set(rules)), item["id"]
+        assert item["checker_clean"] == (not rules), item["id"]
+    for item in _items(doc):
+        if item["kind"] != "plan":
+            assert "checker_clean" not in item, item["id"]
+
+
+def test_checker_status_counts_by_verdict_and_book(doc: JsonObj) -> None:
+    """Held-out clean plans are mostly checker-failing as labelled (AL-884)."""
+    held = [i for i in _plan_items(doc) if i["half"] == "held_out"]
+    clean = [
+        i
+        for i in held
+        if i["expected_verdict"] == "pass" and i["label_strength"] == "strong"
+    ]
+    assert len(clean) == 13
+    passing = {cast("str", i["id"]) for i in clean if i["checker_clean"]}
+    assert passing == {"PL-e4", "PL-f1", "PL-the-midnight-museum-postfix"}
+    rejects = [
+        i
+        for i in held
+        if i["expected_verdict"] == "reject" and i["label_strength"] == "strong"
+    ]
+    assert sum(1 for i in rejects if not i["checker_clean"]) == 13
+    assert {cast("str", i["id"]) for i in rejects if i["checker_clean"]} == {
+        "PL-d5",
+        "PL-the-signal-in-the-static-postfix",
+        "PL-the-cave-of-echoes-postfix",
+        "PL-the-mapmakers-island-postfix",
+    }
+    summary = cast("JsonObj", cast("JsonObj", doc["summary"])["held_out"])
+    by_unit = cast(
+        "dict[str, dict[str, int]]", summary["d12_plans_checker_clean_by_unit"]
+    )
+    assert by_unit["the-cave-of-echoes"] == {"pass/strong": 2, "reject/strong": 2}
+    assert "pass/strong" not in by_unit["the-mapmakers-island"]
+
+
+def test_checker_clean_agrees_with_a_fresh_checker_run(doc: JsonObj) -> None:
+    """The stored status matches check_plan run by the synthetic builder."""
+    path = _REPO / "scripts/build_synthetic_plans.py"
+    spec = importlib.util.spec_from_file_location("build_synthetic_plans", path)
+    assert spec is not None
+    assert spec.loader is not None
+    synth = importlib.util.module_from_spec(spec)
+    sys.modules["build_synthetic_plans"] = synth
+    spec.loader.exec_module(synth)
+    by_id = {cast("str", i["id"]): i for i in _plan_items(doc)}
+    sample = ("PL-e1", "PL-e3", "PL-e4", "PL-f5", "PL-d5", "PL-c2", "PL-x7")
+    try:
+        for pid in sample:
+            item = by_id[pid]
+            # load_source only accepts clean plans, so build the Source by hand.
+            book = _book(item)
+            plan_ref = cast("JsonObj", item["plan"])
+            book_bytes = synth.read_pinned(
+                book["file"], book["revision"], book["sha256"]
+            )
+            plan_bytes = synth.read_pinned(
+                plan_ref["file"], plan_ref.get("revision"), plan_ref["sha256"]
+            )
+            source = synth.Source(
+                item=item,
+                plan=json.loads(plan_bytes),
+                book=Storybook.model_validate(json.loads(book_bytes)),
+                digest=book_sha256(book_bytes),
+            )
+            report = synth.run_check(source.plan, source)
+            rules = sorted(synth.error_rules(report))
+            assert item["checker_error_rules"] == rules, pid
+            assert item["checker_clean"] == (not rules), pid
+    except synth.MissingRevisionError:
+        pytest.skip("pinned revisions are not in this checkout (shallow clone)")
+
+
+def test_smoke_plans_carry_the_recorded_gate_result(doc: JsonObj) -> None:
+    """Smoke plans have no book; they carry their run's recorded final_checks."""
+    smoke = [i for i in _plan_items(doc) if i["scored_for"] == "observe-only"]
+    assert len(smoke) == 6
+    assert all(i["checker_clean"] is True for i in smoke)
+
+
+def test_item_count_and_plan_totals_are_unchanged(doc: JsonObj) -> None:
+    """Adding checker fields changed no count and no label."""
+    assert len(_items(doc)) == 393
+    plans = _plan_items(doc)
+    assert len(plans) == 51
+    verdicts = {(i["expected_verdict"], i["label_strength"]) for i in plans}
+    assert verdicts == {
+        ("reject", "strong"),
+        ("pass", "strong"),
+        ("pass", "weak"),
+        ("unknown", "unlabelled"),
+    }

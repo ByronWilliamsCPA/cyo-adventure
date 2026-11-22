@@ -70,6 +70,7 @@ forced units with reasons, and every unit's half, band and coin flip), `summary`
 | `severity` | `blocker`, `should-fix`, `minor`, `unrated`, or the answer key's `leak`, `thin`, `unearned`. On plans, the highest severity the book carries |
 | `severity_source` | How the source states severity, and any mapping applied |
 | `source` | `doc` (the file) and `anchor` (the id or section in it) |
+| `checker_clean`, `checker_error_rules` | Plans only. `checker_clean` is true when the deterministic plan checker (`check_plan`, the call `scripts/build_synthetic_plans.py::run_check` makes) raises no ERROR on the plan as labelled against its pinned book; `checker_error_rules` is the sorted list of rule ids that raised an ERROR, empty when clean. Smoke plans have no book, so they carry the result their run recorded through the generation gate (`final_checks`). See [What the reviewer sees](#what-the-reviewer-sees-the-checker-gate-d11) |
 | `scored_for` | `D6` (continuity recall and false flags), `D6-payoff` and `D6-merge` (reported beside D6, not in its recall figure), `D12`, or `observe-only` |
 | `label_strength` | `strong`; `weak` (no known defect but never given a full continuity read); `count-agreement` (Clockwork merge counts, where hand and detector counts agree); `unlabelled` |
 | Kind-specific extras | `merge_count`: `merge_nodes`, `hand_seams`, `detector_seams`. `clean_book`: `node_count`, `fixed_nodes` (nodes that carried a defect before the fix, the strongest negatives: for Lighthouse and Orchard the anchor node of each pre-fix finding, for the five books fixed on 2026-11-22 every node a 2026-11-21 residual names), `known_residuals` (see [Known residuals](#known-residuals-the-minor-residual-rule)). `plan`: `plan` (`file`, `sha256`, `pointer` into the file, and `revision` for pinned `out/` plans), `producer`, `defects` (id, class, severity of every defect the book revision carries), `blocker_entries`, `known_residuals` (the book revision's, on blind and hand-written plans), `note` |
@@ -232,16 +233,39 @@ Every family band (8-11, 10-13, 13-16) has at least one defective and one clean 
 
 Held-out D12 plans per book (`summary.held_out.d12_plans_by_unit`; strong labels only, smoke plans excluded):
 
-| Book | `reject` | `pass` | Clean plans are | Known residuals on the clean plans |
-| --- | ---: | ---: | --- | --- |
-| `the-sky-ship-stowaway` | 4 (x7, post-fix, c5, d1) | 2 | e5, f2 | none |
-| `the-midnight-museum` | 1 (x9) | 5 (post-fix, c1, d3, e2, f5) | e2, f5 (post-fix, c1, d3 are minor-only) | MM-5 on e2, f5; MM-4 on the others |
-| `the-signal-in-the-static` | 4 (x8, post-fix, c3, d4) | 2 | e1, f3 | SG-7, SG-8 |
-| `the-cave-of-echoes` | 3 (post-fix, c2, d5) | 2 | e4, f1 | none |
-| `the-mapmakers-island` | 3 (post-fix, c4, d2) | 2 | e3, f4 | MI-12 to MI-17 |
-| `the-clockwork-menagerie` | 1 (z2) | 0 | | |
-| `the-clocktower-cipher` | 1 (z3) | 0 | | |
-| **Total** | **17** | **13** | | |
+| Book | `reject` | `pass` | Clean plans are | Clean plans checker-clean as labelled | Known residuals on the clean plans |
+| --- | ---: | ---: | --- | --- | --- |
+| `the-sky-ship-stowaway` | 4 (x7, post-fix, c5, d1) | 2 | e5, f2 | 0 of 2 (SP-2; SP-2, SP-3) | none |
+| `the-midnight-museum` | 1 (x9) | 5 (post-fix, c1, d3, e2, f5) | e2, f5 (post-fix, c1, d3 are minor-only) | 0 of 2 (e2, f5); 1 of 3 minor-only (post-fix) | MM-5 on e2, f5; MM-4 on the others |
+| `the-signal-in-the-static` | 4 (x8, post-fix, c3, d4) | 2 | e1, f3 | 0 of 2 (SP-3; SP-2, SP-3) | SG-7, SG-8 |
+| `the-cave-of-echoes` | 3 (post-fix, c2, d5) | 2 | e4, f1 | 2 of 2 | none |
+| `the-mapmakers-island` | 3 (post-fix, c4, d2) | 2 | e3, f4 | 0 of 2 (SP-2, SP-3; SP-2) | MI-12 to MI-17 |
+| `the-clockwork-menagerie` | 1 (z2) | 0 | | | |
+| `the-clocktower-cipher` | 1 (z3) | 0 | | | |
+| **Total** | **17** | **13** | | **3 of 13** (2 of the 10 e/f plans) | |
+
+### What the reviewer sees: the checker gate (D11)
+
+D11 lets the plan reviewer see only plans that passed the deterministic checks, so a plan's `checker_clean` bears on
+how it can be scored (`AL-884`):
+
+- **`reject` plans that fail the checker are checker-caught.** The checker already stops them before the reviewer, so a
+  reviewer verdict on them is not a measure of the reviewer. Of the 17 held-out defective plans, 13 are checker-caught
+  and 4 are checker-clean (d5 and the Cave, Mapmaker's Island and Signal post-fix plans); all 12 tuning defective plans
+  are checker-caught. Only the checker-clean `reject` plans are defective plans the reviewer can actually be asked
+  about.
+- **Most clean (`pass`) plans do not pass the checker as labelled.** They are clean as books, not as checked plans. Of
+  the 13 held-out clean plans, 3 are checker-clean (e4, f1 and the Museum post-fix plan); the other 10, including 8
+  of the 10 e/f plans, carry ERRORs (e3 17 SP-2 and 1 SP-3, f5 two SP-9). Both tuning clean plans are checker-clean.
+- **The reviewer's clean sample is therefore the repaired baselines, not the plans as labelled.** Each clean plan with a
+  strong label (except Museum's three minor-only plans and the weak control) has a checker-repaired baseline in
+  [`../plan-reviewer/clean-baselines/`](../plan-reviewer/clean-baselines/manifest.json): the same mechanical repairs the
+  synthetic builder makes before seeding, recorded per plan, with a `checker_clean: true` check on the written file.
+  The clean flag rate is reported both with and without the baselines that needed repair. The method and its limits
+  are in the [clean-baselines README](../plan-reviewer/clean-baselines/README.md).
+
+`summary.<half>.d12_plans_checker_clean_by_unit` counts the checker-clean D12 plans per book unit by verdict and label
+strength, beside `d12_plans_by_unit`.
 
 ## Shortfall against D12 and D6, and the seeding proposal
 

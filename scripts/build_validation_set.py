@@ -49,7 +49,14 @@ import sys
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final, cast
+from typing import TYPE_CHECKING, Final, cast
+
+from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.storyplan.checks import check_plan
+from cyo_adventure.storyplan.models import StoryPlan, book_sha256
+
+if TYPE_CHECKING:
+    from cyo_adventure.validator.report import ValidationReport
 
 REPO: Final = Path(__file__).resolve().parents[1]
 OUT_FILE: Final = REPO / "docs/planning/evidence/continuity-reader/validation-set.json"
@@ -1849,6 +1856,99 @@ def smoke_plan_items() -> list[JsonObj]:
 
 
 # ---------------------------------------------------------------------------
+# Checker status of plan items (D11: the reviewer sees only checker-passing plans)
+# ---------------------------------------------------------------------------
+
+
+def _plan_bytes(ref: JsonObj) -> bytes:
+    """Return a plan item's plan file, verified against its recorded sha256.
+
+    Args:
+        ref: The item's ``plan`` object (``file``, ``sha256``, optional ``revision``).
+
+    Returns:
+        The plan file as pinned.
+
+    Raises:
+        SourceError: The file does not hash to ``sha256``.
+    """
+    path = cast("str", ref["file"])
+    sha = cast("str", ref["sha256"])
+    revision = cast("str | None", ref.get("revision"))
+    local = REPO / path
+    data = local.read_bytes() if local.is_file() else b""
+    if _sha(data) != sha and revision is not None and revision.startswith("git:"):
+        data = _git_blob(revision.removeprefix("git:"), path)
+    if _sha(data) != sha:
+        msg = f"{path} does not hash to the recorded sha256"
+        raise SourceError(msg)
+    return data
+
+
+def _checker_report(item: JsonObj) -> ValidationReport:
+    """Run ``check_plan`` on a plan item against its pinned book.
+
+    This is the call ``scripts/build_synthetic_plans.py::run_check`` makes
+    (``StoryPlan`` validation, then ``check_plan`` with the book digest so SP-0
+    verifies ``provenance.book_sha256``). It is repeated here, not imported, so
+    this builder does not depend on the synthetic builder or read its outputs.
+
+    Args:
+        item: A ``kind: plan`` item that has a book file.
+
+    Returns:
+        The checker's report.
+    """
+    book_ref = cast("JsonObj", item["book"])
+    book_bytes = read_pinned(BOOK_BY_KEY[cast("str", book_ref["key"])])
+    raw = _load_obj(_plan_bytes(cast("JsonObj", item["plan"])))
+    plan = StoryPlan.model_validate(raw)
+    return check_plan(
+        plan,
+        Storybook.model_validate_json(book_bytes),
+        book_digest=book_sha256(book_bytes),
+    )
+
+
+def checker_fields(item: JsonObj) -> JsonObj:
+    """Return ``checker_clean`` and ``checker_error_rules`` for a plan item.
+
+    A plan with a pinned book is run through the deterministic checker, so the
+    value is the plan as labelled, not a repaired baseline. A smoke plan has no
+    book (only a shape), so its value is the checker result its run recorded
+    when the plan was generated through the gate (``final_checks``).
+
+    Args:
+        item: A ``kind: plan`` item.
+
+    Returns:
+        ``checker_clean`` (True when the checker raised no ERROR) and
+        ``checker_error_rules`` (the sorted rule ids that raised an ERROR).
+    """
+    # #ASSUME: data-integrity: a smoke run's recorded final_checks is the same
+    # checker over the plan's own bound book, which the run file does not keep.
+    # #VERIFY: every smoke run records story_plan_status "checked" with an
+    # ok final_checks; a run that is not ok lists its ERROR findings by rule.
+    book_ref = cast("JsonObj", item["book"])
+    if book_ref["file"] is None:
+        plan_ref = cast("JsonObj", item["plan"])
+        run = _load_obj(_read_repo(cast("str", plan_ref["file"])))
+        recorded = cast("JsonObj", run["final_checks"])
+        findings = cast("list[JsonObj]", recorded.get("findings") or [])
+        rules = sorted(
+            {
+                cast("str", f["rule_id"])
+                for f in findings
+                if str(f.get("severity", "error")).lower() == "error"
+            }
+        )
+        return {"checker_clean": bool(recorded["ok"]), "checker_error_rules": rules}
+    report = _checker_report(item)
+    rules = sorted({f.rule_id for f in report.errors})
+    return {"checker_clean": not report.errors, "checker_error_rules": rules}
+
+
+# ---------------------------------------------------------------------------
 # Split
 # ---------------------------------------------------------------------------
 
@@ -2040,6 +2140,9 @@ def _summary(items: list[JsonObj], split: dict[str, str]) -> JsonObj:
                 1 for i in plans if (cast("int | None", i["blocker_entries"]) or 0)
             ),
             "d12_plans_by_unit": _d12_by_unit(plans),
+            "d12_plans_checker_clean_by_unit": _d12_by_unit(
+                [i for i in plans if i.get("checker_clean") is True]
+            ),
         }
     return out
 
@@ -2076,6 +2179,8 @@ def build() -> JsonObj:
     split = frozen_split(items)
     for item in items:
         item["half"] = split[_unit_of(item)]
+        if item["kind"] == "plan":
+            item.update(checker_fields(item))
     return {
         "schema": "validation-set/v1",
         "work_package": "WP-3.1",
