@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B1-3",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "e_set_stair",
+        "class": "ending_gift_mismatch",
+        "severity": "blocker",
+        "reason": "The gift says 'the keeper never took a penny of it', which contradicts the truth and the fact 'truth_ferris_took_money' which state that Ferris took the smuggler's money for six winters.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24460,
+  "output_tokens": 3795,
+  "reasoning_tokens": 3693,
+  "cost_usd": 0.09446,
+  "latency_ms": 34440,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"e_set_stair\", \"class\": \"ending_gift_mismatch\", \"severity\": \"blocker\", \"reason\": \"The gift says 'the keeper never took a penny of it', which contradicts the truth and the fact 'truth_ferris_took_money' which state that Ferris took the smuggler's money for six winters.\"}]}"
+}

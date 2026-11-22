@@ -1,0 +1,29 @@
+{
+  "plan_id": "CBL-PL-the-hollow-lighthouse-postfix",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 1.0,
+    "findings": [
+      {
+        "entry": "e_set_stair",
+        "class": "ending_gift_mismatch",
+        "severity": "blocker",
+        "reason": "The gift states 'the keeper never took a penny of it', which contradicts the truth that 'Ferris took Varley's money for six winters'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24458,
+  "output_tokens": 5838,
+  "reasoning_tokens": 5750,
+  "cost_usd": 0.1149544,
+  "latency_ms": 50844,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 1.0, \"findings\": [{\"entry\": \"e_set_stair\", \"class\": \"ending_gift_mismatch\", \"severity\": \"blocker\", \"reason\": \"The gift states 'the keeper never took a penny of it', which contradicts the truth that 'Ferris took Varley's money for six winters'.\"}]}"
+}

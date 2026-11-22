@@ -1,0 +1,37 @@
+{
+  "plan_id": "SY-B-B3-3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.99,
+    "findings": [
+      {
+        "entry": "e_pho_a",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The ending's gift celebrates saving the prints and beating the Quiet, but its event states that Rowan burns the prints and finishes the Quiet's work, which also contradicts its negative setback valence.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice's intent is to 'pull back from the water', but the target ending e_b1a's event states that 'Rowan holds too long'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 29090,
+  "output_tokens": 4564,
+  "reasoning_tokens": 4360,
+  "cost_usd": 0.112948,
+  "latency_ms": 40055,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.99,\n  \"findings\": [\n    {\n      \"entry\": \"e_pho_a\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The ending's gift celebrates saving the prints and beating the Quiet, but its event states that Rowan burns the prints and finishes the Quiet's work, which also contradicts its negative setback valence.\"\n    },\n    {\n      \"entry\": \"c_b1a_dec_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The choice's intent is to 'pull back from the water', but the target ending e_b1a's event states that 'Rowan holds too long'.\"\n    }\n  ]\n}"
+}

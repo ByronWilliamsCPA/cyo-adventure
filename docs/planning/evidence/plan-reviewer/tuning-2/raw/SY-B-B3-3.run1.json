@@ -1,0 +1,45 @@
+{
+  "plan_id": "SY-B-B3-3",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 1.0,
+    "findings": [
+      {
+        "entry": "e_pho_a",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The gift celebrates saving the prints and beating the Quiet, but the ending's event says Rowan burns the prints and finishes the Quiet's work, and its valence is negative.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The intent is to 'pull back from the water', but the target ending e_b1a's event says 'Rowan holds too long'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b2t_m_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The cost specifies losing 'her memory of her grandmother', but the target ending e_b2tb's event says she gives 'every memory of her family'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 29090,
+  "output_tokens": 2389,
+  "reasoning_tokens": 2109,
+  "cost_usd": 0.086848,
+  "latency_ms": 25436,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 1.0,\n  \"findings\": [\n    {\n      \"entry\": \"e_pho_a\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The gift celebrates saving the prints and beating the Quiet, but the ending's event says Rowan burns the prints and finishes the Quiet's work, and its valence is negative.\"\n    },\n    {\n      \"entry\": \"c_b1a_dec_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The intent is to 'pull back from the water', but the target ending e_b1a's event says 'Rowan holds too long'.\"\n    },\n    {\n      \"entry\": \"c_b2t_m_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The cost specifies losing 'her memory of her grandmother', but the target ending e_b2tb's event says she gives 'every memory of her family'.\"\n    }\n  ]\n}"
+}

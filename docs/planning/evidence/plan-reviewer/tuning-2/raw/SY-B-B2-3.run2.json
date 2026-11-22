@@ -1,0 +1,45 @@
+{
+  "plan_id": "SY-B-B2-3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 1.0,
+    "findings": [
+      {
+        "entry": "grandmother_writes_postcards",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "The fact `grandmother_writes_postcards` states that Rowan's grandmother is alive and well in a far city, which contradicts the `truth` that she went into the spring forty years ago and is held there.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice `c_b1a_dec_2` has the intent to 'pull back from the water', but its target `e_b1a` has an event where Rowan 'holds too long'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b2t_m_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice `c_b2t_m_2` specifies a cost of 'her memory of her grandmother', but its target `e_b2tb` has an event where Rowan gives 'every memory of her family'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 29122,
+  "output_tokens": 6069,
+  "reasoning_tokens": 5755,
+  "cost_usd": 0.131072,
+  "latency_ms": 50504,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 1.0,\n  \"findings\": [\n    {\n      \"entry\": \"grandmother_writes_postcards\",\n      \"class\": \"truth_contradiction\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The fact `grandmother_writes_postcards` states that Rowan's grandmother is alive and well in a far city, which contradicts the `truth` that she went into the spring forty years ago and is held there.\"\n    },\n    {\n      \"entry\": \"c_b1a_dec_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The choice `c_b1a_dec_2` has the intent to 'pull back from the water', but its target `e_b1a` has an event where Rowan 'holds too long'.\"\n    },\n    {\n      \"entry\": \"c_b2t_m_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The choice `c_b2t_m_2` specifies a cost of 'her memory of her grandmother', but its target `e_b2tb` has an event where Rowan gives 'every memory of her family'.\"\n    }\n  ]\n}"
+}

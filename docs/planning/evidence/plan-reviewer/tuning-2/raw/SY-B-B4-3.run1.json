@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B4-3",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "t_key",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff shows for choice c_cm_light_relight_1 credits the code rather than the thread's plant fact has_key, and describes an event that does not match the target node cm_light_true.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24447,
+  "output_tokens": 4780,
+  "reasoning_tokens": 4681,
+  "cost_usd": 0.106254,
+  "latency_ms": 41680,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"t_key\", \"class\": \"payoff_shows_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The payoff shows for choice c_cm_light_relight_1 credits the code rather than the thread's plant fact has_key, and describes an event that does not match the target node cm_light_true.\"}]}"
+}

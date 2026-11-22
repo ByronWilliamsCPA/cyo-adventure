@@ -1,0 +1,37 @@
+{
+  "plan_id": "SY-B-B4-3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "t_key",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff for choice c_cm_light_relight_1 shows Mira flashing the lamp with the keeper's code, which credits the code rather than the plant has_key, and contradicts the target node cm_light_true where she simply winds and lights the lamp.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_set_stair",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The gift states that the keeper \"never took a penny of it\", which contradicts the truth statement and fact truth_ferris_took_money that Ferris took the smuggler's money for six winters.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24447,
+  "output_tokens": 6120,
+  "reasoning_tokens": 5895,
+  "cost_usd": 0.122334,
+  "latency_ms": 53551,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.95,\n  \"findings\": [\n    {\n      \"entry\": \"t_key\",\n      \"class\": \"payoff_shows_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The payoff for choice c_cm_light_relight_1 shows Mira flashing the lamp with the keeper's code, which credits the code rather than the plant has_key, and contradicts the target node cm_light_true where she simply winds and lights the lamp.\"\n    },\n    {\n      \"entry\": \"e_set_stair\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The gift states that the keeper \\\"never took a penny of it\\\", which contradicts the truth statement and fact truth_ferris_took_money that Ferris took the smuggler's money for six winters.\"\n    }\n  ]\n}"
+}

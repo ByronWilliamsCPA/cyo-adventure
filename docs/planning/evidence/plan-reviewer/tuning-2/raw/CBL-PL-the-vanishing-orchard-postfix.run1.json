@@ -1,0 +1,45 @@
+{
+  "plan_id": "CBL-PL-the-vanishing-orchard-postfix",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice's intent is to 'pull back from the water', but the target node e_b1a's event says 'Rowan holds too long', which is the exact opposite action.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_trade_photo",
+        "class": "state_contradiction",
+        "severity": "blocker",
+        "reason": "The event for e_trade_photo states that Rowan 'buys nothing back', but it requires the fact year_restored, which states 'The root gave back one year: the bakery on the square, lit golden.'",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b2t_m_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice's cost specifies losing 'her memory of her grandmother', but the target node e_b2tb's event states she gives 'every memory of her family'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 29084,
+  "output_tokens": 4556,
+  "reasoning_tokens": 4304,
+  "cost_usd": 0.11284,
+  "latency_ms": 39304,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"c_b1a_dec_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"blocker\", \"reason\": \"The choice's intent is to 'pull back from the water', but the target node e_b1a's event says 'Rowan holds too long', which is the exact opposite action.\"}, {\"entry\": \"e_trade_photo\", \"class\": \"state_contradiction\", \"severity\": \"blocker\", \"reason\": \"The event for e_trade_photo states that Rowan 'buys nothing back', but it requires the fact year_restored, which states 'The root gave back one year: the bakery on the square, lit golden.'\"}, {\"entry\": \"c_b2t_m_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice's cost specifies losing 'her memory of her grandmother', but the target node e_b2tb's event states she gives 'every memory of her family'.\"}]}"
+}

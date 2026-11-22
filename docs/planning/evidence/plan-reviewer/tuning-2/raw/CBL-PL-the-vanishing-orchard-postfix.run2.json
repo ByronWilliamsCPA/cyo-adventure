@@ -1,0 +1,45 @@
+{
+  "plan_id": "CBL-PL-the-vanishing-orchard-postfix",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice's intent is to 'pull back from the water', but the target ending e_b1a's event states that 'Rowan holds too long'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "name_every_year",
+        "class": "state_contradiction",
+        "severity": "blocker",
+        "reason": "This fact states the tree is given 'one willing name a year: a keeper', which contradicts clause_names_keeper, which states that a keeper is named by the lease renewal every fortieth year.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b2t_m_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice's cost specifically names 'her memory of her grandmother', but the target ending e_b2tb's event has her give 'every memory of her family'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 29084,
+  "output_tokens": 9946,
+  "reasoning_tokens": 9706,
+  "cost_usd": 0.17752,
+  "latency_ms": 97019,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"c_b1a_dec_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"blocker\", \"reason\": \"The choice's intent is to 'pull back from the water', but the target ending e_b1a's event states that 'Rowan holds too long'.\"}, {\"entry\": \"name_every_year\", \"class\": \"state_contradiction\", \"severity\": \"blocker\", \"reason\": \"This fact states the tree is given 'one willing name a year: a keeper', which contradicts clause_names_keeper, which states that a keeper is named by the lease renewal every fortieth year.\"}, {\"entry\": \"c_b2t_m_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice's cost specifically names 'her memory of her grandmother', but the target ending e_b2tb's event has her give 'every memory of her family'.\"}]}"
+}
