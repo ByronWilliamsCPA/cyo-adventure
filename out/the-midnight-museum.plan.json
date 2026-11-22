@@ -151,6 +151,9 @@
   "reading_lamp_bulb": {
    "text": "The green lamp on the founder's reading table still lights, so someone has been changing the bulb."
   },
+  "landing_reading_table": {
+   "text": "A small reading table stands by the window on the landing outside the founder's study."
+  },
   "globe_combo": {
    "text": "The decoded note: follow the stars to the heart of the house by the Astronomy Hall, the Map Room or the Clock Corridor, then set the globe's rings to four, nine and two."
   },
@@ -477,7 +480,8 @@
    ],
    "establishes": [
     "has_glasses",
-    "cipher_tool"
+    "cipher_tool",
+    "landing_reading_table"
    ]
   },
   "k_founder_portrait": {
@@ -485,7 +489,8 @@
    "event": "Behind the portrait, a brass cipher wheel with two rings of letters.",
    "requires": [],
    "establishes": [
-    "cipher_tool"
+    "cipher_tool",
+    "landing_reading_table"
    ]
   },
   "k_display": {
@@ -509,7 +514,8 @@
    "requires": [],
    "establishes": [
     "cipher_shift_three",
-    "cipher_tool"
+    "cipher_tool",
+    "landing_reading_table"
    ]
   },
   "k_display_force": {
@@ -525,7 +531,8 @@
    "establishes": [
     "cipher_shift_three",
     "cipher_tool",
-    "reading_lamp_bulb"
+    "reading_lamp_bulb",
+    "landing_reading_table"
    ]
   },
   "k_stairs": {
@@ -542,17 +549,19 @@
    "requires": [],
    "establishes": [
     "cipher_shift_three",
-    "cipher_tool"
+    "cipher_tool",
+    "landing_reading_table"
    ]
   },
   "k_stairs_base": {
    "function": "continue",
-   "event": "A chart of two letter rings and the founder's glasses: \"Turn the inner ring three places.\"",
+   "event": "A chart of two letter rings and the founder's glasses: \"Turn the inner ring three places.\" She climbs to the landing and its reading table.",
    "requires": [],
    "establishes": [
     "has_glasses",
     "cipher_shift_three",
-    "cipher_tool"
+    "cipher_tool",
+    "landing_reading_table"
    ]
   },
   "k_study": {
@@ -560,7 +569,8 @@
    "event": "The reading-table lamp still lights: someone changes the bulb; Nadia spreads the coded note.",
    "requires": [
     "founders_key",
-    "cipher_tool"
+    "cipher_tool",
+    "landing_reading_table"
    ],
    "establishes": [
     "reading_lamp_bulb"
@@ -1093,7 +1103,8 @@
    "function": "ending",
    "event": "The curator reads the letter aloud: Ellery did not sell the treasures.",
    "requires": [
-    "vault_room"
+    "vault_room",
+    "landing_reading_table"
    ],
    "establishes": [
     "founder_letter"
@@ -1823,13 +1834,14 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-midnight-museum.filled.json",
-  "book_sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
+  "book_sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
   "authored": "2026-11-21",
   "authoring_minutes": 4,
   "checks": null,
   "approver": null,
   "notes": [
-   "revisions: {\"date\": \"2026-11-21\", \"work_package\": \"WP-0.4\", \"by\": \"claude-opus-5-5 (second reader, did not write this plan)\", \"note\": \"Updated to match the book after the continuity fixes in docs/planning/evidence/story-plan-retro/findings-the-midnight-museum.md. Removed the contradicting facts cipher_substitution_table and floor_left_open; renamed floor_opens_one_minute to floor_opens_by_clockwork; added staff_door_morning, slab_closed_by_hand and east_wing_paintings.\"}"
+   "revisions: {\"date\": \"2026-11-21\", \"work_package\": \"WP-0.4\", \"by\": \"claude-opus-5-5 (second reader, did not write this plan)\", \"note\": \"Updated to match the book after the continuity fixes in docs/planning/evidence/story-plan-retro/findings-the-midnight-museum.md. Removed the contradicting facts cipher_substitution_table and floor_left_open; renamed floor_opens_one_minute to floor_opens_by_clockwork; added staff_door_morning, slab_closed_by_hand and east_wing_paintings.\"}",
+   "residual fixes 2026-11-22: MM-4"
   ]
  }
 }
