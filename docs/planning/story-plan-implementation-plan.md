@@ -63,7 +63,7 @@ tags:
 | 2.1 | Brief unpinning for 8-11 and up | S | none | no |
 | 2.2 | Retained shapes and typed directive format | M | none | D4: which shells |
 | 2.3 | Pitch and plan generation, persistence | L | 5 to 15 USD | no |
-| 2.4 | Plan approval: validated reviewer, owner by exception | M | none | D11 made; D12 via WP-3.7 |
+| 2.4 | Plan approval: validated reviewer, owner by exception | M | none | D11 made; G3b failed 2026-11-22, fallback in force |
 | 2.5 | Directive compiler and single scene template | L | 5 to 10 USD | D9: recap rule per band |
 | 2.6 | Scene-by-scene fill with ledger context | L | 10 to 20 USD | no |
 | 2.7 | Reading-level measure fix | S | none | no |
@@ -583,6 +583,17 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
 - **Depends on.** WP-2.3 **and WP-3.7 (G3b)**. It does not merge with the reviewer enabled before the reviewer's
   validation has passed; until then the worker sends every plan to the owner.
 - **Size.** M.
+- **Status, 2026-11-22: fallback form in force, reviewer integration deferred.** G3b failed (WP-3.7 outcome), so by
+  the acceptance rule this package ships with the reviewer path disabled. That fallback is what the worker already does:
+  every plan job ends `needs_review` with no storybook (`generation/worker.py::_run_plan_generation`, pinned by
+  `tests/unit/test_worker_plan.py::test_plan_job_routes_to_plan_generation_and_ends_needs_review`), a plan that fails
+  its checks goes to the owner with the findings, and `story_plan_reviewer_enabled` defaults to `False` with no
+  validated pairing. The remaining behaviour above (the reviewer call after clean checks, `provenance.approver`, the
+  audit events, `check_story_plan.py --require-approval`) is not built: it would be dead code until a reviewer
+  validates, and building it against an unvalidated one invites enabling it. The reviewer's pure pieces
+  (`storyplan/review.py`: the independence rule, checker authority, the seeded sample draw, the suspension rule and the
+  unvalidated-pairing refusal) already exist and are tested, so the integration is a bounded follow-on once an owner
+  decision (a second revision, another reviewer model, or prose in the reviewer's input) produces a validated pairing.
 
 ### WP-2.5 Directive compiler and single scene template
 
