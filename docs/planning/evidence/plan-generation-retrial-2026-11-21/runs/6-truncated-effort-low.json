@@ -1,0 +1,115 @@
+{
+ "run": 6,
+ "request": {
+  "id": "G03",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=G03]",
+  "text": "Please write a mystery about a missing school trophy, with a clever girl who notices small clues. The culprit should turn out to be someone with a good reason.",
+  "band": "8-11",
+  "length": "medium",
+  "style": "prose",
+  "selection_note": "panel text at medium, bound to the three-thread shape by override so SP-4 to SP-6 run (AL-843)"
+ },
+ "shape": {
+  "id": "the-lantern-keepers-list",
+  "hash": "sha256:11bb80d9d3a5f2ad3c57ce42b8430f4f98e30e2a2d1c473f97a424ae05474b51",
+  "selection": "override (admin skeleton_slug path)",
+  "cell": {
+   "band": "8-11",
+   "length": "medium",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-lantern-keepers-list",
+   "the-river-of-small-boats",
+   "the-sky-ship-stowaway",
+   "the-storm-chasers-club"
+  ],
+  "retained_in_cell": [
+   "the-lantern-keepers-list",
+   "the-storm-chasers-club"
+  ],
+  "nodes": 132,
+  "choices": 314,
+  "variables": 3,
+  "request_seed_id": "e2acbca4-78f9-53eb-a79c-43c66789cdca"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "Please write a mystery about a missing school trophy, with a clever girl who notices small clues. The culprit should turn out to be someone with a good reason.",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "mysterious",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2787,
+   "worst_case_usd": 0.022788,
+   "spent_before_usd": 1.151762,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1049,
+   "output_tokens": 512,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.007218,
+   "vendor_cost_usd": 0.006004,
+   "latency_s": 5.3,
+   "provider_duration_ms": 5326,
+   "response_chars": 1449
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 27868,
+   "worst_case_usd": 0.34787,
+   "spent_before_usd": 1.15898,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 12628,
+   "output_tokens": 32000,
+   "reasoning_tokens": 11071,
+   "finish_reason": "length",
+   "cost_estimate_usd": 0.345256,
+   "vendor_cost_usd": 0.339197,
+   "latency_s": 174.5,
+   "provider_duration_ms": 174536,
+   "response_chars": 49852
+  }
+ ],
+ "wall_seconds": 179.9,
+ "stopped": "TruncationStopError: call 1 stopped at max_tokens (11071 reasoning tokens)",
+ "story_plan_status": null,
+ "attempts": 1,
+ "totals": {
+  "calls": 2,
+  "input_tokens": 13677,
+  "output_tokens": 32512,
+  "reasoning_tokens": 11071,
+  "cost_estimate_usd": 0.352474,
+  "vendor_cost_usd": 0.345201,
+  "provider_seconds": 179.8
+ },
+ "budget": {
+  "budget_usd": 8.0,
+  "spent_before_usd": 1.151762,
+  "spent_after_usd": 1.504236
+ }
+}

@@ -101,6 +101,7 @@ from cyo_adventure.generation.metered import MeteredProvider
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_openrouter_cost_reporting_leg
 from cyo_adventure.generation.providers._base import DEFAULT_MAX_RETRIES
+from cyo_adventure.generation.reasoning import ReasoningControl
 from cyo_adventure.generation.skeleton_match import candidates_for_cell
 from cyo_adventure.generation.usage import UsageLedger
 from cyo_adventure.story_requests.authoring_plan import _pick_shape
@@ -127,6 +128,7 @@ DEFAULT_BUDGET_USD: Final = Decimal("8.00")
 MAX_REPAIRS: Final = 2  # generation/worker.py::_PLAN_MAX_REPAIRS
 TIMEOUT_SECONDS: Final = 900
 PANEL: Final = Path("docs/planning/evidence/short-request-panel/panel.json")
+REASONING_BUDGET: list[int | None] = [None]  # set from --reasoning-budget
 OUT: Final = Path("docs/planning/evidence/plan-generation-smoke-2026-11-21")
 MEDIUM_SHAPE: Final = "the-lantern-keepers-list"
 MEDIUM_REQUEST: Final = "G03"
@@ -435,6 +437,11 @@ async def run_one(spec: RunSpec, leg: Any, spend: Spend) -> dict[str, Any]:
             screen=screen,
             max_repairs=MAX_REPAIRS,
             model_label=guard.model,
+            reasoning=(
+                ReasoningControl(max_tokens=REASONING_BUDGET[0])
+                if REASONING_BUDGET[0]
+                else None
+            ),
         )
     except (BudgetStopError, TruncationStopError) as exc:
         stop = f"{type(exc).__name__}: {exc}"
@@ -534,6 +541,7 @@ def dry_run(specs: list[RunSpec]) -> int:
 
 async def main_async(args: argparse.Namespace) -> int:
     specs = run_specs()
+    REASONING_BUDGET[0] = args.reasoning_budget
     if args.only:
         specs = [s for s in specs if s.n in set(args.only)]
     if args.dry_run:
@@ -573,6 +581,12 @@ async def main_async(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--reasoning-budget",
+        type=int,
+        default=None,
+        help="explicit reasoning token budget for every pitch and plan call",
+    )
     parser.add_argument(
         "--out", default=str(OUT), help="evidence directory (runs/ is written under it)"
     )
