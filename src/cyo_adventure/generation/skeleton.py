@@ -320,6 +320,17 @@ MODEL_OUTPUT_CAPS: dict[str, int] = {
     # `openrouter_model`.
     "claude-sonnet-4-6": 128_000,
     "claude-haiku-4-5": 64_000,
+    # The plan writer and the plan reviewer defaults (`story_plan_writer_model`,
+    # `story_plan_reviewer_model`). `max_completion_tokens` read from the
+    # OpenRouter models endpoint on 2026-11-22. Plan calls pass their own
+    # `max_tokens`, so these rows exist to keep the configured-default audit
+    # honest, not to size those calls.
+    # #ASSUME: external resources: OpenRouter's published ceiling matches the
+    # serving endpoint's.
+    # #VERIFY: re-read `top_provider.max_completion_tokens` when either default
+    # changes; tests/unit/test_fill_output_cap.py fails on a default with no row.
+    "anthropic/claude-sonnet-5.5": 128_000,
+    "google/gemini-3.1-pro-preview": 65_536,
 }
 
 
