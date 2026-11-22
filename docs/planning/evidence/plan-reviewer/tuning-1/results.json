@@ -1,0 +1,1519 @@
+{
+  "schema": "plan-reviewer-run/v1",
+  "run": {
+    "run_id": "tuning-1",
+    "half": "tuning",
+    "live": true,
+    "dry_run": false,
+    "partial": false,
+    "date": "2026-11-22",
+    "reviewer_model": "google/gemini-3.1-pro-preview",
+    "reported_models": [
+      "google/gemini-3.1-pro-preview"
+    ],
+    "writer_model": "anthropic/claude-sonnet-5.5",
+    "prompt_hash": "sha256:d213b476b0be23787d02401e7d5328fd6a600e7d097a05f6e900c8f57a8b4600",
+    "runs": 2,
+    "reasoning_effort": "medium",
+    "max_tokens": 24000,
+    "temperature": 0.2,
+    "sample_rate_setting": 0.1,
+    "plans_run": 27,
+    "plans_checker_only": 2,
+    "plans_unrun": 0,
+    "unrun_ids": [],
+    "spend_stopped": false,
+    "budget_usd": "8",
+    "cost_usd": 1.6826378,
+    "cost_complete": true,
+    "input_tokens": 316930,
+    "output_tokens": 98699,
+    "finish_reason_counts": {
+      "stop": 12
+    },
+    "skipped_real_plans": {
+      "unknown": 4,
+      "weak": 1
+    }
+  },
+  "estimate": {
+    "plans": 6,
+    "calls": 12,
+    "input_tokens": 507696,
+    "output_tokens": 168000,
+    "usd": 3.03,
+    "assumptions": {
+      "chars_per_token": 2.1,
+      "output_tokens_per_call": 14000,
+      "input_usd_per_mtok": 2.0,
+      "output_usd_per_mtok": 12.0
+    },
+    "checker_already_rejects": 21,
+    "largest_prompt_chars": 96787
+  },
+  "figures": {
+    "real_defective": {
+      "recall_overall": {
+        "k": 12,
+        "n": 12,
+        "rate": 1.0,
+        "ci95": [
+          0.7575,
+          1.0
+        ]
+      },
+      "checker_caught": {
+        "k": 12,
+        "n": 12,
+        "rate": 1.0,
+        "ci95": [
+          0.7575,
+          1.0
+        ]
+      },
+      "reviewer_decisive_recall": {
+        "k": 0,
+        "n": 0,
+        "rate": null,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "by_worst_severity": {
+        "blocker": {
+          "k": 5,
+          "n": 5,
+          "rate": 1.0,
+          "ci95": [
+            0.5655,
+            1.0
+          ]
+        },
+        "leak": {
+          "k": 5,
+          "n": 5,
+          "rate": 1.0,
+          "ci95": [
+            0.5655,
+            1.0
+          ]
+        },
+        "thin": {
+          "k": 2,
+          "n": 2,
+          "rate": 1.0,
+          "ci95": [
+            0.3424,
+            1.0
+          ]
+        }
+      },
+      "blocker_entries": {
+        "KD-LH-B1": {
+          "plans": 2,
+          "flagged": 2
+        },
+        "KD-LH-B2": {
+          "plans": 2,
+          "flagged": 2
+        },
+        "KD-LH-B3": {
+          "plans": 2,
+          "flagged": 2
+        },
+        "KD-LH-BS1": {
+          "plans": 2,
+          "flagged": 2
+        },
+        "TT-B1": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "TT-B2": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "TT-B3": {
+          "plans": 1,
+          "flagged": 1
+        },
+        "TT-B4": {
+          "plans": 1,
+          "flagged": 1
+        }
+      },
+      "blockers_all_flagged": true,
+      "note": "checker_caught plans were rejected by SP-0 to SP-9 with no model call; reviewer_decisive_recall is the reviewer's own"
+    },
+    "synthetic": {
+      "family_A_checker_visible": {
+        "k": 9,
+        "n": 9,
+        "rate": 1.0,
+        "ci95": [
+          0.7009,
+          1.0
+        ]
+      },
+      "family_B_checker_invisible": {
+        "k": 4,
+        "n": 4,
+        "rate": 1.0,
+        "ci95": [
+          0.5101,
+          1.0
+        ]
+      },
+      "family_B_by_class": {
+        "B1": {
+          "k": 1,
+          "n": 1,
+          "rate": 1.0,
+          "ci95": [
+            0.2065,
+            1.0
+          ]
+        },
+        "B2": {
+          "k": 1,
+          "n": 1,
+          "rate": 1.0,
+          "ci95": [
+            0.2065,
+            1.0
+          ]
+        },
+        "B3": {
+          "k": 1,
+          "n": 1,
+          "rate": 1.0,
+          "ci95": [
+            0.2065,
+            1.0
+          ]
+        },
+        "B4": {
+          "k": 1,
+          "n": 1,
+          "rate": 1.0,
+          "ci95": [
+            0.2065,
+            1.0
+          ]
+        }
+      },
+      "by_family_and_half": {
+        "A:tuning": {
+          "k": 9,
+          "n": 9,
+          "rate": 1.0,
+          "ci95": [
+            0.7009,
+            1.0
+          ]
+        },
+        "B:tuning": {
+          "k": 4,
+          "n": 4,
+          "rate": 1.0,
+          "ci95": [
+            0.5101,
+            1.0
+          ]
+        }
+      },
+      "note": "synthetic recall overstates real recall; never merged"
+    },
+    "clean_baselines": {
+      "flag_rate_raw": {
+        "k": 2,
+        "n": 2,
+        "rate": 1.0,
+        "ci95": [
+          0.3424,
+          1.0
+        ]
+      },
+      "false_flag_rate": {
+        "k": 2,
+        "n": 2,
+        "rate": 1.0,
+        "ci95": [
+          0.3424,
+          1.0
+        ]
+      },
+      "flags_explained_by_known_residual": 0,
+      "by_book": {
+        "the-hollow-lighthouse": {
+          "plans": 1,
+          "flagged": 1,
+          "false_flags": 1
+        },
+        "the-vanishing-orchard": {
+          "plans": 1,
+          "flagged": 1,
+          "false_flags": 1
+        }
+      },
+      "needed_repair_false_flags": {
+        "k": 0,
+        "n": 0,
+        "rate": null,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "no_repair_false_flags": {
+        "k": 2,
+        "n": 2,
+        "rate": 1.0,
+        "ci95": [
+          0.3424,
+          1.0
+        ]
+      },
+      "books": 2
+    },
+    "run_agreement": {
+      "k": 6,
+      "n": 6,
+      "rate": 1.0,
+      "ci95": [
+        0.6097,
+        1.0
+      ]
+    },
+    "checker_only_clean_plans_rejected": 0
+  },
+  "g3b": {
+    "passed": false,
+    "checks": [
+      {
+        "name": "held-out half",
+        "passed": false,
+        "detail": "half is tuning"
+      },
+      {
+        "name": "live reviewer",
+        "passed": true,
+        "detail": "a dry run never passes G3b"
+      },
+      {
+        "name": "run complete",
+        "passed": true,
+        "detail": "every selected plan was run within the budget"
+      },
+      {
+        "name": "defective plans >= 15",
+        "passed": false,
+        "detail": "12 real defective plans"
+      },
+      {
+        "name": "clean baselines cover >= 5 books (D12 amended)",
+        "passed": false,
+        "detail": "2 books, 2 baselines, unamended minimum 15 plans"
+      },
+      {
+        "name": "defect recall >= 0.9",
+        "passed": true,
+        "detail": "12/12 = 1.00 (95% 0.76 to 1.00)"
+      },
+      {
+        "name": "every blocker entry flagged",
+        "passed": true,
+        "detail": "8 blocker entries"
+      },
+      {
+        "name": "clean false-flag rate <= 0.2",
+        "passed": false,
+        "detail": "2/2 = 1.00 (95% 0.34 to 1.00)"
+      },
+      {
+        "name": "run agreement >= 0.9",
+        "passed": true,
+        "detail": "6/6 = 1.00 (95% 0.61 to 1.00)"
+      }
+    ]
+  },
+  "checker_only_clean_plans": {
+    "PL-the-hollow-lighthouse-postfix": [],
+    "PL-the-vanishing-orchard-postfix": []
+  },
+  "plans": [
+    {
+      "id": "PL-x1",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x1.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-4",
+          "checker_error:SP-6"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-x2",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x2.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-x4",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-lantern-keepers-list",
+      "expected": "reject",
+      "severity": "leak",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x4.plan.json",
+        "book": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-lkl-new-2/filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6",
+        "SP-8"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-4",
+          "checker_error:SP-6",
+          "checker_error:SP-8"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-x5",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-orchard-signal",
+      "expected": "reject",
+      "severity": "leak",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x5.plan.json",
+        "book": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6",
+        "SP-8"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-4",
+          "checker_error:SP-6",
+          "checker_error:SP-8"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-x5b",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-orchard-signal",
+      "expected": "reject",
+      "severity": "leak",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x5b.plan.json",
+        "book": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-4",
+          "checker_error:SP-6"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-x6",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-orchard-signal",
+      "expected": "reject",
+      "severity": "thin",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/plans/x6.plan.json",
+        "book": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-2/filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6",
+        "SP-8"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-4",
+          "checker_error:SP-6",
+          "checker_error:SP-8"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-y1",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-orchard-signal",
+      "expected": "reject",
+      "severity": "leak",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/rerun/plans/y1.plan.json",
+        "book": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-4",
+          "checker_error:SP-6"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-y2",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/rerun/plans/y2.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-4",
+          "checker_error:SP-6"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-y3",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-orchard-signal",
+      "expected": "reject",
+      "severity": "thin",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/rerun/plans/y3.plan.json",
+        "book": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-2/filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-4",
+        "SP-6"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-4",
+          "checker_error:SP-6"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-y4",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/rerun/plans/y4.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-y5",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-lantern-keepers-list",
+      "expected": "reject",
+      "severity": "leak",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/story-plan-retro/rerun/plans/y5.plan.json",
+        "book": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-lkl-new-2/filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3",
+        "SP-6",
+        "SP-9"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3",
+          "checker_error:SP-6",
+          "checker_error:SP-9"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "PL-z1",
+      "source": "real",
+      "half": "tuning",
+      "unit": "the-thornwood-trial",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": null,
+      "defect_class": null,
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/fresh-corpus-2026-11-21/plans/z1.plan.json",
+        "book": "out/the-thornwood-trial.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2",
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2",
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-4-3",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-4",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-4-3.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-4"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-4"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-5-2",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-5",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-5-2.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-5"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-5"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-9-3",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-9",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-9-3.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-9"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-9"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-1-2",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-1",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-1-2.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-1"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-1"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-2-2",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-2",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-2-2.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-2"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-2"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-3-2",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-3",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-3-2.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-3"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-3"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-7-2",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-7",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-7-2.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-7"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-7"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-8-2",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-8",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-8-2.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-8"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-8"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-A-SP-9-4",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "A",
+      "defect_class": "SP-9",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-A-SP-9-4.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [
+        "SP-9"
+      ],
+      "review": {
+        "verdict": "reject",
+        "confidence": null,
+        "findings": [],
+        "reasons": [
+          "checker_error:SP-9"
+        ],
+        "run_verdicts": [],
+        "checker_caught": true,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": false
+      },
+      "cost_usd": 0.0,
+      "finish_reasons": []
+    },
+    {
+      "id": "SY-B-B1-3",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B1",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B1-3.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "e_win_name_cleared",
+            "class": "truth_contradiction",
+            "severity": "blocker",
+            "reason": "The event states that the confession 'clears Ferris's name', which contradicts the truth that Ferris took the smuggler's money for six winters.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_set_stair",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The gift claims 'the keeper never took a penny of it', contradicting the truth that Ferris took Varley's money for six winters.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_win_smugglers",
+            "class": "state_contradiction",
+            "severity": "should-fix",
+            "reason": "The event has Mira flash the call by the hand lever, but this ending is reached from c_cm_smug_photo_1 in the smuggler's store (cm_smug_photo), not at the lamp where the lever is located.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_set_stair",
+            "class": "ending_gift_mismatch",
+            "severity": "blocker",
+            "reason": "The gift claims 'the keeper never took a penny of it', which directly contradicts the truth and fact 'truth_ferris_took_money' that he took the money for six winters (even if he never spent it).",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_cm_smug_photo_1",
+            "class": "label_outcome_mismatch",
+            "severity": "blocker",
+            "reason": "The choice intent is to flash the call, and its target 'e_win_smugglers' describes Mira flashing it by the hand lever. However, this choice is offered in the smuggler's store ('cm_smug_photo'), not at the lamp where the hand lever is located.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.399304,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B4-3",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B4",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B4-3.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "t_key",
+            "class": "payoff_shows_mismatch",
+            "severity": "should-fix",
+            "reason": "The payoff 'shows' for choice c_cm_light_relight_1 describes flashing the coastguard with the keeper's code, but the thread is about the key (has_key) and the target node cm_light_true is about winding the great lamp.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_set_stair",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The gift states that the keeper 'never took a penny of it', which contradicts the truth and fact truth_ferris_took_money that he did take the smuggler's money for six winters, even if he never spent it.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.406488,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B2-3",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "reject",
+      "severity": "blocker",
+      "family": "B",
+      "defect_class": "B2",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B2-3.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.95,
+        "findings": [
+          {
+            "entry": "e_trade_photo",
+            "class": "state_contradiction",
+            "severity": "blocker",
+            "reason": "The event for e_trade_photo states that Rowan 'buys nothing back', which contradicts the required fact year_restored (established in fin_trade_2), which states that the root already gave back one year (the bakery).",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_b1a_dec_2",
+            "class": "label_outcome_mismatch",
+            "severity": "blocker",
+            "reason": "The intent for c_b1a_dec_2 is to 'pull back from the water', but the target node e_b1a's event states that 'Rowan holds too long'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "name_every_year",
+            "class": "state_contradiction",
+            "severity": "blocker",
+            "reason": "The fact name_every_year states the tree is given 'one willing name a year', which contradicts empty_knot (which says there is only 'one fresh empty knot' after 40 years) and clause_names_keeper (which says each 40-year renewal names a keeper).",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_trade_photo",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The ending gift for e_trade_photo claims 'keeping buys nothing', which contradicts the fact year_restored that the reader has already experienced in the preceding node fin_trade_2.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "grandmother_writes_postcards",
+            "class": "truth_contradiction",
+            "severity": "blocker",
+            "reason": "This fact claims Rowan's grandmother is alive and well in a far city, which contradicts the truth that she went into the spring forty years ago and is held there.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_b1a_dec_2",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The choice intent is to 'pull back from the water', but the target ending e_b1a says Rowan 'holds too long'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_b2t_m_2",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The choice intent and cost specify letting the root take her memory of her grandmother, but the target ending e_b2tb says she gives 'every memory of her family'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_fin_one_2_2",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The choice intent is to 'ask whether she might save one more', but the target ending e_one_content describes her accepting one life for one memory without asking for more.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.2912992,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "SY-B-B3-3",
+      "source": "synthetic",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "reject",
+      "severity": "should-fix",
+      "family": "B",
+      "defect_class": "B3",
+      "needed_repair": null,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/synthetic/SY-B-B3-3.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.95,
+        "findings": [
+          {
+            "entry": "c_b1a_dec_2",
+            "class": "label_outcome_mismatch",
+            "severity": "blocker",
+            "reason": "The choice intent is to pull back from the water, but the target node e_b1a's event states that Rowan holds on too long.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_pho_a",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The gift celebrates saving the prints and beating the Quiet, but the ending's valence is negative, its kind is setback, and its node event has Rowan burn the prints.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_fin_one_2_2",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The choice intent is to ask whether she might save one more, but the target node e_one_content's event describes her accepting one life for one memory without mentioning asking for more.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.1845626,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-the-hollow-lighthouse-postfix",
+      "source": "baseline",
+      "half": "tuning",
+      "unit": "the-hollow-lighthouse",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": false,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-the-hollow-lighthouse-postfix.baseline.plan.json",
+        "book": "out/the-hollow-lighthouse.filled.json"
+      },
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "e_win_name_cleared",
+            "class": "truth_contradiction",
+            "severity": "blocker",
+            "reason": "The ending event states that the confession clears Ferris's name, but the truth and 'truth_ferris_took_money' establish that he took the smuggler's money for six winters, which a confession would confirm rather than clear.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_set_stair",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The ending's gift claims 'the keeper never took a penny of it', which contradicts the truth and 'truth_ferris_took_money' stating that he took Varley's money for six winters (even if he never spent it).",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_set_stair",
+            "class": "ending_gift_mismatch",
+            "severity": "blocker",
+            "reason": "The gift claims 'the keeper never took a penny of it', which directly contradicts the truth that Ferris took Varley's money for six winters.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_tn_gate_open_2",
+            "class": "label_outcome_mismatch",
+            "severity": "should-fix",
+            "reason": "The intent is to hold the ring until the big swells pass to avoid getting wet, but the target node 'tn_gate_wait' has her get soaked anyway.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.173252,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "CBL-PL-the-vanishing-orchard-postfix",
+      "source": "baseline",
+      "half": "tuning",
+      "unit": "the-vanishing-orchard",
+      "expected": "pass",
+      "severity": null,
+      "family": null,
+      "defect_class": null,
+      "needed_repair": false,
+      "files": {
+        "plan": "docs/planning/evidence/plan-reviewer/clean-baselines/PL-the-vanishing-orchard-postfix.baseline.plan.json",
+        "book": "out/the-vanishing-orchard.filled.json"
+      },
+      "checker_error_rules": [],
+      "review": {
+        "verdict": "reject",
+        "confidence": 0.9,
+        "findings": [
+          {
+            "entry": "c_b1a_dec_2",
+            "class": "label_outcome_mismatch",
+            "severity": "blocker",
+            "reason": "The choice intent is to 'pull back from the water', but the target ending e_b1a's event states that Rowan 'holds too long'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_b2t_m_2",
+            "class": "label_outcome_mismatch",
+            "severity": "blocker",
+            "reason": "The choice intent specifies the cost as 'her memory of her grandmother', but the target ending e_b2tb's event states she gives 'every memory of her family'.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "c_fin_one_2_2",
+            "class": "label_outcome_mismatch",
+            "severity": "blocker",
+            "reason": "The choice intent is to 'ask whether she might save one more', but the target ending e_one_content's event describes her accepting one life for one memory without asking for more.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "name_every_year",
+            "class": "state_contradiction",
+            "severity": "blocker",
+            "reason": "This fact states the tree is given 'one willing name a year: a keeper', which contradicts clause_names_keeper, which establishes that a keeper is named only once every forty years at the lease renewal.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_kee_a",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The gift includes 'the lesson that starving a hunger feeds it', but the ending's event only states that Rowan swears to starve it and receives a warning, without demonstrating this lesson.",
+            "entry_known": true,
+            "authoritative": true
+          },
+          {
+            "entry": "e_b2tb",
+            "class": "ending_gift_mismatch",
+            "severity": "should-fix",
+            "reason": "The gift refers to the price as 'the person she meant to honour' (matching the choice intent), but the ending's event states she gave 'every memory of her family'.",
+            "entry_known": true,
+            "authoritative": true
+          }
+        ],
+        "reasons": [],
+        "run_verdicts": [
+          "reject",
+          "reject"
+        ],
+        "checker_caught": false,
+        "reviewer_pass_overridden": false,
+        "reviewer_ran": true
+      },
+      "cost_usd": 0.227732,
+      "finish_reasons": [
+        "stop",
+        "stop"
+      ]
+    }
+  ]
+}

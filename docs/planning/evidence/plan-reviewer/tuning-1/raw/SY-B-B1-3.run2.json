@@ -1,0 +1,45 @@
+{
+  "plan_id": "SY-B-B1-3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "e_win_name_cleared",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "The event states the confession clears Ferris's name, but the truth and fact 'truth_ferris_took_money' establish that he took the smuggler's money for six winters, meaning he is guilty.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_set_stair",
+        "class": "ending_gift_mismatch",
+        "severity": "blocker",
+        "reason": "The gift claims 'the keeper never took a penny of it', which directly contradicts the truth and fact 'truth_ferris_took_money' that he took the money for six winters (even if he never spent it).",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_cm_smug_photo_1",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice intent is to flash the call, and its target 'e_win_smugglers' describes Mira flashing it by the hand lever. However, this choice is offered in the smuggler's store ('cm_smug_photo'), not at the lamp where the hand lever is located.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24094,
+  "output_tokens": 12643,
+  "reasoning_tokens": 12309,
+  "cost_usd": 0.199904,
+  "latency_ms": 110647,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"e_win_name_cleared\",\n      \"class\": \"truth_contradiction\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The event states the confession clears Ferris's name, but the truth and fact 'truth_ferris_took_money' establish that he took the smuggler's money for six winters, meaning he is guilty.\"\n    },\n    {\n      \"entry\": \"e_set_stair\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The gift claims 'the keeper never took a penny of it', which directly contradicts the truth and fact 'truth_ferris_took_money' that he took the money for six winters (even if he never spent it).\"\n    },\n    {\n      \"entry\": \"c_cm_smug_photo_1\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The choice intent is to flash the call, and its target 'e_win_smugglers' describes Mira flashing it by the hand lever. However, this choice is offered in the smuggler's store ('cm_smug_photo'), not at the lamp where the hand lever is located.\"\n    }\n  ]\n}"
+}

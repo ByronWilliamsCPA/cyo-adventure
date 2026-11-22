@@ -1,0 +1,45 @@
+{
+  "plan_id": "SY-B-B3-3",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice intent is to pull back from the water, but the target node e_b1a's event states that Rowan holds on too long.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_pho_a",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The gift celebrates saving the prints and beating the Quiet, but the ending's valence is negative, its kind is setback, and its node event has Rowan burn the prints.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_fin_one_2_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice intent is to ask whether she might save one more, but the target node e_one_content's event describes her accepting one life for one memory without mentioning asking for more.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28724,
+  "output_tokens": 6352,
+  "reasoning_tokens": 6116,
+  "cost_usd": 0.133672,
+  "latency_ms": 51860,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"c_b1a_dec_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"blocker\", \"reason\": \"The choice intent is to pull back from the water, but the target node e_b1a's event states that Rowan holds on too long.\"}, {\"entry\": \"e_pho_a\", \"class\": \"ending_gift_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The gift celebrates saving the prints and beating the Quiet, but the ending's valence is negative, its kind is setback, and its node event has Rowan burn the prints.\"}, {\"entry\": \"c_fin_one_2_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice intent is to ask whether she might save one more, but the target node e_one_content's event describes her accepting one life for one memory without mentioning asking for more.\"}]}"
+}

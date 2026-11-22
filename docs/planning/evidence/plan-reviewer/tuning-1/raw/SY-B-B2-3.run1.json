@@ -1,0 +1,53 @@
+{
+  "plan_id": "SY-B-B2-3",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "e_trade_photo",
+        "class": "state_contradiction",
+        "severity": "blocker",
+        "reason": "The event for e_trade_photo states that Rowan 'buys nothing back', which contradicts the required fact year_restored (established in fin_trade_2), which states that the root already gave back one year (the bakery).",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The intent for c_b1a_dec_2 is to 'pull back from the water', but the target node e_b1a's event states that 'Rowan holds too long'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "name_every_year",
+        "class": "state_contradiction",
+        "severity": "blocker",
+        "reason": "The fact name_every_year states the tree is given 'one willing name a year', which contradicts empty_knot (which says there is only 'one fresh empty knot' after 40 years) and clause_names_keeper (which says each 40-year renewal names a keeper).",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_trade_photo",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The ending gift for e_trade_photo claims 'keeping buys nothing', which contradicts the fact year_restored that the reader has already experienced in the preceding node fin_trade_2.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28756,
+  "output_tokens": 9437,
+  "reasoning_tokens": 9093,
+  "cost_usd": 0.170756,
+  "latency_ms": 76491,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"e_trade_photo\", \"class\": \"state_contradiction\", \"severity\": \"blocker\", \"reason\": \"The event for e_trade_photo states that Rowan 'buys nothing back', which contradicts the required fact year_restored (established in fin_trade_2), which states that the root already gave back one year (the bakery).\"}, {\"entry\": \"c_b1a_dec_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"blocker\", \"reason\": \"The intent for c_b1a_dec_2 is to 'pull back from the water', but the target node e_b1a's event states that 'Rowan holds too long'.\"}, {\"entry\": \"name_every_year\", \"class\": \"state_contradiction\", \"severity\": \"blocker\", \"reason\": \"The fact name_every_year states the tree is given 'one willing name a year', which contradicts empty_knot (which says there is only 'one fresh empty knot' after 40 years) and clause_names_keeper (which says each 40-year renewal names a keeper).\"}, {\"entry\": \"e_trade_photo\", \"class\": \"ending_gift_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The ending gift for e_trade_photo claims 'keeping buys nothing', which contradicts the fact year_restored that the reader has already experienced in the preceding node fin_trade_2.\"}]}"
+}

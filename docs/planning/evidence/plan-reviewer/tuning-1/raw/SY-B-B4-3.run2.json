@@ -1,0 +1,37 @@
+{
+  "plan_id": "SY-B-B4-3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "t_key",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff shows for choice c_cm_light_relight_1 credits the keeper's code, which belongs to thread t_code, rather than the key from t_key. It also copies the event text from e_win_smugglers instead of reflecting the choice's intent to wind the lamp.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_set_stair",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The gift states that the keeper 'never took a penny of it', which contradicts the truth and fact truth_ferris_took_money that he did take the smuggler's money for six winters, even if he never spent it.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24081,
+  "output_tokens": 20910,
+  "reasoning_tokens": 20670,
+  "cost_usd": 0.299082,
+  "latency_ms": 152300,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"t_key\",\n      \"class\": \"payoff_shows_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The payoff shows for choice c_cm_light_relight_1 credits the keeper's code, which belongs to thread t_code, rather than the key from t_key. It also copies the event text from e_win_smugglers instead of reflecting the choice's intent to wind the lamp.\"\n    },\n    {\n      \"entry\": \"e_set_stair\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The gift states that the keeper 'never took a penny of it', which contradicts the truth and fact truth_ferris_took_money that he did take the smuggler's money for six winters, even if he never spent it.\"\n    }\n  ]\n}"
+}

@@ -1,0 +1,37 @@
+{
+  "plan_id": "CBL-PL-the-hollow-lighthouse-postfix",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "e_win_name_cleared",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "The ending event states that the confession clears Ferris's name, but the truth and 'truth_ferris_took_money' establish that he took the smuggler's money for six winters, which a confession would confirm rather than clear.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_set_stair",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The ending's gift claims 'the keeper never took a penny of it', which contradicts the truth and 'truth_ferris_took_money' stating that he took Varley's money for six winters (even if he never spent it).",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24092,
+  "output_tokens": 4833,
+  "reasoning_tokens": 4641,
+  "cost_usd": 0.10618,
+  "latency_ms": 42496,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"e_win_name_cleared\", \"class\": \"truth_contradiction\", \"severity\": \"blocker\", \"reason\": \"The ending event states that the confession clears Ferris's name, but the truth and 'truth_ferris_took_money' establish that he took the smuggler's money for six winters, which a confession would confirm rather than clear.\"}, {\"entry\": \"e_set_stair\", \"class\": \"ending_gift_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The ending's gift claims 'the keeper never took a penny of it', which contradicts the truth and 'truth_ferris_took_money' stating that he took Varley's money for six winters (even if he never spent it).\"}]}"
+}

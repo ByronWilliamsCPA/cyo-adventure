@@ -1,0 +1,45 @@
+{
+  "plan_id": "SY-B-B1-3",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "e_win_name_cleared",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "The event states that the confession 'clears Ferris's name', which contradicts the truth that Ferris took the smuggler's money for six winters.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_set_stair",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The gift claims 'the keeper never took a penny of it', contradicting the truth that Ferris took Varley's money for six winters.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_win_smugglers",
+        "class": "state_contradiction",
+        "severity": "should-fix",
+        "reason": "The event has Mira flash the call by the hand lever, but this ending is reached from c_cm_smug_photo_1 in the smuggler's store (cm_smug_photo), not at the lamp where the lever is located.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24094,
+  "output_tokens": 12601,
+  "reasoning_tokens": 12365,
+  "cost_usd": 0.1994,
+  "latency_ms": 112921,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.9, \"findings\": [{\"entry\": \"e_win_name_cleared\", \"class\": \"truth_contradiction\", \"severity\": \"blocker\", \"reason\": \"The event states that the confession 'clears Ferris's name', which contradicts the truth that Ferris took the smuggler's money for six winters.\"}, {\"entry\": \"e_set_stair\", \"class\": \"ending_gift_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The gift claims 'the keeper never took a penny of it', contradicting the truth that Ferris took Varley's money for six winters.\"}, {\"entry\": \"e_win_smugglers\", \"class\": \"state_contradiction\", \"severity\": \"should-fix\", \"reason\": \"The event has Mira flash the call by the hand lever, but this ending is reached from c_cm_smug_photo_1 in the smuggler's store (cm_smug_photo), not at the lamp where the lever is located.\"}]}"
+}

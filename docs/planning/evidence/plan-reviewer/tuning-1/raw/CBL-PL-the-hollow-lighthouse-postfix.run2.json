@@ -1,0 +1,45 @@
+{
+  "plan_id": "CBL-PL-the-hollow-lighthouse-postfix",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "e_win_name_cleared",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "The event states that the confession clears Ferris's name, but the truth establishes that he took Varley's money for six winters to look away, meaning he is guilty of taking bribes.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_set_stair",
+        "class": "ending_gift_mismatch",
+        "severity": "blocker",
+        "reason": "The gift claims 'the keeper never took a penny of it', which directly contradicts the truth that Ferris took Varley's money for six winters.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_tn_gate_open_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The intent is to hold the ring until the big swells pass to avoid getting wet, but the target node 'tn_gate_wait' has her get soaked anyway.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24092,
+  "output_tokens": 4880,
+  "reasoning_tokens": 4601,
+  "cost_usd": 0.067072,
+  "latency_ms": 40934,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"e_win_name_cleared\",\n      \"class\": \"truth_contradiction\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The event states that the confession clears Ferris's name, but the truth establishes that he took Varley's money for six winters to look away, meaning he is guilty of taking bribes.\"\n    },\n    {\n      \"entry\": \"e_set_stair\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The gift claims 'the keeper never took a penny of it', which directly contradicts the truth that Ferris took Varley's money for six winters.\"\n    },\n    {\n      \"entry\": \"c_tn_gate_open_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The intent is to hold the ring until the big swells pass to avoid getting wet, but the target node 'tn_gate_wait' has her get soaked anyway.\"\n    }\n  ]\n}"
+}

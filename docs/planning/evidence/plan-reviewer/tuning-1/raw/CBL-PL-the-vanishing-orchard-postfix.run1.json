@@ -1,0 +1,69 @@
+{
+  "plan_id": "CBL-PL-the-vanishing-orchard-postfix",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice intent is to 'pull back from the water', but the target ending e_b1a's event states that Rowan 'holds too long'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b2t_m_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice intent specifies the cost as 'her memory of her grandmother', but the target ending e_b2tb's event states she gives 'every memory of her family'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_fin_one_2_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice intent is to 'ask whether she might save one more', but the target ending e_one_content's event describes her accepting one life for one memory without asking for more.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "name_every_year",
+        "class": "state_contradiction",
+        "severity": "blocker",
+        "reason": "This fact states the tree is given 'one willing name a year: a keeper', which contradicts clause_names_keeper, which establishes that a keeper is named only once every forty years at the lease renewal.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_kee_a",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The gift includes 'the lesson that starving a hunger feeds it', but the ending's event only states that Rowan swears to starve it and receives a warning, without demonstrating this lesson.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "e_b2tb",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The gift refers to the price as 'the person she meant to honour' (matching the choice intent), but the ending's event states she gave 'every memory of her family'.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28718,
+  "output_tokens": 4956,
+  "reasoning_tokens": 4409,
+  "cost_usd": 0.116908,
+  "latency_ms": 42199,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"c_b1a_dec_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The choice intent is to 'pull back from the water', but the target ending e_b1a's event states that Rowan 'holds too long'.\"\n    },\n    {\n      \"entry\": \"c_b2t_m_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The choice intent specifies the cost as 'her memory of her grandmother', but the target ending e_b2tb's event states she gives 'every memory of her family'.\"\n    },\n    {\n      \"entry\": \"c_fin_one_2_2\",\n      \"class\": \"label_outcome_mismatch\",\n      \"severity\": \"blocker\",\n      \"reason\": \"The choice intent is to 'ask whether she might save one more', but the target ending e_one_content's event describes her accepting one life for one memory without asking for more.\"\n    },\n    {\n      \"entry\": \"name_every_year\",\n      \"class\": \"state_contradiction\",\n      \"severity\": \"blocker\",\n      \"reason\": \"This fact states the tree is given 'one willing name a year: a keeper', which contradicts clause_names_keeper, which establishes that a keeper is named only once every forty years at the lease renewal.\"\n    },\n    {\n      \"entry\": \"e_kee_a\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The gift includes 'the lesson that starving a hunger feeds it', but the ending's event only states that Rowan swears to starve it and receives a warning, without demonstrating this lesson.\"\n    },\n    {\n      \"entry\": \"e_b2tb\",\n      \"class\": \"ending_gift_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The gift refers to the price as 'the person she meant to honour' (matching the choice intent), but the ending's event states she gave 'every memory of her family'.\"\n    }\n  ]\n}"
+}

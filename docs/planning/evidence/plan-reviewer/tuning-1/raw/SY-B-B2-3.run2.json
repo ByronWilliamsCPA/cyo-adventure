@@ -1,0 +1,53 @@
+{
+  "plan_id": "SY-B-B2-3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 1.0,
+    "findings": [
+      {
+        "entry": "grandmother_writes_postcards",
+        "class": "truth_contradiction",
+        "severity": "blocker",
+        "reason": "This fact claims Rowan's grandmother is alive and well in a far city, which contradicts the truth that she went into the spring forty years ago and is held there.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice intent is to 'pull back from the water', but the target ending e_b1a says Rowan 'holds too long'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b2t_m_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice intent and cost specify letting the root take her memory of her grandmother, but the target ending e_b2tb says she gives 'every memory of her family'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_fin_one_2_2",
+        "class": "label_outcome_mismatch",
+        "severity": "should-fix",
+        "reason": "The choice intent is to 'ask whether she might save one more', but the target ending e_one_content describes her accepting one life for one memory without asking for more.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28756,
+  "output_tokens": 9566,
+  "reasoning_tokens": 9265,
+  "cost_usd": 0.1205432,
+  "latency_ms": 74738,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 1.0, \"findings\": [{\"entry\": \"grandmother_writes_postcards\", \"class\": \"truth_contradiction\", \"severity\": \"blocker\", \"reason\": \"This fact claims Rowan's grandmother is alive and well in a far city, which contradicts the truth that she went into the spring forty years ago and is held there.\"}, {\"entry\": \"c_b1a_dec_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice intent is to 'pull back from the water', but the target ending e_b1a says Rowan 'holds too long'.\"}, {\"entry\": \"c_b2t_m_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice intent and cost specify letting the root take her memory of her grandmother, but the target ending e_b2tb says she gives 'every memory of her family'.\"}, {\"entry\": \"c_fin_one_2_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The choice intent is to 'ask whether she might save one more', but the target ending e_one_content describes her accepting one life for one memory without asking for more.\"}]}"
+}

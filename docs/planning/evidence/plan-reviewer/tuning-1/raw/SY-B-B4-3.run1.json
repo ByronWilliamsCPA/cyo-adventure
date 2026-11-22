@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B4-3",
+  "run": 1,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "findings": [
+      {
+        "entry": "t_key",
+        "class": "payoff_shows_mismatch",
+        "severity": "should-fix",
+        "reason": "The payoff 'shows' for choice c_cm_light_relight_1 describes flashing the coastguard with the keeper's code, but the thread is about the key (has_key) and the target node cm_light_true is about winding the great lamp.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 24081,
+  "output_tokens": 4937,
+  "reasoning_tokens": 4803,
+  "cost_usd": 0.107406,
+  "latency_ms": 41687,
+  "called": true,
+  "error": null,
+  "raw_text": "{\n  \"verdict\": \"reject\",\n  \"confidence\": 0.9,\n  \"findings\": [\n    {\n      \"entry\": \"t_key\",\n      \"class\": \"payoff_shows_mismatch\",\n      \"severity\": \"should-fix\",\n      \"reason\": \"The payoff 'shows' for choice c_cm_light_relight_1 describes flashing the coastguard with the keeper's code, but the thread is about the key (has_key) and the target node cm_light_true is about winding the great lamp.\"\n    }\n  ]\n}"
+}

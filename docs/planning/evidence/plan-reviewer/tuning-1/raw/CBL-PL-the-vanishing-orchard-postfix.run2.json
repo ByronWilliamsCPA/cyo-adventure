@@ -1,0 +1,45 @@
+{
+  "plan_id": "CBL-PL-the-vanishing-orchard-postfix",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "c_b1a_dec_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice intent is to 'pull back from the water', but the target ending e_b1a describes Rowan holding on too long.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_b2t_m_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice cost specifies losing 'her memory of her grandmother', but the target ending e_b2tb states she gives 'every memory of her family'.",
+        "entry_known": true,
+        "authoritative": true
+      },
+      {
+        "entry": "c_fin_one_2_2",
+        "class": "label_outcome_mismatch",
+        "severity": "blocker",
+        "reason": "The choice intent is to 'ask whether she might save one more', but the target ending e_one_content describes her accepting one life and walking home without asking for more.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28718,
+  "output_tokens": 4449,
+  "reasoning_tokens": 4220,
+  "cost_usd": 0.110824,
+  "latency_ms": 38719,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"c_b1a_dec_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"blocker\", \"reason\": \"The choice intent is to 'pull back from the water', but the target ending e_b1a describes Rowan holding on too long.\"}, {\"entry\": \"c_b2t_m_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"blocker\", \"reason\": \"The choice cost specifies losing 'her memory of her grandmother', but the target ending e_b2tb states she gives 'every memory of her family'.\"}, {\"entry\": \"c_fin_one_2_2\", \"class\": \"label_outcome_mismatch\", \"severity\": \"blocker\", \"reason\": \"The choice intent is to 'ask whether she might save one more', but the target ending e_one_content describes her accepting one life and walking home without asking for more.\"}]}"
+}

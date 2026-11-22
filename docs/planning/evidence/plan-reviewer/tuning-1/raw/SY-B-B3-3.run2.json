@@ -1,0 +1,29 @@
+{
+  "plan_id": "SY-B-B3-3",
+  "run": 2,
+  "verdict": {
+    "verdict": "reject",
+    "confidence": 0.95,
+    "findings": [
+      {
+        "entry": "e_pho_a",
+        "class": "ending_gift_mismatch",
+        "severity": "should-fix",
+        "reason": "The ending's gift celebrates saving the prints, beating the Quiet, and being cheered by the town, but its valence is negative, its kind is setback, and its event describes Rowan burning the prints and finishing the Quiet's work.",
+        "entry_known": true,
+        "authoritative": true
+      }
+    ],
+    "reasons": []
+  },
+  "finish_reason": "stop",
+  "model": "google/gemini-3.1-pro-preview",
+  "input_tokens": 28724,
+  "output_tokens": 3135,
+  "reasoning_tokens": 3029,
+  "cost_usd": 0.0508906,
+  "latency_ms": 25375,
+  "called": true,
+  "error": null,
+  "raw_text": "{\"verdict\": \"reject\", \"confidence\": 0.95, \"findings\": [{\"entry\": \"e_pho_a\", \"class\": \"ending_gift_mismatch\", \"severity\": \"should-fix\", \"reason\": \"The ending's gift celebrates saving the prints, beating the Quiet, and being cheered by the town, but its valence is negative, its kind is setback, and its event describes Rowan burning the prints and finishing the Quiet's work.\"}]}"
+}
