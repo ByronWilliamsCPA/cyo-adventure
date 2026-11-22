@@ -497,6 +497,33 @@ class TestHeldOutRule:
 # ---------------------------------------------------------------------------
 
 
+class RejectEverythingProvider:
+    """Rejects every plan, always citing the same entry that no seed edited."""
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        return Completion(
+            text=json.dumps(
+                {
+                    "verdict": "reject",
+                    "confidence": 0.9,
+                    "findings": [
+                        {
+                            "entry": "n_elsewhere",
+                            "class": "state_contradiction",
+                            "severity": "blocker",
+                            "reason": "a flag on an entry no seed touched",
+                        }
+                    ],
+                }
+            ),
+            usage=TokenUsage("openrouter", REVIEWER, 20_000, 3_000, 10, 1_000),
+            finish_reason="stop",
+            vendor_cost_usd=None,
+        )
+
+
 class MarkerProvider:
     """Answers by a marker planted in the plan text: reject, residual or pass."""
 
@@ -616,6 +643,7 @@ class Tree:
         family: str,
         code: str,
         marker: str | None = None,
+        edited_paths: tuple[str, ...] = (),
     ) -> None:
         plan, book = self._pair(kind, item_id, marker)
         self.synthetic.append(
@@ -627,6 +655,7 @@ class Tree:
                 "family": family,
                 "class_code": code if family == "B" else None,
                 "intended_rule": code if family == "A" else None,
+                "edited_paths": list(edited_paths),
                 "severity": "should-fix",
                 "plan": plan,
                 "book": book,
@@ -710,9 +739,20 @@ def _small_tree(harness: ModuleType, root: Path) -> Tree:
     tree.add_real("R-tuning", half="tuning", marker="MARK_REJECT")
     tree.add_synthetic("SY-A-1", kind="bad", family="A", code="SP-7")
     tree.add_synthetic(
-        "SY-B-1", kind="clean", family="B", code="B1", marker="MARK_REJECT"
+        "SY-B-1",
+        kind="clean",
+        family="B",
+        code="B1",
+        marker="MARK_REJECT",
+        edited_paths=("/choices/c_take_map/intent", "/choices/c_take_map/cost"),
     )
-    tree.add_synthetic("SY-B-2", kind="clean", family="B", code="B2")
+    tree.add_synthetic(
+        "SY-B-2",
+        kind="clean",
+        family="B",
+        code="B2",
+        edited_paths=("/facts/f_new", "/nodes/n_fork/establishes"),
+    )
     tree.add_baseline("BL-1", unit="book-x")
     tree.add_baseline("BL-2", unit="book-x", marker="MARK_REJECT", repaired=True)
     tree.add_baseline(
@@ -1129,6 +1169,223 @@ class TestHarnessEndToEnd:
 # ---------------------------------------------------------------------------
 # The single-plan CLI
 # ---------------------------------------------------------------------------
+
+
+class TestLocatedRecallAndRescore:
+    """Located recall, the reject-everything diagnostic and the offline re-scorer."""
+
+    @pytest.fixture
+    def tree(self, harness: ModuleType, tmp_path: Path) -> Tree:
+        return _small_tree(harness, tmp_path)
+
+    def _run(
+        self, harness: ModuleType, tree: Tree, run_id: str, provider: object
+    ) -> int:
+        import asyncio
+
+        return asyncio.run(
+            harness.run_validation(
+                _args(
+                    harness,
+                    "--half",
+                    "held_out",
+                    *_live("--confirm-held-out", "--run-id", run_id),
+                ),
+                tree.paths(),
+                provider_override=provider,
+            )
+        )
+
+    def _doc(self, directory: Path, name: str = "results.json") -> JsonObj:
+        return cast("JsonObj", json.loads((directory / name).read_text("utf-8")))
+
+    def test_results_record_the_seeded_entries_and_the_findings_at_them(
+        self, harness: ModuleType, tree: Tree
+    ) -> None:
+        self._run(harness, tree, "loc1", MarkerProvider())
+        plans = {
+            cast("str", p["id"]): p
+            for p in cast(
+                "list[JsonObj]", self._doc(tree.root / "out" / "loc1")["plans"]
+            )
+        }
+        hit = plans["SY-B-1"]
+        assert hit["seeded_entry_ids"] == ["c_take_map"]
+        assert hit["reviewer_findings_at_entry"] == {
+            "c_take_map": [
+                {"class": "label_outcome_mismatch", "severity": "should-fix"}
+            ]
+        }
+        assert hit["located"] is True
+        miss = plans["SY-B-2"]
+        assert miss["seeded_entry_ids"] == ["f_new", "n_fork"]
+        assert miss["reviewer_findings_at_entry"] == {"f_new": [], "n_fork": []}
+        assert miss["located"] is False
+        assert plans["BL-3"]["residual_entries"] == ["n_fork"]
+        assert plans["R-missed"]["blockers"] == ["KD-2"]
+
+    def test_a_reviewer_that_rejects_everything_scores_below_its_any_reject_recall(
+        self, harness: ModuleType, tree: Tree, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        self._run(harness, tree, "all1", RejectEverythingProvider())
+        out = tree.root / "out" / "all1"
+        synthetic = cast(
+            "JsonObj", cast("JsonObj", self._doc(out)["figures"])["synthetic"]
+        )
+        any_reject = cast("JsonObj", synthetic["family_B_checker_invisible"])
+        located = cast("JsonObj", synthetic["family_B_located"])
+        assert (any_reject["k"], any_reject["n"]) == (2, 2)
+        assert (located["k"], located["n"]) == (0, 2)
+        by_class = cast("JsonObj", synthetic["family_B_located_by_class"])
+        assert set(by_class) == {"B1", "B2"}
+        assert all(cast("JsonObj", v)["k"] == 0 for v in by_class.values())
+        diagnostic = cast(
+            "JsonObj",
+            cast("JsonObj", self._doc(out)["figures"])["reject_everything_diagnostic"],
+        )
+        assert diagnostic["warning"] is True
+        report = (out / "report.md").read_text("utf-8")
+        assert "WARNING: the reviewer flagged more than 90%" in report
+        assert "located recall, family B: 0/2" in report
+        assert "any-reject recall 2/2" in report
+        assert "## (f) Reject-everything diagnostic" in report
+
+    def test_g3b_rules_ignore_located_recall(
+        self, harness: ModuleType, tree: Tree
+    ) -> None:
+        self._run(harness, tree, "g3b1", RejectEverythingProvider())
+        g3b = cast("JsonObj", self._doc(tree.root / "out" / "g3b1")["g3b"])
+        names = [c["name"] for c in cast("list[JsonObj]", g3b["checks"])]
+        assert not any("locat" in cast("str", n) for n in names)
+
+    def test_the_warning_does_not_trigger_for_a_discriminating_reviewer(
+        self, harness: ModuleType, tree: Tree
+    ) -> None:
+        self._run(harness, tree, "ok1", MarkerProvider())
+        out = tree.root / "out" / "ok1"
+        diagnostic = cast(
+            "JsonObj",
+            cast("JsonObj", self._doc(out)["figures"])["reject_everything_diagnostic"],
+        )
+        assert diagnostic["warning"] is False
+        report = (out / "report.md").read_text("utf-8")
+        assert "WARNING: the reviewer flagged" not in report
+        assert "No warning" in report
+
+    def test_rescore_reproduces_the_figures_and_leaves_the_original_untouched(
+        self, harness: ModuleType, tree: Tree
+    ) -> None:
+        self._run(harness, tree, "re1", MarkerProvider())
+        out = tree.root / "out" / "re1"
+        before = {n: (out / n).read_bytes() for n in ("results.json", "report.md")}
+        assert harness.rescore_run(out, tree.paths()) == harness.EXIT_OK
+        assert {n: (out / n).read_bytes() for n in before} == before
+        original = self._doc(out)
+        rescored = self._doc(out, "results.rescored.json")
+        assert rescored["figures"] == original["figures"]
+        assert rescored["g3b"] == original["g3b"]
+        note = cast("JsonObj", rescored["rescored"])
+        assert note["model_calls"] == 0
+        assert note["original_g3b_passed"] == note["g3b_passed_now"]
+        report = (out / "report.rescored.md").read_text("utf-8")
+        assert "Re-scored offline" in report
+        assert EM_DASH not in report
+        assert EM_DASH not in (out / "results.rescored.json").read_text("utf-8")
+
+    def test_rescore_refuses_to_overwrite_its_outputs(
+        self,
+        harness: ModuleType,
+        tree: Tree,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        self._run(harness, tree, "re2", MarkerProvider())
+        out = tree.root / "out" / "re2"
+        assert harness.rescore_run(out, tree.paths()) == harness.EXIT_OK
+        first = (out / "report.rescored.md").read_bytes()
+        (out / "report.rescored.md").write_text("edited by hand\n", encoding="utf-8")
+        assert harness.rescore_run(out, tree.paths()) == harness.EXIT_BAD_INPUT
+        assert "never overwrites" in capsys.readouterr().err
+        assert (out / "report.rescored.md").read_text("utf-8") == "edited by hand\n"
+        assert first != b"edited by hand\n"
+        # One of the two outputs existing is enough to refuse.
+        (out / "report.rescored.md").unlink()
+        assert harness.rescore_run(out, tree.paths()) == harness.EXIT_BAD_INPUT
+        assert not (out / "report.rescored.md").exists()
+
+    def test_rescore_of_a_directory_without_results_is_refused(
+        self,
+        harness: ModuleType,
+        tree: Tree,
+        tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        empty = tmp_path / "empty-run"
+        empty.mkdir()
+        assert harness.rescore_run(empty, tree.paths()) == harness.EXIT_BAD_INPUT
+        assert "cannot read" in capsys.readouterr().err
+        assert not any(empty.iterdir())
+
+    def test_rescore_backfills_a_results_file_written_before_the_new_fields(
+        self, harness: ModuleType, tree: Tree
+    ) -> None:
+        self._run(harness, tree, "old1", MarkerProvider())
+        out = tree.root / "out" / "old1"
+        document = self._doc(out)
+        expected = cast("JsonObj", document["figures"])
+        for plan in cast("list[JsonObj]", document["plans"]):
+            for key in (
+                "blockers",
+                "residual_entries",
+                "seeded_entry_ids",
+                "reviewer_findings_at_entry",
+                "located",
+            ):
+                plan.pop(key)
+        (out / "results.json").write_text(json.dumps(document), encoding="utf-8")
+        assert harness.rescore_run(out, tree.paths()) == harness.EXIT_OK
+        rescored = self._doc(out, "results.rescored.json")
+        assert rescored["figures"] == expected
+
+    def test_the_cli_rescores_a_run_directory_and_rejects_mixed_modes(
+        self,
+        harness: ModuleType,
+        tree: Tree,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        self._run(harness, tree, "cli1", MarkerProvider())
+        out = tree.root / "out" / "cli1"
+        assert harness.main(["--rescore", str(out)]) == harness.EXIT_OK
+        assert (out / "results.rescored.json").is_file()
+        capsys.readouterr()
+        assert (
+            harness.main(["--rescore", str(out), "--half", "tuning"])
+            == harness.EXIT_BAD_INPUT
+        )
+        assert "--rescore takes only a run directory" in capsys.readouterr().err
+        assert harness.main(["--dry-run"]) == harness.EXIT_BAD_INPUT
+        assert "--half is required" in capsys.readouterr().err
+
+    def test_rescoring_the_committed_tuning_run_locates_three_of_four_seeds(
+        self, harness: ModuleType, tmp_path: Path
+    ) -> None:
+        source = _REPO / "docs/planning/evidence/plan-reviewer/tuning-1/results.json"
+        run = tmp_path / "tuning-1"
+        run.mkdir()
+        (run / "results.json").write_bytes(source.read_bytes())
+        assert harness.rescore_run(run, harness.Paths()) == harness.EXIT_OK
+        figures = cast("JsonObj", self._doc(run, "results.rescored.json")["figures"])
+        synthetic = cast("JsonObj", figures["synthetic"])
+        located = cast("JsonObj", synthetic["family_B_located"])
+        assert (located["k"], located["n"]) == (3, 4)
+        by_class = cast("dict[str, JsonObj]", synthetic["family_B_located_by_class"])
+        assert {k: v["k"] for k, v in by_class.items()} == {
+            "B1": 0,
+            "B2": 1,
+            "B3": 1,
+            "B4": 1,
+        }
+        diagnostic = cast("JsonObj", figures["reject_everything_diagnostic"])
+        assert diagnostic["warning"] is True
 
 
 class TestReviewCli:

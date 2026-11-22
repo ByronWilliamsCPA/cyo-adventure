@@ -7,6 +7,7 @@ Usage:
         --budget 40 --reviewer-model <model>
     uv run python scripts/validate_plan_reviewer.py --half held_out --live \
         --budget 60 --reviewer-model <model> --confirm-held-out
+    uv run python scripts/validate_plan_reviewer.py --rescore <run-dir>
 
 What it reads (committed files only; every sha256 is verified, and a mismatch
 stops the run):
@@ -43,6 +44,18 @@ neither the record nor the network.
 Modes: ``--dry-run`` (a stub provider answers ``pass``; no network; the figures
 mean nothing) or ``--live`` (needs ``OPENROUTER_API_KEY`` and a ``--budget`` hard
 cap in USD, checked before every call). Live refuses to start without a budget.
+
+Located recall (informational, never a threshold): for each family B seed the
+harness derives the entry ids the seed edited from its ``edited_paths`` and
+credits the seed only when a reviewer finding names one of them. It sits beside
+the "any reject" recall, and a reject-everything diagnostic warns when clean
+baselines and seeds are both flagged above 90 percent. ``results.json`` records
+each plan's seeded entry ids and the findings at them.
+
+Re-scoring: ``--rescore <run-dir>`` recomputes the figures of an existing run
+from its ``results.json`` with no model call and writes ``report.rescored.md``
+and ``results.rescored.json`` beside it; it refuses to overwrite either, and
+never touches the original files.
 
 Output: ``<out-root>/<run-id>/results.json``, ``report.md`` and ``raw/`` (every
 call's answer, with ``ensure_ascii`` so no raw em dash lands in the repo). A
@@ -91,6 +104,7 @@ from cyo_adventure.storyplan.checks import check_plan
 from cyo_adventure.storyplan.models import StoryPlan, book_sha256
 from cyo_adventure.storyplan.review import (
     PlanReview,
+    ReviewFinding,
     ValidatedPairing,
     assert_independent,
     format_validated_pairing,
@@ -102,6 +116,7 @@ from cyo_adventure.storyplan.review_figures import (
     MIN_CLEAN_BOOKS,
     MIN_DEFECTIVE,
     RECALL_MIN,
+    REJECT_EVERYTHING_MIN,
     Figures,
     G3bResult,
     ScoredPlan,
@@ -109,6 +124,7 @@ from cyo_adventure.storyplan.review_figures import (
     compute_figures,
     evaluate_g3b,
     project_costs,
+    seeded_entry_ids,
 )
 
 if TYPE_CHECKING:
@@ -126,6 +142,8 @@ SYNTHETIC_SET: Final = (
 BASELINES: Final = EVIDENCE / "plan-reviewer/clean-baselines/manifest.json"
 OUT_ROOT: Final = EVIDENCE / "plan-reviewer"
 HELD_OUT_RUNS_NAME: Final = "held-out-runs.json"
+RESCORED_REPORT_NAME: Final = "report.rescored.md"
+RESCORED_RESULTS_NAME: Final = "results.rescored.json"
 PAIRING_NAME: Final = "validated-pairing.json"
 
 EXIT_OK: Final = 0
@@ -190,6 +208,7 @@ class Candidate:
         defect_class: Synthetic class or rule.
         needed_repair: For a baseline, whether the repair changed it.
         residual_entries: Known residuals' node and choice ids.
+        seeded_entries: For a synthetic item, the entry ids its seed edited.
         files: The plan and book file paths, for the results record.
     """
 
@@ -207,6 +226,7 @@ class Candidate:
     defect_class: str | None = None
     needed_repair: bool | None = None
     residual_entries: frozenset[str] = field(default_factory=frozenset)
+    seeded_entries: frozenset[str] = field(default_factory=frozenset)
     files: dict[str, str] = field(default_factory=dict)
 
 
@@ -409,6 +429,18 @@ def _blockers(item: Mapping[str, object]) -> tuple[str, ...]:
     return tuple(out)
 
 
+def _seeded(item: Mapping[str, object]) -> frozenset[str]:
+    """Derive the entry ids a synthetic item's seed edited.
+
+    Args:
+        item: The synthetic validation item.
+
+    Returns:
+        frozenset[str]: The ids from its ``edited_paths`` pointers.
+    """
+    return seeded_entry_ids(_strings(item.get("edited_paths")))
+
+
 def _items(document: Mapping[str, object]) -> list[dict[str, object]]:
     """Return a set's ``items`` as dicts.
 
@@ -498,6 +530,7 @@ def load_candidates(
                 defect_class=cast(
                     "str | None", item.get("class_code") or item.get("intended_rule")
                 ),
+                seeded_entries=_seeded(item),
                 files=files,
             )
         )
@@ -570,6 +603,7 @@ def _scored(candidate: Candidate, review: PlanReview) -> ScoredPlan:
         defect_class=candidate.defect_class,
         needed_repair=candidate.needed_repair,
         residual_entries=candidate.residual_entries,
+        seeded_entries=candidate.seeded_entries,
     )
 
 
@@ -827,7 +861,9 @@ _DRY_RUN_NOTE = "**Dry run: a stub provider answered every call, so no figure be
 _TUNING_NOTE = " (the tuning half never passes G3b: it guides prompt work only)"
 _DEFECTS_NOTE = "A plan's `defects` are every defect its book revision carries, an upper bound on what is visible in the plan."
 _SYNTHETIC_NOTE = "Synthetic recall overstates real recall: each seed is one defect at a known place in an otherwise clean plan."
+_LOCATED_NOTE = "Located recall credits a seed only when a reviewer finding (either run) names an entry the seed edited; the any-reject figure credits any reject or unsure, so a reviewer that rejects everything scores 100 percent on it. Located recall is informational: D12 sets no threshold for it, and G3b is unchanged."
 _RESIDUAL_NOTE = "A reviewer finding at a recorded known residual is a true positive, not a false flag (`AL-882`); a flag elsewhere on the book is still a false flag."
+_RESCORED_NOTE = "Re-scored offline from an existing run's results.json (no model call); the original report.md and results.json are unchanged. Source:"
 _LIMITS = (
     "- Synthetic recall overstates real recall, and family A is checker-visible by construction.",
     "- The clean sample is five books; per-book results matter more than the pooled rate.",
@@ -902,6 +938,37 @@ def _cost_note(est: Mapping[str, object]) -> str:
     return f"Projected: {est['plans']} plans reach the reviewer ({est['checker_already_rejects']} the checker already rejects), {est['calls']} calls, {tokens}, about {est['usd']} USD at {price} ({basis})."
 
 
+def _reject_everything_warning(diagnostic: Mapping[str, object]) -> str:
+    """Render the warning that the reviewer flags nearly everything.
+
+    Args:
+        diagnostic: The ``reject_everything_diagnostic`` figures block.
+
+    Returns:
+        str: One paragraph.
+    """
+    return (
+        f"**WARNING: the reviewer flagged more than {REJECT_EVERYTHING_MIN:.0%} of both "
+        f"clean baselines ({_fmt_rate(diagnostic['clean_baselines_flagged'])}) and seeds "
+        f"({_fmt_rate(diagnostic['seeds_flagged'])}): it discriminates nothing, so its "
+        "any-reject recall means nothing; read located recall.**"
+    )
+
+
+def _located_cell(plan: Mapping[str, object]) -> str:
+    """Render the "seed located" cell of the plans table.
+
+    Args:
+        plan: One plan record of the results document.
+
+    Returns:
+        str: ``yes`` or ``NO`` for a plan with seeded entries, else ``-``.
+    """
+    if not plan.get("seeded_entry_ids"):
+        return "-"
+    return "yes" if plan.get("located") else "NO"
+
+
 def render_report(context: Mapping[str, object]) -> str:
     """Render ``report.md`` from a results document.
 
@@ -944,22 +1011,38 @@ def render_report(context: Mapping[str, object]) -> str:
         (f"Family B class {k}", _fmt_rate(v))
         for k, v in _mapping(synth["family_B_by_class"]).items()
     ]
+    located_class_rows = [
+        (f"Family B class {k}, located", _fmt_rate(v))
+        for k, v in _mapping(synth["family_B_located_by_class"]).items()
+    ]
     book_rows = [
         (b, _mapping(r)["plans"], _mapping(r)["flagged"], _mapping(r)["false_flags"])
         for b, r in _mapping(clean["by_book"]).items()
     ]
+    diagnostic = _mapping(figures["reject_everything_diagnostic"])
     lines = [
         f"# Plan reviewer validation run {run['run_id']}",
         "",
         _DRY_RUN_NOTE if not live else f"Live run on the {run['half']} half.",
         "",
-        "## Run",
-        "",
     ]
+    rescored = _mapping(context.get("rescored"))
+    if rescored:
+        lines += [f"{_RESCORED_NOTE} {rescored.get('source')}.", ""]
+    lines += ["## Run", ""]
     lines += _table(("Item", "Value"), _run_rows(run))
     lines += ["", "## Verdict (G3b)", "", verdict, ""]
     lines += _table(("Condition", "Met", "Detail"), checks)
-    lines += ["", thresholds, "", "## (a) Real defective plans", ""]
+    lines += [
+        "",
+        thresholds,
+        "",
+        f"Informational, not a threshold: located recall, family B: {_fmt_rate(synth['family_B_located'])} (any-reject recall {_fmt_rate(synth['family_B_checker_invisible'])}).",
+        "",
+    ]
+    if diagnostic["warning"]:
+        lines += [_reject_everything_warning(diagnostic), ""]
+    lines += ["## (a) Real defective plans", ""]
     lines += _table(
         ("Figure", "Value"),
         [
@@ -1010,9 +1093,21 @@ def render_report(context: Mapping[str, object]) -> str:
                 _fmt_rate(synth["family_B_checker_invisible"]),
             ),
             *class_rows,
+            (
+                "Family B, located (a finding names a seeded entry)",
+                _fmt_rate(synth["family_B_located"]),
+            ),
+            *located_class_rows,
         ],
     )
-    lines += ["", _SYNTHETIC_NOTE, "", "## (c) Clean baselines", ""]
+    unscorable = cast("int", synth["family_B_located_unscorable"])
+    lines += ["", _SYNTHETIC_NOTE, "", _LOCATED_NOTE]
+    if unscorable:
+        lines += [
+            "",
+            f"{unscorable} family B plan(s) have no known seeded entry and are left out of the located figures.",
+        ]
+    lines += ["", "## (c) Clean baselines", ""]
     lines += _table(
         ("Figure", "Value"),
         [
@@ -1049,7 +1144,34 @@ def render_report(context: Mapping[str, object]) -> str:
         "",
     ]
     est = _mapping(context.get("estimate"))
-    lines += [_cost_note(est) if est else "No projection recorded.", "", "## Plans", ""]
+    lines += [_cost_note(est) if est else "No projection recorded.", ""]
+    lines += ["## (f) Reject-everything diagnostic", ""]
+    lines += _table(
+        ("Figure", "Value"),
+        [
+            (
+                "Flagged, every plan the reviewer ran on (clean and defective)",
+                _fmt_rate(diagnostic["reviewer_run_plans_flagged"]),
+            ),
+            (
+                "Flagged, clean baselines",
+                _fmt_rate(diagnostic["clean_baselines_flagged"]),
+            ),
+            (
+                "Flagged, seeds the reviewer ran on",
+                _fmt_rate(diagnostic["seeds_flagged"]),
+            ),
+        ],
+    )
+    lines += [
+        "",
+        _reject_everything_warning(diagnostic)
+        if diagnostic["warning"]
+        else f"No warning: the reviewer did not flag more than {REJECT_EVERYTHING_MIN:.0%} of both clean baselines and seeds.",
+        "",
+        "## Plans",
+        "",
+    ]
     plans = cast("list[dict[str, object]]", context["plans"])
     plan_rows: list[Sequence[object]] = []
     for plan in plans:
@@ -1065,6 +1187,7 @@ def render_report(context: Mapping[str, object]) -> str:
                 ", ".join(cast("list[str]", review["run_verdicts"])) or "none",
                 review["verdict"],
                 len(cast("list[object]", review["findings"])),
+                _located_cell(plan),
             )
         )
     lines += _table(
@@ -1077,6 +1200,7 @@ def render_report(context: Mapping[str, object]) -> str:
             "Run verdicts",
             "Final",
             "Findings",
+            "Seed located",
         ),
         plan_rows,
     )
@@ -1094,6 +1218,34 @@ def render_report(context: Mapping[str, object]) -> str:
             lines.append(f"- {plan['id']}: {listed}")
     lines += ["", "## Limits", "", *_LIMITS, ""]
     return "\n".join(lines)
+
+
+def _located_fields(scored: ScoredPlan) -> dict[str, object]:
+    """Return the per-plan record that lets located recall be recomputed offline.
+
+    Args:
+        scored: The scored plan.
+
+    Returns:
+        dict[str, object]: ``blockers``, ``residual_entries``, ``seeded_entry_ids``,
+            ``reviewer_findings_at_entry`` (every seeded id with the class and
+            severity of each finding naming it; an empty list means that seeded
+            entry was not named) and ``located``.
+    """
+    return {
+        "blockers": list(scored.blockers),
+        "residual_entries": sorted(scored.residual_entries),
+        "seeded_entry_ids": sorted(scored.seeded_entries),
+        "reviewer_findings_at_entry": {
+            entry: [
+                {"class": f.defect_class, "severity": f.severity}
+                for f in scored.review.findings
+                if f.entry == entry
+            ]
+            for entry in sorted(scored.seeded_entries)
+        },
+        "located": scored.located,
+    }
 
 
 def build_results(
@@ -1158,6 +1310,7 @@ def build_results(
                 "defect_class": scored.defect_class,
                 "needed_repair": scored.needed_repair,
                 "files": candidate.files,
+                **_located_fields(scored),
                 "checker_error_rules": sorted(
                     r.removeprefix("checker_error:")
                     for r in scored.review.reasons
@@ -1229,6 +1382,221 @@ def write_run(
             )
 
 
+_VERDICTS: Final = ("pass", "reject", "unsure")
+_SEVERITIES: Final = ("blocker", "should-fix", "minor")
+
+
+def _review_from_record(data: Mapping[str, object]) -> PlanReview:
+    """Rebuild a plan's final answer from its ``results.json`` record.
+
+    Args:
+        data: The record's ``review`` block (``PlanReview.to_dict()``).
+
+    Returns:
+        PlanReview: The review.
+
+    Raises:
+        InputError: When the verdict is not one the reviewer can give.
+    """
+    verdict = data.get("verdict")
+    if verdict not in _VERDICTS:
+        msg = f"results.json: unknown verdict {verdict!r}"
+        raise InputError(msg)
+    findings: list[ReviewFinding] = []
+    raw_findings = data.get("findings")
+    for raw in (
+        cast("list[object]", raw_findings) if isinstance(raw_findings, list) else []
+    ):
+        entry = _mapping(raw)
+        severity = entry.get("severity")
+        findings.append(
+            ReviewFinding(
+                entry=str(entry.get("entry", "")),
+                defect_class=str(entry.get("class", "other")),
+                severity=severity if severity in _SEVERITIES else "should-fix",
+                reason=str(entry.get("reason", "")),
+                entry_known=entry.get("entry_known") is not False,
+            )
+        )
+    confidence = data.get("confidence")
+    return PlanReview(
+        verdict=verdict,
+        confidence=float(confidence)
+        if isinstance(confidence, (int, float)) and not isinstance(confidence, bool)
+        else None,
+        findings=tuple(findings),
+        reasons=tuple(_strings(data.get("reasons"))),
+        run_verdicts=tuple(
+            v for v in _strings(data.get("run_verdicts")) if v in _VERDICTS
+        ),
+        checker_caught=data.get("checker_caught") is True,
+        reviewer_pass_overridden=data.get("reviewer_pass_overridden") is True,
+        reviewer_ran=data.get("reviewer_ran") is not False,
+    )
+
+
+def _set_metadata(paths: Paths, half: str) -> dict[str, dict[str, object]]:
+    """Read per-item blockers, residuals and seeded entries from the committed sets.
+
+    Used only to back-fill a ``results.json`` written before it recorded them.
+    It reads the three set files and loads no plan, book or git revision.
+
+    Args:
+        paths: The harness paths.
+        half: The run's half.
+
+    Returns:
+        dict[str, dict[str, object]]: Item id to ``blockers``,
+            ``residual_entries`` and ``seeded_entry_ids``.
+
+    Raises:
+        InputError: When a set file cannot be read.
+    """
+    out: dict[str, dict[str, object]] = {}
+    documents = [_json_object(paths.real_set), _json_object(paths.synthetic_set)]
+    if paths.baselines.is_file():
+        documents.append(_json_object(paths.baselines))
+    for document in documents:
+        for item in _items(document):
+            if item.get("half") != half or not isinstance(item.get("id"), str):
+                continue
+            out[str(item["id"])] = {
+                "blockers": list(_blockers(item)),
+                "residual_entries": sorted(_residual_entries(item)),
+                "seeded_entry_ids": sorted(_seeded(item)),
+            }
+    return out
+
+
+def _rescored_plans(document: Mapping[str, object], paths: Paths) -> list[ScoredPlan]:
+    """Rebuild every scored plan of a run from its ``results.json``.
+
+    A record that lacks ``blockers``, ``residual_entries`` or
+    ``seeded_entry_ids`` (written before they were recorded) is back-filled
+    from the committed sets by item id.
+
+    Args:
+        document: The decoded ``results.json``.
+        paths: The harness paths (for the back-fill).
+
+    Returns:
+        list[ScoredPlan]: One scored plan per record.
+
+    Raises:
+        InputError: When a record is malformed or the back-fill cannot be read.
+    """
+    records = [_mapping(p) for p in cast("list[object]", document.get("plans", []))]
+    half = str(_mapping(document.get("run")).get("half"))
+    keys = ("blockers", "residual_entries", "seeded_entry_ids")
+    backfill: dict[str, dict[str, object]] = {}
+    if any(k not in record for record in records for k in keys):
+        backfill = _set_metadata(paths, half)
+    scored: list[ScoredPlan] = []
+    for record in records:
+        extra = backfill.get(str(record.get("id")), {})
+        merged = {k: record[k] if k in record else extra.get(k, []) for k in keys}
+        source = record.get("source")
+        expected = record.get("expected")
+        if source not in ("real", "synthetic", "baseline") or expected not in (
+            "reject",
+            "pass",
+        ):
+            msg = f"results.json: plan {record.get('id')!r} has an unknown source or label"
+            raise InputError(msg)
+        scored.append(
+            ScoredPlan(
+                id=str(record["id"]),
+                source=source,
+                half=str(record.get("half")),
+                unit=str(record.get("unit")),
+                expected=expected,
+                review=_review_from_record(_mapping(record.get("review"))),
+                severity=cast("str | None", record.get("severity")),
+                blockers=tuple(_strings(merged["blockers"])),
+                family=cast("str | None", record.get("family")),
+                defect_class=cast("str | None", record.get("defect_class")),
+                needed_repair=cast("bool | None", record.get("needed_repair")),
+                residual_entries=frozenset(_strings(merged["residual_entries"])),
+                seeded_entries=frozenset(_strings(merged["seeded_entry_ids"])),
+            )
+        )
+    return scored
+
+
+def rescore_run(run_dir: Path, paths: Paths) -> int:
+    """Recompute a finished run's figures from its ``results.json``; no model call.
+
+    Writes ``report.rescored.md`` and ``results.rescored.json`` beside the
+    original and refuses to overwrite either (or to run when the original is
+    missing). The original ``results.json``, ``report.md`` and ``raw/`` are never
+    written. G3b is re-evaluated with the same rules; its verdict is recorded
+    beside the original's so a change would be visible.
+
+    Args:
+        run_dir: The run directory (holds ``results.json``).
+        paths: The harness paths (for the back-fill of older results files).
+
+    Returns:
+        int: The exit code (0 done, 2 bad input or a refused overwrite).
+    """
+    # #ASSUME: external resources: run_dir holds a results.json this harness wrote
+    # #VERIFY: a missing or malformed file stops with EXIT_BAD_INPUT, nothing written.
+    report_path = run_dir / RESCORED_REPORT_NAME
+    results_path = run_dir / RESCORED_RESULTS_NAME
+    existing = [p.name for p in (report_path, results_path) if p.exists()]
+    if existing:
+        held = ", ".join(existing)
+        _err(
+            f"REFUSED: {run_dir} already holds {held}; a re-score never overwrites (move or delete it first)"
+        )
+        return EXIT_BAD_INPUT
+    try:
+        document = _json_object(run_dir / "results.json")
+        scored = _rescored_plans(document, paths)
+    except InputError as exc:
+        _err(f"FAIL: {exc.message}")
+        return EXIT_BAD_INPUT
+    run = _mapping(document.get("run"))
+    only_clean = _mapping(document.get("checker_only_clean_plans"))
+    figures = compute_figures(
+        scored,
+        checker_only_clean=sum(1 for rules in only_clean.values() if rules),
+    )
+    complete = run.get("spend_stopped") is not True and run.get("partial") is not True
+    g3b = evaluate_g3b(
+        figures,
+        half=str(run.get("half")),
+        live=run.get("live") is True,
+        complete=complete,
+    )
+    original_g3b = _mapping(document.get("g3b"))
+    rescored = dict(document)
+    rescored["figures"] = figures.to_dict()
+    rescored["g3b"] = g3b.to_dict()
+    rescored["plans"] = [
+        {**_mapping(record), **_located_fields(plan)}
+        for record, plan in zip(
+            cast("list[object]", document.get("plans", [])), scored, strict=True
+        )
+    ]
+    rescored["rescored"] = {
+        "source": f"{run_dir.name}/results.json",
+        "date": datetime.now(UTC).date().isoformat(),
+        "model_calls": 0,
+        "original_g3b_passed": original_g3b.get("passed"),
+        "g3b_passed_now": g3b.passed,
+        "note": (
+            "figures recomputed from the recorded reviews; located recall and "
+            "the reject-everything diagnostic are informational and change no "
+            "G3b rule"
+        ),
+    }
+    _write_json(results_path, rescored)
+    report_path.write_text(render_report(rescored), encoding="utf-8")
+    sys.stdout.write(f"wrote {results_path} and {report_path}\n")
+    return EXIT_OK
+
+
 def _build_parser() -> argparse.ArgumentParser:
     """Return the CLI parser.
 
@@ -1238,7 +1606,17 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("--half", required=True, choices=["tuning", "held_out"])
+    parser.add_argument("--half", default=None, choices=["tuning", "held_out"])
+    parser.add_argument(
+        "--rescore",
+        default=None,
+        metavar="RUN_DIR",
+        help=(
+            "Recompute the figures of an existing run directory from its "
+            "results.json (no model call) and write report.rescored.md and "
+            "results.rescored.json beside it; never overwrites."
+        ),
+    )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
         "--dry-run", action="store_true", help="Stub provider; no network."
@@ -1329,6 +1707,21 @@ async def _async_main(args: argparse.Namespace) -> int:
     """
     root = cast("str | None", args.out_root)
     paths = Paths(out_root=Path(root)) if root else Paths()
+    rescore = cast("str | None", args.rescore)
+    if rescore is not None:
+        if (
+            cast("bool", args.live)
+            or cast("bool", args.dry_run)
+            or cast("str | None", args.half) is not None
+        ):
+            _err(
+                "FAIL: --rescore takes only a run directory (no --half, --live or --dry-run)"
+            )
+            return EXIT_BAD_INPUT
+        return rescore_run(Path(rescore), paths)
+    if cast("str | None", args.half) is None:
+        _err("FAIL: --half is required (or --rescore <run-dir>)")
+        return EXIT_BAD_INPUT
     return await run_validation(args, paths)
 
 

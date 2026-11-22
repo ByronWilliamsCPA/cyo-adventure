@@ -15,13 +15,21 @@ Figures, never merged:
   reviewer-decisive subset is the reviewer's own recall. Also split by the worst
   severity a plan carries, and per blocker entry.
 * **(b) synthetic recall**, family A (checker-visible) and family B
-  (checker-invisible) apart, B further by class.
+  (checker-invisible) apart, B further by class. Family B is also scored for
+  **located recall**: a seed counts only when a reviewer finding names an entry
+  the seed edited, because a reviewer that rejects every plan would otherwise
+  score 100 percent "any reject" recall. Located recall is informational: D12
+  fixed no threshold for it.
 * **(c) clean flag rate** on the checker-repaired baselines: raw, and with a
   reviewer finding at a recorded known residual counted as the true positive it
   is (``AL-882``); per book, and with and without the baselines that needed a
   repair.
 * **(d) run agreement**: identical verdicts across the runs of a plan.
 * **(e) the D12 thresholds and a G3b pass or fail line.**
+* **(f) the reject-everything diagnostic**: the share of every reviewer-run plan
+  that was flagged, and a warning when clean baselines and seeds are both
+  flagged above :data:`REJECT_EVERYTHING_MIN` (the reviewer discriminates
+  nothing).
 
 The tuning discipline is here too: :func:`check_held_out_allowed` is the
 pre-registered rule that refuses a second held-out run with a prompt hash
@@ -45,6 +53,7 @@ __all__ = [
     "MIN_CLEAN_BOOKS",
     "MIN_DEFECTIVE",
     "RECALL_MIN",
+    "REJECT_EVERYTHING_MIN",
     "Figures",
     "G3bResult",
     "Proportion",
@@ -52,8 +61,10 @@ __all__ = [
     "check_held_out_allowed",
     "compute_figures",
     "evaluate_g3b",
+    "pointer_entry_ids",
     "project_costs",
     "residual_explained",
+    "seeded_entry_ids",
     "wilson_interval",
 ]
 
@@ -65,6 +76,9 @@ MIN_CLEAN_RAW: Final = 15
 MIN_CLEAN_BOOKS: Final = 5
 """D12 as amended 2026-11-21 (``AL-853``): the clean minimum is met by baselines
 of five books, reported per book, not by 15 independent clean plans."""
+REJECT_EVERYTHING_MIN: Final = 0.90
+"""A flag share above this on both clean baselines and seeds is the
+reject-everything warning (diagnostic only; not a D12 threshold)."""
 
 _Z95: Final = 1.959964
 _BLOCKING_SEVERITIES: Final = ("blocker", "should-fix")
@@ -90,6 +104,79 @@ def wilson_interval(k: int, n: int) -> tuple[float, float]:
     centre = (p + z2 / (2 * n)) / denom
     half = _Z95 * math.sqrt(p * (1 - p) / n + z2 / (4 * n * n)) / denom
     return max(0.0, centre - half), min(1.0, centre + half)
+
+
+_ENTRY_COLLECTIONS: Final = frozenset(
+    {"choices", "nodes", "facts", "endings", "threads"}
+)
+_FACT_LIST_FIELDS: Final = frozenset({"requires", "establishes"})
+
+
+def _unescape_pointer_segment(segment: str) -> str:
+    """Decode one RFC 6901 pointer segment (``~1`` is ``/``, ``~0`` is ``~``).
+
+    Args:
+        segment: The raw segment.
+
+    Returns:
+        str: The decoded segment.
+    """
+    return segment.replace("~1", "/").replace("~0", "~")
+
+
+def pointer_entry_ids(pointer: str) -> frozenset[str]:
+    """Return the plan entry ids one edited JSON pointer touches.
+
+    ``/choices/<id>/...`` gives the choice id, ``/nodes/<id>/...`` the node id,
+    ``/facts/<id>`` and ``/facts/<id>/...`` the fact id, ``/endings/<id>/...``
+    the ending id and ``/threads/<id>/...`` the thread id. A node pointer that
+    walks into a fact list by id (``/nodes/<id>/establishes/<fact>``, a
+    non-numeric segment) touches the node and that fact. Any other pointer (a
+    collection that holds no entries, a malformed pointer) touches nothing.
+
+    Args:
+        pointer: A JSON pointer into the plan, as ``edited_paths`` records.
+
+    Returns:
+        frozenset[str]: The entry ids; empty when the pointer names none.
+    """
+    # #ASSUME: data integrity: edited_paths are RFC 6901 pointers into the plan
+    # #VERIFY: a pointer that does not parse yields no id, which the report
+    # surfaces as an unscorable seed rather than a silent miss.
+    if not pointer.startswith("/"):
+        return frozenset()
+    parts = [_unescape_pointer_segment(p) for p in pointer[1:].split("/")]
+    if len(parts) < 2 or parts[0] not in _ENTRY_COLLECTIONS or not parts[1]:
+        return frozenset()
+    ids = {parts[1]}
+    if (
+        parts[0] == "nodes"
+        and len(parts) >= 4
+        and parts[2] in _FACT_LIST_FIELDS
+        and parts[3]
+        and not parts[3].isdigit()
+    ):
+        ids.add(parts[3])
+    return frozenset(ids)
+
+
+def seeded_entry_ids(edited_paths: Sequence[str]) -> frozenset[str]:
+    """Return every plan entry id a synthetic seed edited.
+
+    A seed that adds a fact lists both ``/facts/<id>`` and the node that
+    establishes it, so the union of :func:`pointer_entry_ids` over the pointers
+    counts the node and the fact.
+
+    Args:
+        edited_paths: The item's ``edited_paths`` JSON pointers.
+
+    Returns:
+        frozenset[str]: The seeded entry ids.
+    """
+    out: set[str] = set()
+    for pointer in edited_paths:
+        out |= pointer_entry_ids(pointer)
+    return frozenset(out)
 
 
 @dataclass(frozen=True, slots=True)
@@ -158,6 +245,8 @@ class ScoredPlan:
         defect_class: The synthetic class or rule (``B1`` to ``B4``, ``SP-3``).
         needed_repair: For a baseline, whether the checker repair changed it.
         residual_entries: Node and choice ids of the plan's known residuals.
+        seeded_entries: For a synthetic item, the entry ids its seed edited
+            (:func:`seeded_entry_ids`); empty when unknown.
     """
 
     id: str
@@ -172,6 +261,31 @@ class ScoredPlan:
     defect_class: str | None = None
     needed_repair: bool | None = None
     residual_entries: frozenset[str] = field(default_factory=frozenset)
+    seeded_entries: frozenset[str] = field(default_factory=frozenset)
+
+    @property
+    def located_entries(self) -> tuple[str, ...]:
+        """Return the seeded entries the reviewer's findings name.
+
+        Findings of both runs are combined (``review.findings`` is their union).
+        Nothing is located on a plan the reviewer did not flag.
+
+        Returns:
+            tuple[str, ...]: The seeded entry ids with a finding, sorted.
+        """
+        if not self.review.flagged:
+            return ()
+        flagged = {f.entry for f in self.review.findings}
+        return tuple(sorted(self.seeded_entries & flagged))
+
+    @property
+    def located(self) -> bool:
+        """Whether the reviewer flagged the plan and named a seeded entry.
+
+        Returns:
+            bool: True when at least one seeded entry has a finding.
+        """
+        return bool(self.located_entries)
 
 
 def residual_explained(review: PlanReview, residual_entries: frozenset[str]) -> bool:
@@ -211,6 +325,18 @@ def _proportion(items: Sequence[ScoredPlan]) -> Proportion:
     return Proportion(sum(1 for i in items if i.review.flagged), len(items))
 
 
+def _located(items: Sequence[ScoredPlan]) -> Proportion:
+    """Count the plans among ``items`` whose seed the reviewer located.
+
+    Args:
+        items: The plans (each with known seeded entries).
+
+    Returns:
+        Proportion: Located over total.
+    """
+    return Proportion(sum(1 for i in items if i.located), len(items))
+
+
 @dataclass(frozen=True, slots=True)
 class Figures:
     """Every figure for one run, in the order the report prints them.
@@ -238,6 +364,16 @@ class Figures:
             (a count; observation only).
         real_defective_n: Count of real defective plans.
         clean_books: Distinct books among the baselines.
+        located_b: Family B plans whose seed was located (a reviewer finding
+            names an entry the seed edited), over family B plans with known
+            seeded entries. Informational: D12 sets no threshold for it.
+        located_b_by_class: The same per family B class.
+        located_b_unscorable: Family B plans with no known seeded entry (left
+            out of the located denominators).
+        reviewer_flag_all: Flagged over every plan the reviewer ran on (clean
+            and defective; checker-caught plans never reached it).
+        reviewer_flag_seeds: Flagged over the synthetic plans the reviewer ran
+            on.
     """
 
     real_recall: Proportion
@@ -259,6 +395,28 @@ class Figures:
     real_defective_n: int
     clean_books: int
     checker_only_clean: int = 0
+    located_b: Proportion = field(default_factory=lambda: Proportion(0, 0))
+    located_b_by_class: dict[str, Proportion] = field(default_factory=dict)
+    located_b_unscorable: int = 0
+    reviewer_flag_all: Proportion = field(default_factory=lambda: Proportion(0, 0))
+    reviewer_flag_seeds: Proportion = field(default_factory=lambda: Proportion(0, 0))
+
+    @property
+    def rejects_everything(self) -> bool:
+        """Whether the reviewer flagged nearly every clean baseline and seed.
+
+        True when both the clean baselines and the reviewer-run seeds were
+        flagged above :data:`REJECT_EVERYTHING_MIN`: a reviewer that does that
+        discriminates nothing, and its any-reject recall is meaningless.
+
+        Returns:
+            bool: True when the warning applies (False with no baselines or no
+                reviewer-run seeds).
+        """
+        return all(
+            p.n > 0 and p.k / p.n > REJECT_EVERYTHING_MIN
+            for p in (self.clean_raw, self.reviewer_flag_seeds)
+        )
 
     @property
     def blockers_all_flagged(self) -> bool:
@@ -300,7 +458,16 @@ class Figures:
                 "by_family_and_half": {
                     k: v.to_dict() for k, v in sorted(self.synthetic_by_half.items())
                 },
-                "note": "synthetic recall overstates real recall; never merged",
+                "family_B_located": self.located_b.to_dict(),
+                "family_B_located_by_class": {
+                    k: v.to_dict() for k, v in sorted(self.located_b_by_class.items())
+                },
+                "family_B_located_unscorable": self.located_b_unscorable,
+                "note": (
+                    "synthetic recall overstates real recall; never merged. "
+                    "Located recall credits a seed only when a finding names an "
+                    "entry the seed edited; informational, not a threshold"
+                ),
             },
             "clean_baselines": {
                 "flag_rate_raw": self.clean_raw.to_dict(),
@@ -312,6 +479,13 @@ class Figures:
                 "books": self.clean_books,
             },
             "run_agreement": self.agreement.to_dict(),
+            "reject_everything_diagnostic": {
+                "reviewer_run_plans_flagged": self.reviewer_flag_all.to_dict(),
+                "clean_baselines_flagged": self.clean_raw.to_dict(),
+                "seeds_flagged": self.reviewer_flag_seeds.to_dict(),
+                "threshold": REJECT_EVERYTHING_MIN,
+                "warning": self.rejects_everything,
+            },
             "checker_only_clean_plans_rejected": self.checker_only_clean,
         }
 
@@ -368,6 +542,11 @@ def compute_figures(
         i for i in items if i.review.reviewer_ran and len(i.review.run_verdicts) >= 2
     ]
     agreed = sum(1 for i in ran if len(set(i.review.run_verdicts)) == 1)
+    scorable_b = [i for i in family_b if i.seeded_entries]
+    located_classes: dict[str, list[ScoredPlan]] = {}
+    for item in scorable_b:
+        located_classes.setdefault(item.defect_class or "unclassed", []).append(item)
+    reviewed = [i for i in items if i.review.reviewer_ran]
     return Figures(
         real_recall=_proportion(real),
         real_checker_caught=Proportion(len(caught), len(real)),
@@ -402,6 +581,13 @@ def compute_figures(
         real_defective_n=len(real),
         clean_books=len({i.unit for i in baselines}),
         checker_only_clean=checker_only_clean,
+        located_b=_located(scorable_b),
+        located_b_by_class={k: _located(v) for k, v in located_classes.items()},
+        located_b_unscorable=len(family_b) - len(scorable_b),
+        reviewer_flag_all=_proportion(reviewed),
+        reviewer_flag_seeds=_proportion(
+            [i for i in reviewed if i.source == "synthetic"]
+        ),
     )
 
 

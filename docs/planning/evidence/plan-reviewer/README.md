@@ -73,10 +73,78 @@ and clustered by book.
 | Figure | What it is |
 | --- | --- |
 | (a) Real defective recall | Overall (checker plus reviewer), split into **checker-caught** plans (an SP ERROR, no model call) and **reviewer-decisive** plans (the checks were clean); recall on the decisive subset is the reviewer's own. Also by worst severity carried, and per blocker entry |
-| (b) Synthetic recall | Family A (a floor: checker-visible by construction) and family B apart, B further by class (B1 to B4) |
+| (b) Synthetic recall | Family A (a floor: checker-visible by construction) and family B apart, B further by class (B1 to B4). Family B is reported twice: **any-reject recall** (any reject or `unsure` counts) and **located recall** (see below) |
 | (c) Clean flag rate | On the baselines: raw, and with a finding at a recorded known residual counted as the true positive it is (`AL-882`); per book; with and without the baselines that needed repair |
 | (d) Run agreement | Identical verdicts across the two runs of a plan, over plans the reviewer ran on |
 | (e) Thresholds and G3b | Every D12 threshold and the minimum size, and one pass or fail line |
+| (f) Reject-everything diagnostic | The share of every plan the reviewer ran on that was flagged (clean and defective), the share of clean baselines and of seeds flagged, and a warning line (see below) |
+
+### Located recall (family B, informational)
+
+The any-reject recall is too lenient on its own: a reviewer that rejects every plan scores 100 percent on it. The
+first live tuning pass (`tuning-1`) rejected every plan, both clean baselines included. **Located recall** credits a
+family B seed only when the reviewer's findings (the union of both runs) name at least one entry the seed edited, and
+only on a plan the reviewer flagged.
+
+- **Seeded entry ids** come from the item's `edited_paths` (JSON pointers): `/choices/<id>/...` is a choice id,
+  `/nodes/<id>/...` a node id, `/facts/<id>` a fact id, `/endings/<id>/...` an ending id, `/threads/<id>/...` a thread
+  id; a seed's pointers are united, so an edit that adds a fact counts the fact (`/facts/<id>`) and the node that
+  establishes it. A node pointer that walks into a fact list by a non-numeric segment
+  (`/nodes/<id>/establishes/<fact>`) counts that fact too; no committed item uses that shape. Any other pointer names
+  no entry. The code is `pointer_entry_ids` and `seeded_entry_ids` in `review_figures.py`.
+- It is reported for family B overall and per class (B1 to B4), with Wilson intervals, beside the any-reject figure and
+  labelled as such. A family B plan with no derivable seeded entry is counted apart (`family_B_located_unscorable`) and
+  left out of the located denominators rather than scored as a miss.
+- It is **informational**. The D12 thresholds are pre-registered and G3b's rules are unchanged: located recall is not a
+  threshold, and the verdict section prints it as an informational line only.
+- Family A is checker-caught by construction and has no located figure.
+- **Real defective plans have no located figure, on purpose.** A real plan item's `defects` records only each defect's
+  id, class and severity. The node ids sit in the matching reader items (`node`, `other_nodes`, `choice_ids`), and they
+  do resolve, but the result would not be reliable: the defects are every defect the *book revision* carries (an upper
+  bound on what a plan can show, see below), most are prose-level, and the target sets are large (for example 39
+  distinct nodes for the two Lighthouse plans carrying 20 defects, 83 for the 48 of the Clockwork plan), so almost any
+  finding would land in one. The four reviewer-decisive held-out plans are the only place it would matter, and a located
+  figure there would credit coincidence. Recording a per-plan list of the defects visible in the plan (not the book) is
+  what would make it possible; until then real recall stays any-reject, and the checker-caught split is the honest
+  reading of it.
+
+### Reject-everything diagnostic
+
+Printed in the report (section (f)) and in `results.json` under `figures.reject_everything_diagnostic`: the flagged
+share of all plans the reviewer ran on (checker-caught plans never reach it), of clean baselines, and of the seeds it
+ran on (family B in practice). The report carries a **warning line**, and repeats it in the verdict section, when more
+than 90 percent of the clean baselines **and** more than 90 percent of the seeds were flagged: a reviewer that does that
+discriminates nothing, and read together with located recall it shows whether any seed was actually found. It is a
+diagnostic, not a gate.
+
+### What `results.json` records for re-scoring
+
+Every plan record carries `blockers`, `residual_entries`, `seeded_entry_ids`, `reviewer_findings_at_entry` (every
+seeded id with the class and severity of each finding that names it; an empty list means that entry was not named) and
+`located`, next to the full `review` (verdict, run verdicts and every finding). Located recall can therefore be
+recomputed from `results.json` alone.
+
+### Re-scoring an existing run
+
+```bash
+uv run python scripts/validate_plan_reviewer.py --rescore docs/planning/evidence/plan-reviewer/tuning-1
+```
+
+`--rescore <run-dir>` reads `<run-dir>/results.json`, rebuilds the scored plans from the recorded reviews, recomputes
+every figure and G3b with the same rules, and writes `report.rescored.md` and `results.rescored.json` beside the
+original. It makes no model call, never writes the original `results.json`, `report.md` or `raw/`, and refuses when
+either output already exists. A results file written before these fields existed (such as `tuning-1`) is back-filled
+by item id from the committed validation sets (the three JSON set files only; no plan, book or git revision is
+loaded). `results.rescored.json` records the original and the recomputed G3b verdict side by side.
+
+### The tuning-1 re-score
+
+`tuning-1` was re-scored with this tool; the files are `tuning-1/report.rescored.md` and
+`tuning-1/results.rescored.json`. Family B located recall is 3 of 4 (any-reject recall 4 of 4), and the
+reject-everything warning fires (clean baselines 2 of 2 flagged, seeds 4 of 4 flagged, all 6 reviewer-run plans
+flagged). The seeded entry of `SY-B-B1-3` (`c_a_hearth_1`) was never named; the other three seeds were located. The
+G3b verdict is unchanged (tuning never passes it). With four seeds and two baselines this is a tuning signal, not a
+measurement.
 
 A flag on a clean baseline is "explained" when it has findings, at least one cites a known residual's node or choice, and
 no blocker or should-fix finding cites anything else. A flag with no findings (a disagreement, a parse failure) is a
@@ -138,6 +206,8 @@ uv run python scripts/validate_plan_reviewer.py --half held_out --live --budget 
 # One plan against its book.
 uv run python scripts/review_story_plan.py --plan out/<slug>.plan.json --book out/<slug>.filled.json --dry-run
 ```
+
+`--rescore <run-dir>` takes no `--half`, `--live` or `--dry-run` (see above).
 
 `--only <id,id>` runs a partial set (a partial run never passes G3b), `--price-in` and `--price-out` set the reviewer's
 price when `core/pricing.py` has no row (otherwise 3 and 15 USD per million tokens are assumed), and `--temperature`,
