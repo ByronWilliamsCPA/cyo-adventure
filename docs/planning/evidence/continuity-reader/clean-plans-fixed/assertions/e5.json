@@ -1,0 +1,612 @@
+{
+  "n_open": [
+    "bree_dreams_sky",
+    "cirrus_airship",
+    "bree_stowaway",
+    "captain_quill"
+  ],
+  "n_start": [
+    "bree_stowaway",
+    "four_ways_deck"
+  ],
+  "a_eng1": [
+    "stoker"
+  ],
+  "a_eng_deep": [
+    "stoker",
+    "scuffling_below"
+  ],
+  "a_eng_a": [
+    "hold_dial_warm"
+  ],
+  "a_eng_a2": [
+    "mew_sound"
+  ],
+  "a_eng_b": [
+    "scuffling_below",
+    "paw_prints",
+    "mew_sound"
+  ],
+  "a_eng_b2": [
+    "paw_prints",
+    "mew_sound"
+  ],
+  "a_eng_conv": [
+    "mew_sound",
+    "nook_eyes"
+  ],
+  "a_eng_risk": [
+    "stoker"
+  ],
+  "a_eng_recover": [
+    "stoker"
+  ],
+  "e_set_eng": [
+    "stoker",
+    "bree_no_ticket",
+    "sad_note_below",
+    "bree_stowaway"
+  ],
+  "b_hold1": [
+    "forty_sacks_feed"
+  ],
+  "b_hold_deep": [
+    "silver_crest",
+    "grey_fur"
+  ],
+  "b_hold_a": [
+    "silver_crest",
+    "haven_crest",
+    "forty_sacks_feed"
+  ],
+  "b_hold_a2": [
+    "mew_sound"
+  ],
+  "b_hold_b": [
+    "rag_nest"
+  ],
+  "b_hold_b2": [
+    "rag_nest",
+    "mew_sound"
+  ],
+  "b_hold_conv": [
+    "nook_eyes"
+  ],
+  "b_hold_risk": [],
+  "b_hold_recover": [],
+  "e_set_hold": [
+    "grey_cat",
+    "cat_name_unknown",
+    "bree_put_ashore"
+  ],
+  "c_nest1": [],
+  "c_nest_deep": [
+    "lookout"
+  ],
+  "c_nest_a": [
+    "tired_seam"
+  ],
+  "c_nest_a2": [
+    "mew_sound"
+  ],
+  "c_nest_b": [
+    "lookout"
+  ],
+  "c_nest_b2": [
+    "mew_sound"
+  ],
+  "c_nest_conv": [
+    "mew_sound",
+    "nook_eyes"
+  ],
+  "c_nest_risk": [],
+  "c_nest_recover": [],
+  "e_set_nest": [
+    "lookout",
+    "flying_heavy",
+    "bree_put_ashore"
+  ],
+  "d_salon1": [
+    "steward"
+  ],
+  "d_salon_deep": [
+    "steward"
+  ],
+  "d_salon_a": [
+    "hidden_deck"
+  ],
+  "d_salon_a2": [
+    "mew_sound"
+  ],
+  "d_salon_b": [
+    "steward"
+  ],
+  "d_salon_b2": [
+    "mew_sound"
+  ],
+  "d_salon_conv": [
+    "mew_sound",
+    "nook_eyes"
+  ],
+  "d_salon_risk": [],
+  "d_salon_recover": [],
+  "e_set_salon": [
+    "steward",
+    "odd_cargo_hint",
+    "bree_put_ashore"
+  ],
+  "n_friend": [
+    "nook_eyes",
+    "grey_cat",
+    "pip_named"
+  ],
+  "f_galley1": [
+    "pip_named",
+    "cook",
+    "cook_forty_buckets",
+    "pip_hungry"
+  ],
+  "f_galley_a": [
+    "pip_named",
+    "pip_fed_sardines",
+    "pip_purrs"
+  ],
+  "f_galley_b": [
+    "pip_named",
+    "cook"
+  ],
+  "f_galley_mid": [
+    "pip_named"
+  ],
+  "e_set_galley": [
+    "pip_named",
+    "cook",
+    "cook_sardine_thief",
+    "cook_forty_buckets",
+    "pip_kept_aboard",
+    "bree_put_ashore"
+  ],
+  "f_cabin1": [
+    "captain_quill",
+    "pip_named"
+  ],
+  "f_cabin_a": [
+    "captain_quill",
+    "secret_he",
+    "hates_loud_noise",
+    "crew_unaware",
+    "storm_coming",
+    "sealed_hold"
+  ],
+  "f_cabin_b": [
+    "pip_named",
+    "storm_coming",
+    "chart_whale_home"
+  ],
+  "f_cabin_b2": [
+    "pip_named",
+    "first_officer",
+    "seasick_calf"
+  ],
+  "f_cabin_mid": [
+    "pip_named"
+  ],
+  "e_set_cabin": [
+    "pip_named",
+    "first_officer",
+    "nimbus_sketch",
+    "bree_put_ashore"
+  ],
+  "f_rig1": [
+    "pip_named",
+    "rope_bridge"
+  ],
+  "f_rig_a": [
+    "pip_named",
+    "old_seam_goes",
+    "storm_coming"
+  ],
+  "f_rig_b": [
+    "pip_named",
+    "rope_bridge"
+  ],
+  "f_rig_b2": [
+    "pip_named",
+    "bree_crossed_live_rope"
+  ],
+  "f_rig_mid": [
+    "pip_named"
+  ],
+  "e_set_rig": [
+    "pip_named",
+    "rope_bridge",
+    "old_seam_goes",
+    "bree_put_ashore"
+  ],
+  "n_storm": [
+    "pip_named",
+    "bosun",
+    "deep_hold_groan"
+  ],
+  "s_deck1": [],
+  "s_deck_a": [
+    "deep_hold_groan"
+  ],
+  "s_deck_b": [],
+  "s_deck_mid": [
+    "deep_hold_groan",
+    "sealed_hold",
+    "bolt_loose"
+  ],
+  "e_set_storm1": [
+    "pip_named",
+    "sad_note_below"
+  ],
+  "s_crew1": [
+    "bosun"
+  ],
+  "s_crew_a": [
+    "bosun",
+    "pip_named"
+  ],
+  "s_crew_b": [],
+  "s_crew_mid": [
+    "bosun",
+    "bosun_asks_name",
+    "stowaways_to_purser",
+    "bree_stowaway"
+  ],
+  "s_crew_truth": [
+    "bosun",
+    "bree_told_bosun",
+    "bosun_keeps_secret",
+    "deep_hold_groan",
+    "sealed_hold",
+    "bolt_loose",
+    "bree_stowaway"
+  ],
+  "s_crew_dodge": [
+    "bosun",
+    "pip_named",
+    "bree_kept_name",
+    "deep_hold_groan",
+    "sealed_hold",
+    "bolt_loose"
+  ],
+  "e_set_storm2": [
+    "bosun",
+    "pip_named",
+    "bosun_strange_girl",
+    "deep_hold_groan",
+    "sealed_hold"
+  ],
+  "s_hold1": [
+    "deep_hold_groan",
+    "pip_named",
+    "alive_afraid",
+    "sealed_hold"
+  ],
+  "s_hold_a": [
+    "pip_named",
+    "pale_shape"
+  ],
+  "s_hold_b": [
+    "captain_quill",
+    "brass_panel",
+    "hates_loud_noise"
+  ],
+  "s_hold_mid": [
+    "pip_named",
+    "bolt_loose"
+  ],
+  "n_secret": [
+    "pip_named",
+    "nimbus_sky_whale",
+    "cut_from_net",
+    "bound_for_haven",
+    "captain_secret",
+    "whale_rocks_ship",
+    "hates_loud_noise",
+    "calmed_by_gentle",
+    "nimbus_hoooom",
+    "crew_unaware",
+    "captain_quill"
+  ],
+  "p_save1": [
+    "nimbus_sky_whale",
+    "pip_named",
+    "nimbus_harness",
+    "harness_strap_fin"
+  ],
+  "p_save_a": [
+    "nimbus_sky_whale",
+    "harness_strap_fin",
+    "our_song",
+    "fin_still_pinned",
+    "calmed_by_gentle"
+  ],
+  "p_save_b": [
+    "nimbus_sky_whale",
+    "harness_strap_fin",
+    "fin_freed",
+    "nimbus_hoooom"
+  ],
+  "p_pip1": [
+    "pip_named",
+    "pip_fed_sardines",
+    "pip_purrs",
+    "nimbus_sky_whale",
+    "calmed_by_gentle",
+    "nimbus_hoooom"
+  ],
+  "p_save_mid": [
+    "nimbus_sky_whale",
+    "captain_secret",
+    "pip_named",
+    "calmed_by_gentle"
+  ],
+  "p_reveal1": [
+    "pip_named",
+    "stair_jammed"
+  ],
+  "p_reveal_a": [
+    "pip_named",
+    "nimbus_sky_whale",
+    "captain_secret",
+    "whale_rocks_ship",
+    "hates_loud_noise"
+  ],
+  "p_reveal_a2": [
+    "bree_stowaway"
+  ],
+  "p_reveal_mid": [
+    "captain_quill",
+    "nimbus_sky_whale",
+    "captain_secret",
+    "whale_rocks_ship",
+    "hates_loud_noise"
+  ],
+  "e_set_reveal": [
+    "pip_named",
+    "captain_quill",
+    "nimbus_sky_whale",
+    "stair_jammed"
+  ],
+  "p_people1": [
+    "pip_named",
+    "bosun",
+    "captain_secret",
+    "bree_stowaway",
+    "captain_quill"
+  ],
+  "p_people_a": [
+    "bosun",
+    "bree_told_bosun",
+    "nimbus_sky_whale",
+    "cut_from_net",
+    "bosun_trusts_bree"
+  ],
+  "p_people_cold": [
+    "bosun",
+    "nimbus_sky_whale",
+    "pip_named",
+    "bosun_strange_girl"
+  ],
+  "p_people_b": [
+    "captain_quill",
+    "nimbus_sky_whale",
+    "sealed_hold",
+    "bolt_loose",
+    "pip_named"
+  ],
+  "p_people_mid": [
+    "pip_named"
+  ],
+  "n_bridge": [
+    "captain_quill",
+    "bosun",
+    "nimbus_sky_whale",
+    "whale_rocks_ship",
+    "speaking_tube",
+    "envelope_tearing",
+    "crew_unaware",
+    "captain_secret"
+  ],
+  "b_steer1": [
+    "captain_quill",
+    "speaking_tube",
+    "nimbus_sky_whale",
+    "pip_named",
+    "captain_needs_ten",
+    "hates_loud_noise",
+    "pip_fed_sardines"
+  ],
+  "b_steer_ok": [
+    "speaking_tube",
+    "nimbus_sky_whale",
+    "nimbus_hoooom",
+    "calmed_by_gentle",
+    "our_song"
+  ],
+  "b_steer_ok2": [],
+  "e_set_final": [
+    "speaking_tube",
+    "nimbus_sky_whale",
+    "captain_quill",
+    "hates_loud_noise",
+    "bree_put_ashore",
+    "captain_needs_ten"
+  ],
+  "e_win_save_ship": [
+    "captain_quill",
+    "captain_needs_ten",
+    "bound_for_haven",
+    "pip_named",
+    "bree_stays_aboard",
+    "nimbus_reaches_haven",
+    "speaking_tube",
+    "nimbus_hoooom"
+  ],
+  "b_steer_purr": [
+    "pip_named",
+    "pip_fed_sardines",
+    "pip_purrs",
+    "speaking_tube",
+    "captain_quill",
+    "calmed_by_gentle",
+    "nimbus_hoooom"
+  ],
+  "e_win_purr": [
+    "pip_named",
+    "captain_quill",
+    "nimbus_sky_whale",
+    "pip_kept_aboard",
+    "bree_stays_aboard"
+  ],
+  "b_patch1": [
+    "envelope_tearing",
+    "rigger_winch",
+    "bree_crossed_live_rope"
+  ],
+  "b_patch_ok": [
+    "bree_crossed_live_rope",
+    "rope_bridge"
+  ],
+  "b_patch_alt": [
+    "rigger_winch"
+  ],
+  "e_win_patch": [
+    "bree_crossed_live_rope",
+    "rope_bridge",
+    "nimbus_sky_whale",
+    "captain_quill",
+    "pip_named",
+    "bree_stays_aboard",
+    "pip_kept_aboard"
+  ],
+  "e_win_steer": [
+    "captain_quill",
+    "nimbus_sky_whale",
+    "pip_named",
+    "bree_stays_aboard"
+  ],
+  "e_set_aloft": [
+    "pip_named",
+    "bree_never_crossed_rope",
+    "rope_bridge"
+  ],
+  "b_free1": [
+    "captain_quill",
+    "nimbus_sky_whale",
+    "nimbus_wants_out",
+    "cargo_door_open",
+    "nimbus_harness",
+    "inner_bay",
+    "whale_rocks_ship"
+  ],
+  "b_free_ok": [
+    "fin_freed",
+    "harness_strap_fin",
+    "captain_quill",
+    "nimbus_harness"
+  ],
+  "b_free_ok2": [
+    "nimbus_sky_whale",
+    "bosun",
+    "captain_quill",
+    "fly_east_for_nimbus",
+    "crew_learns_nimbus"
+  ],
+  "e_win_free": [
+    "fin_freed",
+    "bound_for_haven",
+    "captain_quill",
+    "pip_named",
+    "nimbus_reaches_haven",
+    "bree_stays_aboard"
+  ],
+  "b_free_alt": [
+    "nimbus_sky_whale",
+    "inner_bay",
+    "captain_quill",
+    "calmed_by_gentle"
+  ],
+  "e_win_friend": [
+    "nimbus_sky_whale",
+    "bound_for_haven",
+    "captain_quill",
+    "nimbus_reaches_haven"
+  ],
+  "e_neu_kite": [
+    "nimbus_sky_whale",
+    "cargo_door_open",
+    "captain_quill",
+    "bound_for_haven",
+    "harness_strap_fin",
+    "fin_still_pinned",
+    "nimbus_delayed"
+  ],
+  "b_tell1": [
+    "captain_secret",
+    "captain_quill",
+    "bosun",
+    "nimbus_sky_whale",
+    "hunters_pay",
+    "crew_unaware"
+  ],
+  "b_tell_crew": [
+    "bree_told_bosun",
+    "bosun",
+    "nimbus_sky_whale",
+    "bosun_trusts_bree",
+    "crew_learns_nimbus",
+    "hates_loud_noise",
+    "whale_rocks_ship"
+  ],
+  "e_win_crew": [
+    "bosun",
+    "bree_told_bosun",
+    "captain_quill",
+    "nimbus_sky_whale",
+    "bree_stays_aboard",
+    "bosun_trusts_bree",
+    "crew_learns_nimbus"
+  ],
+  "b_tell_doubt": [
+    "bosun",
+    "pip_named",
+    "bosun_strange_girl",
+    "nimbus_sky_whale"
+  ],
+  "b_tell_captain": [
+    "captain_quill",
+    "nimbus_sky_whale",
+    "crew_learns_nimbus"
+  ],
+  "e_win_captain": [
+    "captain_quill",
+    "nimbus_sky_whale",
+    "bosun",
+    "bree_stays_aboard"
+  ],
+  "e_neu_home": [
+    "nimbus_sky_whale",
+    "pip_named",
+    "captain_quill",
+    "bree_put_ashore"
+  ],
+  "b_tell_reveal": [
+    "bosun",
+    "sealed_hold",
+    "captain_quill",
+    "crew_learns_nimbus",
+    "nimbus_sky_whale"
+  ],
+  "e_win_discovery": [
+    "nimbus_sky_whale",
+    "captain_quill",
+    "crew_learns_nimbus",
+    "cook_forty_buckets",
+    "bree_stays_aboard"
+  ]
+}

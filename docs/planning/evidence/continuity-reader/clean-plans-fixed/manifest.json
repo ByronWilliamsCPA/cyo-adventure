@@ -1,0 +1,41 @@
+{
+  "purpose": "Blind clean plans of the five held-out books after the 2026-11-22 residual fixes (fix records: ../fixes-2026-11-22-*.md). Two independent passes per book (e then f); the pre-fix c and d plans in ../clean-plans/ become defective items.",
+  "prompt": "../../story-plan-retro/plans/EXTRACTION-PROMPT-v2.md",
+  "extractions": {
+    "e1": {
+      "pass": "first",
+      "source_file": "out/the-signal-in-the-static.filled.json",
+      "book_sha256": "2636ac09b73244731fc09cb4c4fa561b890a336df19093ca6b58be40b6bc36a7",
+      "authoring_minutes": 70,
+      "deviation": "none"
+    },
+    "e2": {
+      "pass": "first",
+      "source_file": "out/the-midnight-museum.filled.json",
+      "book_sha256": "af54082e1ac3cc015ba8a1e3bd19b01f75f67890af7f0288082e383fbbe594f1",
+      "authoring_minutes": 50,
+      "deviation": "none"
+    },
+    "e3": {
+      "pass": "first",
+      "source_file": "out/the-mapmakers-island.filled.json",
+      "book_sha256": "ce7e80a923c4090aa180a84a6dbfa141ef4468496b477cfe9058c4b364a3b853",
+      "authoring_minutes": 80,
+      "deviation": "none"
+    },
+    "e4": {
+      "pass": "first",
+      "source_file": "out/the-cave-of-echoes.filled.json",
+      "book_sha256": "a4a7c090391572dc58e3c31166f53fbe51a03aba18fa4a086a26b6f833fbc7fe",
+      "authoring_minutes": 40,
+      "deviation": "none"
+    },
+    "e5": {
+      "pass": "first",
+      "source_file": "out/the-sky-ship-stowaway.filled.json",
+      "book_sha256": "3621f39c156ad9fa64360889dd24a63dbdbf0e6030e48b2d3fa5158c71a1a66f",
+      "authoring_minutes": 45,
+      "deviation": "none"
+    }
+  }
+}
